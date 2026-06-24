@@ -15,8 +15,13 @@ export interface Team {
   /** Externer Link zu Spielplan/Tabelle (optional) – z. B. DBV-Turnierseite. */
   href?: string;
   platzhalter?: boolean;
-  /** Mannschaftsfoto aus Sanity (optional) – wird oben auf der Karte angezeigt. */
-  foto?: { url?: string; alt?: string };
+  /** Mannschaftsfoto aus Sanity (optional, mit Hotspot/Crop) – oben auf der Karte. */
+  foto?: {
+    asset?: { _ref?: string; _type?: string };
+    hotspot?: Record<string, number>;
+    crop?: Record<string, number>;
+    alt?: string;
+  };
 }
 export interface Foto {
   src: string;

@@ -3,6 +3,7 @@
  * Sparten-Unterseite "Mannschaften" (Landung): Kurzvorstellung + Teams + Fotos.
  */
 import type { SparteData } from "../data/sparten";
+import { urlFor } from "../lib/sanity";
 interface Props { data: SparteData; }
 const { data } = Astro.props as Props;
 ---
@@ -13,10 +14,10 @@ const { data } = Astro.props as Props;
     <div class="teams">
       {data.teams.map((t) => (
         <article class="team">
-          {t.foto?.url && (
+          {t.foto?.asset && (
             <img
               class="team__foto"
-              src={t.foto.url}
+              src={urlFor(t.foto).width(1000).height(563).fit("crop").auto("format").url()}
               alt={t.foto.alt || `Mannschaftsfoto ${t.name}`}
               loading="lazy"
             />

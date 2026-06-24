@@ -4,6 +4,25 @@
  * (Project-ID/Dataset aus astro.config.mjs bzw. .env).
  */
 import { sanityClient } from 'sanity:client';
+import imageUrlBuilder from '@sanity/image-url';
+
+const imageBuilder = imageUrlBuilder(sanityClient);
+
+/** Sanity-Bildobjekt (mit Hotspot/Crop aus dem Studio) + Alt-Text. */
+export interface SanityImage {
+  asset?: { _ref?: string; _type?: string };
+  hotspot?: Record<string, number>;
+  crop?: Record<string, number>;
+  alt?: string;
+}
+
+/**
+ * Bild-URL-Builder, der das im Studio gesetzte Crop & den Hotspot berücksichtigt.
+ * Beispiel: urlFor(foto).width(1000).height(563).url()
+ */
+export function urlFor(source: SanityImage) {
+  return imageBuilder.image(source as Parameters<typeof imageBuilder.image>[0]);
+}
 
 export interface MannschaftDoc {
   name: string;
@@ -13,13 +32,13 @@ export interface MannschaftDoc {
   jahrgang?: string;
   trainer?: string;
   trainingszeiten?: string;
-  foto?: { url?: string; alt?: string };
+  foto?: SanityImage;
   platzhalter?: boolean;
 }
 
 const MANNSCHAFTEN_QUERY = `*[_type == "mannschaft"] | order(reihenfolge asc, name asc){
   name, kategorie, liga, text, jahrgang, trainer, trainingszeiten, platzhalter,
-  foto{ "url": asset->url, alt }
+  foto
 }`;
 
 /**
@@ -44,12 +63,12 @@ export interface SparteTeamDoc {
   info?: string;
   href?: string;
   platzhalter?: boolean;
-  foto?: { url?: string; alt?: string };
+  foto?: SanityImage;
 }
 
 const SPARTE_TEAMS_QUERY = `*[_type == $type] | order(reihenfolge asc, name asc){
   name, liga, info, href, platzhalter,
-  foto{ "url": asset->url, alt }
+  foto
 }`;
 
 /**
