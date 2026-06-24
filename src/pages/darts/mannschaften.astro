@@ -5,10 +5,15 @@ import SparteHeader from "../../components/SparteHeader.astro";
 import SparteMannschaften from "../../components/SparteMannschaften.astro";
 import Footer from "../../components/Footer.astro";
 import { darts } from "../../data/sparten";
+import { getSparteTeams } from "../../lib/sanity";
+
+// Teams aus Sanity (Typ dartsMannschaft); Fallback auf data/sparten.ts.
+const cmsTeams = await getSparteTeams("darts");
+const data = cmsTeams.length > 0 ? { ...darts, teams: cmsTeams } : darts;
 ---
 <Layout title="Darts – Mannschaften – FC Lübbecke" description="Darts beim FC Lübbecke: Mannschaften, Gruppen und Vorstellung der Sparte.">
   <Header active="darts" />
   <SparteHeader {...darts} active="mannschaften" />
-  <SparteMannschaften data={darts} />
+  <SparteMannschaften data={data} />
   <Footer />
 </Layout>

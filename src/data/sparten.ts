@@ -9,7 +9,7 @@ export interface Training {
 }
 export interface Team {
   name: string;
-  info: string;
+  info?: string;
   /** Spielklasse/Liga (optional) – wird als Tag angezeigt. */
   liga?: string;
   /** Externer Link zu Spielplan/Tabelle (optional) – z. B. DBV-Turnierseite. */

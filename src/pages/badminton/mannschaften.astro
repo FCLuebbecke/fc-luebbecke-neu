@@ -5,10 +5,16 @@ import SparteHeader from "../../components/SparteHeader.astro";
 import SparteMannschaften from "../../components/SparteMannschaften.astro";
 import Footer from "../../components/Footer.astro";
 import { badminton } from "../../data/sparten";
+import { getSparteTeams } from "../../lib/sanity";
+
+// Teams aus Sanity; wenn dort (noch) keine angelegt sind, greifen die
+// Platzhalter-Teams aus data/sparten.ts.
+const cmsTeams = await getSparteTeams("badminton");
+const data = cmsTeams.length > 0 ? { ...badminton, teams: cmsTeams } : badminton;
 ---
 <Layout title="Badminton – Mannschaften – FC Lübbecke" description="Badminton beim FC Lübbecke: Mannschaften, Gruppen und Vorstellung der Sparte.">
   <Header active="badminton" />
   <SparteHeader {...badminton} active="mannschaften" />
-  <SparteMannschaften data={badminton} />
+  <SparteMannschaften data={data} />
   <Footer />
 </Layout>
