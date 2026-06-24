@@ -19,6 +19,21 @@ function defineSparteMannschaft(name: string, title: string) {
         validation: (rule) => rule.required(),
       }),
       defineField({
+        name: 'foto',
+        title: 'Mannschaftsfoto',
+        type: 'image',
+        description: 'Optional – wird oben auf der Karte angezeigt.',
+        options: { hotspot: true },
+        fields: [
+          defineField({
+            name: 'alt',
+            title: 'Bildbeschreibung (Alt-Text)',
+            type: 'string',
+            description: 'Kurze Beschreibung des Fotos – wichtig für Barrierefreiheit.',
+          }),
+        ],
+      }),
+      defineField({
         name: 'liga',
         title: 'Liga / Spielklasse',
         type: 'string',

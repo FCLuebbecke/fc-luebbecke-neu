@@ -44,10 +44,12 @@ export interface SparteTeamDoc {
   info?: string;
   href?: string;
   platzhalter?: boolean;
+  foto?: { url?: string; alt?: string };
 }
 
 const SPARTE_TEAMS_QUERY = `*[_type == $type] | order(reihenfolge asc, name asc){
-  name, liga, info, href, platzhalter
+  name, liga, info, href, platzhalter,
+  foto{ "url": asset->url, alt }
 }`;
 
 /**

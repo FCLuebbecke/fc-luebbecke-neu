@@ -13,18 +13,28 @@ const { data } = Astro.props as Props;
     <div class="teams">
       {data.teams.map((t) => (
         <article class="team">
-          <div class="team__head">
-            <h3 class="team__name">{t.name}</h3>
-            {t.liga && <span class="tag">{t.liga}</span>}
-          </div>
-          <p class="team__info">{t.info}</p>
-          {t.href && (
-            <a class="team__link" href={t.href} target="_blank" rel="noopener noreferrer">
-              Spielplan &amp; Tabelle <span aria-hidden="true">↗</span>
-              <span class="sr-only"> (öffnet in neuem Fenster)</span>
-            </a>
+          {t.foto?.url && (
+            <img
+              class="team__foto"
+              src={t.foto.url}
+              alt={t.foto.alt || `Mannschaftsfoto ${t.name}`}
+              loading="lazy"
+            />
           )}
-          {t.platzhalter && <p class="platzhalter">Daten folgen</p>}
+          <div class="team__body">
+            <div class="team__head">
+              <h3 class="team__name">{t.name}</h3>
+              {t.liga && <span class="tag">{t.liga}</span>}
+            </div>
+            {t.info && <p class="team__info">{t.info}</p>}
+            {t.href && (
+              <a class="team__link" href={t.href} target="_blank" rel="noopener noreferrer">
+                Spielplan &amp; Tabelle <span aria-hidden="true">↗</span>
+                <span class="sr-only"> (öffnet in neuem Fenster)</span>
+              </a>
+            )}
+            {t.platzhalter && <p class="platzhalter">Daten folgen</p>}
+          </div>
         </article>
       ))}
     </div>
@@ -42,12 +52,12 @@ const { data } = Astro.props as Props;
   }
   .team {
     position: relative;
+    display: flex;
+    flex-direction: column;
     background: #fff;
     border: 1px solid rgba(10, 80, 18, 0.10);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-soft);
-    padding: var(--space-4);
-    padding-top: calc(var(--space-4) + 4px);
     overflow: hidden;
     transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
   }
@@ -57,11 +67,22 @@ const { data } = Astro.props as Props;
     inset: 0 0 auto 0;
     height: 4px;
     background: var(--color-green-500);
+    z-index: 1;
   }
   .team:hover {
     transform: translateY(-3px);
     box-shadow: var(--shadow-card);
     border-color: rgba(10, 80, 18, 0.18);
+  }
+  .team__foto {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+  .team__body {
+    padding: var(--space-4);
+    padding-top: calc(var(--space-4) + 4px);
   }
   .team__head {
     display: flex;
