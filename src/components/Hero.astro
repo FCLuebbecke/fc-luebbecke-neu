@@ -1,0 +1,320 @@
+---
+/**
+ * Hero – Startseite (claude.md Abschnitt 6.2)
+ * Stil: "Foto mit grünem Rahmen/Band" – bodenständig & traditionell.
+ * Aufbau: links Vereinsname + Claim + CTAs, rechts Foto im Vereinsgrün gerahmt,
+ * mit versetztem Akzent-Band und kleinem "seit 1925"-Siegel.
+ */
+interface Props {
+  /** Pfad zum Hero-Foto. Platzhalter ist 1:1 austauschbar. */
+  image?: string;
+  imageAlt?: string;
+}
+
+const {
+  image = "/hero-placeholder.svg",
+  imageAlt = "Spieler des FC Lübbecke auf dem Vereinsplatz",
+} = Astro.props;
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="container hero__grid">
+    <!-- Textspalte -->
+    <div class="hero__content">
+      <p class="hero__kicker">
+        <span class="hero__kicker-bar" aria-hidden="true"></span>
+        Sportverein seit 1925 · Lübbecke
+      </p>
+
+      <h1 id="hero-title" class="hero__title">FC Lübbecke</h1>
+
+      <p class="hero__claim">Unser Verein.<br />Unser Lübbecke.</p>
+
+      <p class="hero__lead">
+        Fußball, Badminton, Darts und Laufsport – vier Sparten, ein Verein.
+        Bei uns ist jeder willkommen, der Sport und Gemeinschaft liebt.
+      </p>
+
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="#mitglied-werden">Mitglied werden</a>
+        <a class="btn btn--secondary" href="#sparten">Unsere Sparten</a>
+      </div>
+    </div>
+
+    <!-- Bildspalte: Foto im grünen Rahmen mit versetztem Band -->
+    <div class="hero__media">
+      <span class="hero__band" aria-hidden="true"></span>
+      <div class="hero__frame">
+        <div class="hero__imgwrap">
+          <img
+            class="hero__image"
+            src={image}
+            alt={imageAlt}
+            width="1200"
+            height="900"
+            fetchpriority="high"
+          />
+          <span class="hero__overlay" aria-hidden="true"></span>
+        </div>
+      </div>
+      <span class="hero__seal" aria-hidden="true">
+        <span class="hero__seal-year">1925</span>
+        <span class="hero__seal-label">gegründet</span>
+      </span>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    background:
+      /* dezenter Lichtschein oben rechts */
+      radial-gradient(120% 80% at 85% 0%, var(--color-green-050) 0%, transparent 60%),
+      /* Grundverlauf weiß → hellgrün */
+      linear-gradient(180deg, var(--color-white) 0%, var(--color-green-050) 100%);
+    padding-block: var(--space-6) var(--space-7);
+    overflow: hidden;
+  }
+
+  /* sehr zarte, weiche Streifen – nur zur Bildseite hin sichtbar */
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      rgba(10, 80, 18, 0.05) 70px,
+      transparent 140px
+    );
+    /* zur linken (Text-)Seite ausblenden, damit es ruhig bleibt */
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.55) 58%, #000 100%);
+    mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.55) 58%, #000 100%);
+  }
+
+  .hero__grid {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+    align-items: center;
+  }
+
+  /* ---- Textspalte ---- */
+  .hero__content {
+    max-width: 40ch;
+  }
+
+  .hero__kicker {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-head);
+    font-weight: 500;
+    font-size: var(--fs-small);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-green-700);
+    margin-bottom: var(--space-3);
+  }
+  .hero__kicker-bar {
+    width: 34px;
+    height: 4px;
+    background: var(--color-green-500);
+    border-radius: 2px;
+    flex: none;
+  }
+
+  .hero__title {
+    font-size: clamp(2.75rem, 1.6rem + 5.5vw, 5rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.005em;
+    line-height: 1;
+    /* „FC Lübbecke" bleibt auf einer Zeile – sonst stoßen die Ü-Punkte
+       der zweiten Zeile bei engem Zeilenabstand ins „FC" darüber. */
+    white-space: nowrap;
+    color: var(--color-green-900);
+  }
+
+  .hero__claim {
+    font-family: var(--font-head);
+    font-weight: 500;
+    font-size: var(--fs-h2);
+    line-height: 1.12;
+    color: var(--color-ink);
+    margin-top: var(--space-3);
+  }
+
+  .hero__lead {
+    margin-top: var(--space-3);
+    color: var(--color-muted);
+    max-width: 46ch;
+  }
+
+  .hero__actions {
+    margin-top: var(--space-5);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  /* ---- Bildspalte: grüner Rahmen + versetztes Band + Siegel ---- */
+  .hero__media {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .hero__frame {
+    position: relative;
+    z-index: 1;
+    /* kräftiges Vereinsgrün als schmale Einfassung */
+    background: var(--color-green-900);
+    padding: 10px;
+    border-radius: var(--radius-md);
+    box-shadow: 0 18px 40px rgba(10, 80, 18, 0.22);
+  }
+
+  /* versetztes Akzent-Band hinter dem Rahmen (Akzentgrün) */
+  .hero__band {
+    position: absolute;
+    z-index: 0;
+    inset: 22px -18px -18px 22px; /* nach unten-rechts versetzt */
+    background: var(--color-green-500);
+    border-radius: var(--radius-md);
+  }
+
+  /* Bildausschnitt: begrenzt den langsamen Zoom (Ken Burns) */
+  .hero__imgwrap {
+    position: relative;
+    overflow: hidden;
+    border-radius: 6px;
+  }
+
+  .hero__image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    display: block;
+    transform-origin: 60% 40%;
+    animation: hero-kenburns 26s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+
+  /* Tiefe: Verlauf unten + dezente Vignette für cinematischen Look */
+  .hero__overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(to top, rgba(10, 80, 18, 0.48) 0%, rgba(10, 80, 18, 0) 42%);
+    box-shadow:
+      inset 0 0 90px rgba(8, 28, 10, 0.40),
+      inset 0 -40px 60px rgba(8, 28, 10, 0.25);
+  }
+
+  @keyframes hero-kenburns {
+    from { transform: scale(1.02); }
+    to   { transform: scale(1.12) translate(-1.5%, -1%); }
+  }
+
+  /* ---- Cinematisches Einblenden beim Laden (gestaffelt) ---- */
+  .hero__kicker,
+  .hero__title,
+  .hero__claim,
+  .hero__lead,
+  .hero__actions {
+    opacity: 0;
+    /* langes, weiches Auslaufen (easeOutExpo) */
+    animation: hero-rise 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .hero__title   { animation-delay: 0.25s; }
+  .hero__claim   { animation-delay: 0.5s; }
+  .hero__lead    { animation-delay: 0.75s; }
+  .hero__actions { animation-delay: 1s; }
+
+  .hero__media {
+    opacity: 0;
+    animation: hero-reveal 2.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+  }
+
+  @keyframes hero-rise {
+    from { opacity: 0; transform: translateY(32px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @keyframes hero-reveal {
+    from { opacity: 0; transform: scale(0.94); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__image { animation: none; }
+    .hero__kicker,
+    .hero__title,
+    .hero__claim,
+    .hero__lead,
+    .hero__actions,
+    .hero__media {
+      opacity: 1;
+      animation: none;
+    }
+  }
+
+  /* rundes "seit 1925"-Siegel oben links auf dem Rahmen */
+  .hero__seal {
+    position: absolute;
+    z-index: 2;
+    top: -18px;
+    left: -18px;
+    width: 84px;
+    height: 84px;
+    display: grid;
+    place-content: center;
+    text-align: center;
+    border-radius: 999px;
+    background: var(--color-white);
+    color: var(--color-green-900);
+    box-shadow: var(--shadow-card);
+    border: 3px solid var(--color-green-500);
+    font-family: var(--font-head);
+    line-height: 1;
+  }
+  .hero__seal-year {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+  .hero__seal-label {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-green-700);
+  }
+
+  /* ---- Desktop: zwei Spalten ---- */
+  @media (min-width: 860px) {
+    .hero {
+      padding-block: var(--space-7);
+    }
+    .hero__grid {
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: var(--space-7);
+    }
+  }
+
+  @media (max-width: 520px) {
+    .hero__actions .btn { width: 100%; }
+    .hero__seal { width: 68px; height: 68px; top: -12px; left: -12px; }
+    .hero__seal-year { font-size: 1.2rem; }
+  }
+</style>

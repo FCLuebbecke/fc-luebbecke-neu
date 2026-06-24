@@ -1,0 +1,116 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+import SparteHeader from "../../components/SparteHeader.astro";
+import Footer from "../../components/Footer.astro";
+// D-Jugend (D1): Mo 17:00–18:30, Obernfelder Allee (belegt). Rest = Platzhalter.
+
+const zeiten = [
+  { team: "1. Mannschaft", tage: "Di + Do", zeit: "19:30 – 21:00", ort: "Platz Obernfelder Allee", platzhalter: true },
+  { team: "2. Mannschaft", tage: "Mi + Fr", zeit: "19:30 – 21:00", ort: "Platz Obernfelder Allee", platzhalter: true },
+  { team: "Alte Herren", tage: "Freitag", zeit: "19:00 – 20:30", ort: "Platz Obernfelder Allee", platzhalter: true },
+  { team: "D-Jugend (D1)", tage: "Montag", zeit: "17:00 – 18:30", ort: "Obernfelder Allee", platzhalter: false },
+  { team: "Übrige Jugend", tage: "nach Altersklasse", zeit: "wird ergänzt", ort: "Obernfelder Allee", platzhalter: true },
+];
+---
+
+<Layout title="Trainingszeiten – Fußball – FC Lübbecke" description="Trainingszeiten der Fußball-Mannschaften des FC Lübbecke auf der Anlage an der Obernfelder Allee.">
+  <Header active="fussball" />
+  <SparteHeader
+    name="Fußball"
+    claim="Die größte Sparte des FC Lübbecke – von der 1. Mannschaft bis zur Jugend."
+    basePath="/fussball"
+    tag="Größte Sparte"
+    withSpielplan
+    active="trainingszeiten"
+  />
+
+  <main id="inhalt">
+    <section class="container section">
+      <h2 class="section-title">Übersicht</h2>
+      <p class="prose">
+        Trainiert wird auf unserer Anlage an der <strong>Obernfelder Allee 42</strong>,
+        32312 Lübbecke. Alle Zeiten gelten in der Regel während der Saison;
+        in den Ferien kann es Abweichungen geben.
+      </p>
+
+      <div class="tabelle-wrap">
+        <table class="tabelle">
+          <thead>
+            <tr>
+              <th scope="col">Mannschaft</th>
+              <th scope="col">Tage</th>
+              <th scope="col">Uhrzeit</th>
+              <th scope="col">Ort</th>
+            </tr>
+          </thead>
+          <tbody>
+            {zeiten.map((z) => (
+              <tr>
+                <th scope="row">
+                  {z.team}
+                  {z.platzhalter && <span class="platzhalter"> (vorläufig)</span>}
+                </th>
+                <td>{z.tage}</td>
+                <td>{z.zeit}{z.zeit !== "wird ergänzt" && " Uhr"}</td>
+                <td>{z.ort}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <p class="prose hinweis">
+        Angaben ohne Gewähr – verbindliche Zeiten erfragst du bei der
+        <a href="mailto:fussball@fc-luebbecke.de">Fußballabteilung</a>.
+      </p>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .section { padding-block: var(--space-6); }
+
+  .tabelle-wrap {
+    margin-top: var(--space-4);
+    overflow-x: auto;
+    border: 1px solid rgba(10, 80, 18, 0.10);
+    border-radius: var(--radius-md);
+  }
+  .tabelle {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 520px;
+  }
+  .tabelle th,
+  .tabelle td {
+    text-align: left;
+    padding: 0.8rem var(--space-3);
+    border-bottom: 1px solid rgba(10, 80, 18, 0.08);
+  }
+  .tabelle thead th {
+    background: var(--color-green-700);
+    color: #fff;
+    font-family: var(--font-head);
+    font-weight: 500;
+  }
+  .tabelle tbody th {
+    font-family: var(--font-head);
+    font-weight: 500;
+    color: var(--color-green-900);
+  }
+  .tabelle tbody tr:nth-child(even) { background: var(--color-green-050); }
+  .tabelle tbody tr:last-child th,
+  .tabelle tbody tr:last-child td { border-bottom: 0; }
+
+  .platzhalter {
+    font-size: var(--fs-small);
+    color: var(--color-muted);
+    font-style: italic;
+    font-family: var(--font-body);
+    font-weight: 400;
+  }
+  .hinweis { margin-top: var(--space-4); }
+</style>

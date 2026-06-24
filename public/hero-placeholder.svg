@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" role="img" aria-label="Platzhalter für Vereinsfoto">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e7f3e8"/>
+      <stop offset="1" stop-color="#cbe6cf"/>
+    </linearGradient>
+    <linearGradient id="grass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#16a626"/>
+      <stop offset="1" stop-color="#0a6e12"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Himmel -->
+  <rect width="1200" height="900" fill="url(#sky)"/>
+  <!-- Rasen -->
+  <rect y="430" width="1200" height="470" fill="url(#grass)"/>
+  <!-- Rasenstreifen -->
+  <g opacity="0.10" fill="#ffffff">
+    <rect x="0"   y="430" width="150" height="470"/>
+    <rect x="300" y="430" width="150" height="470"/>
+    <rect x="600" y="430" width="150" height="470"/>
+    <rect x="900" y="430" width="150" height="470"/>
+  </g>
+  <!-- Mittellinie & Kreis -->
+  <g stroke="#ffffff" stroke-width="5" fill="none" opacity="0.85">
+    <line x1="0" y1="640" x2="1200" y2="640"/>
+    <circle cx="600" cy="640" r="120"/>
+    <circle cx="600" cy="640" r="6" fill="#ffffff" stroke="none"/>
+  </g>
+
+  <!-- Hinweis-Label -->
+  <g font-family="'Oswald', sans-serif" text-anchor="middle">
+    <text x="600" y="300" fill="#0a5012" font-size="56" font-weight="600" letter-spacing="2">FC LÜBBECKE</text>
+    <text x="600" y="350" fill="#0a6e12" font-size="26" font-weight="500" letter-spacing="3">VEREINSFOTO FOLGT</text>
+  </g>
+</svg>

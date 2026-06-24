@@ -1,0 +1,14 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+import SparteHeader from "../../components/SparteHeader.astro";
+import SparteMannschaften from "../../components/SparteMannschaften.astro";
+import Footer from "../../components/Footer.astro";
+import { darts } from "../../data/sparten";
+---
+<Layout title="Darts – Mannschaften – FC Lübbecke" description="Darts beim FC Lübbecke: Mannschaften, Gruppen und Vorstellung der Sparte.">
+  <Header active="darts" />
+  <SparteHeader {...darts} active="mannschaften" />
+  <SparteMannschaften data={darts} />
+  <Footer />
+</Layout>

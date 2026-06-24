@@ -1,0 +1,210 @@
+/* =============================================================
+   FC Lübbecke – Design-System (Design-Tokens)
+   Quelle: claude.md (Abschnitt 3 Farben, 4 Schriften)
+   ⚠️ Grüntöne & Schrift werden an die bestehende Fußball-Seite
+      angeglichen, sobald deren URL vorliegt.
+   ============================================================= */
+
+:root {
+  /* ---- Farben (60–30–10) ----
+     Verankert am echten Vereinsgrün aus dem Logo (gemessen ≈ #087010).
+     Buttons mit weißer Schrift nutzen das tiefe Grün (AA-konform),
+     das helle Akzentgrün nur für nicht-textliche Elemente. */
+  --color-green-900: #0a5012; /* Tiefgrün – Header, Navi, Footer, große Flächen */
+  --color-green-700: #0a6e12; /* Logo-Grün – Überschriften, Button-Füllung, Links */
+  --color-green-500: #16a626; /* Akzentgrün – Balken, Band, aktive Unterstreichung */
+  --color-green-050: #e7f3e8; /* Hellgrün   – Flächen, Karten-Hintergründe */
+  --color-white:     #ffffff; /* Grund */
+  --color-ink:       #1a1a1a; /* Anthrazit – Fließtext */
+  --color-muted:     #555555; /* Grau – Nebeninfos, Bildunterschriften */
+
+  /* abgeleitete Töne */
+  --color-green-overlay: rgba(10, 80, 18, 0.55); /* dezenter Grün-Schleier auf Fotos */
+
+  /* ---- Typografie ---- */
+  --font-head: "Oswald", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* fluide Schriftgrößen (mobil → desktop), siehe claude.md Abschnitt 4 */
+  --fs-h1: clamp(1.75rem, 1.1rem + 3.2vw, 3rem);   /* 28 → 48 px */
+  --fs-h2: clamp(1.375rem, 1rem + 1.8vw, 2rem);    /* 22 → 32 px */
+  --fs-h3: clamp(1.125rem, 1rem + 0.6vw, 1.375rem);/* 18 → 22 px */
+  --fs-body: clamp(1rem, 0.97rem + 0.15vw, 1.125rem); /* 16 → 18 px */
+  --fs-small: 0.875rem; /* 14 px */
+
+  --lh-body: 1.6;
+  --measure: 70ch; /* max. Zeilenlänge */
+
+  /* ---- Abstände & Form ---- */
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-5: 3rem;
+  --space-6: 4rem;
+  --space-7: 6rem;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+
+  --shadow-card: 0 6px 24px rgba(27, 94, 32, 0.10);
+  --shadow-soft: 0 2px 10px rgba(26, 26, 26, 0.08);
+
+  --container: 1180px;
+  --tap: 44px; /* Mindest-Tippfläche */
+}
+
+/* ---- Reset / Grundlagen ---- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--color-ink);
+  background: var(--color-white);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-head);
+  font-weight: 600;
+  line-height: 1.1;
+  margin: 0;
+  color: var(--color-green-900);
+}
+
+h1 { font-size: var(--fs-h1); }
+h2 { font-size: var(--fs-h2); }
+h3 { font-size: var(--fs-h3); }
+
+p { margin: 0; }
+
+a {
+  color: var(--color-green-700);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* ---- Hilfsklassen ---- */
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--space-3);
+}
+
+/* Abschnittstitel mit grünem Balken links (claude.md Abschnitt 8) */
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.section-title::before {
+  content: "";
+  width: 6px;
+  height: 1.4em;
+  background: var(--color-green-500);
+  border-radius: 3px;
+  flex: none;
+}
+
+/* Buttons (claude.md Abschnitt 8) */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  min-height: var(--tap);
+  padding: 0.75rem 1.6rem;
+  font-family: var(--font-head);
+  font-weight: 500;
+  font-size: 1.0625rem;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.05s ease;
+}
+.btn:active { transform: translateY(1px); }
+
+.btn--primary {
+  background: var(--color-green-700);
+  color: var(--color-white);
+  border-color: var(--color-green-700);
+}
+.btn--primary:hover {
+  background: var(--color-green-900);
+  border-color: var(--color-green-900);
+}
+
+.btn--secondary {
+  background: transparent;
+  color: var(--color-green-700);
+  border-color: var(--color-green-700);
+}
+.btn--secondary:hover {
+  background: var(--color-green-050);
+}
+
+/* Varianten für dunkle/grüne Hintergründe */
+.btn--light {
+  background: var(--color-white);
+  color: var(--color-green-900);
+  border-color: var(--color-white);
+}
+.btn--light:hover {
+  background: var(--color-green-050);
+  border-color: var(--color-green-050);
+}
+
+.btn--ghost-light {
+  background: transparent;
+  color: var(--color-white);
+  border-color: rgba(255, 255, 255, 0.7);
+}
+.btn--ghost-light:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: #fff;
+}
+
+/* Sichtbarer Fokus für Tastatur-Navigation (Barrierefreiheit) */
+:focus-visible {
+  outline: 3px solid var(--color-green-500);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Wiederverwendbare Textspalte (Pflichtseiten, Fließtext-Blöcke) */
+.prose { max-width: var(--measure); }
+.prose > * + * { margin-top: var(--space-3); }
+.prose h2 { margin-top: var(--space-5); }
+.prose h3 { margin-top: var(--space-4); }
+.prose a { color: var(--color-green-700); }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,125 @@
+---
+/**
+ * Sparten-Unterseite "Kontakt": Ansprechpartner + Schnupper-Hinweis/CTA.
+ */
+import type { SparteData } from "../data/sparten";
+interface Props { data: SparteData; }
+const { data } = Astro.props as Props;
+const telHref = data.ansprechTel ? `tel:${data.ansprechTel.replace(/[^+\d]/g, "")}` : null;
+const initialen = data.ansprechName
+  .split(" ")
+  .map((w) => w[0])
+  .join("")
+  .slice(0, 2)
+  .toUpperCase();
+---
+
+<main id="inhalt">
+  <section class="sparte__cta">
+    <div class="container sparte__cta-grid">
+      <div>
+        <h2 class="sparte__cta-title">Lust mitzumachen?</h2>
+        <p class="sparte__cta-text">{data.schnupper}</p>
+        <a
+          class="btn btn--light"
+          href={`mailto:${data.ansprechMail}?subject=Schnuppertraining%20${encodeURIComponent(data.name)}`}
+        >
+          Schnuppertraining anfragen
+        </a>
+      </div>
+
+      <aside class="ansprech">
+        <span class="ansprech__avatar" aria-hidden="true">{initialen}</span>
+        <p class="ansprech__rolle">{data.ansprechRolle}</p>
+        <p class="ansprech__name">{data.ansprechName}</p>
+        <p class="ansprech__kontakt">
+          <a href={`mailto:${data.ansprechMail}`}>
+            <svg class="ansprech__ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 7l9 6 9-6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            {data.ansprechMail}
+          </a>
+          {telHref && (
+            <a href={telHref}>
+              <svg class="ansprech__ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h4l2 5-3 2a12 12 0 0 0 5 5l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+              {data.ansprechTel}
+            </a>
+          )}
+        </p>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<style>
+  .sparte__cta {
+    background: linear-gradient(135deg, var(--color-green-700) 0%, var(--color-green-900) 100%);
+    color: #fff;
+    padding-block: var(--space-6);
+  }
+  .sparte__cta-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    align-items: start;
+  }
+  .sparte__cta-title { color: #fff; }
+  .sparte__cta-text {
+    margin: var(--space-2) 0 var(--space-4);
+    color: rgba(255, 255, 255, 0.92);
+    max-width: 50ch;
+  }
+
+  .ansprech {
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+  }
+  .ansprech__avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--color-green-900);
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 1.5rem;
+    letter-spacing: 0.02em;
+    margin-bottom: var(--space-2);
+  }
+  .ansprech__rolle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: var(--fs-small);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .ansprech__name {
+    font-family: var(--font-head);
+    font-weight: 500;
+    font-size: var(--fs-h3);
+    margin-top: 0.15rem;
+  }
+  .ansprech__kontakt {
+    margin-top: var(--space-2);
+    display: grid;
+    gap: 0.4rem;
+  }
+  .ansprech__kontakt a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #fff;
+    text-decoration: none;
+  }
+  .ansprech__kontakt a:hover { color: var(--color-green-050); text-decoration: underline; text-underline-offset: 2px; }
+  .ansprech__ico { width: 1.1em; height: 1.1em; flex: none; opacity: 0.85; }
+
+  @media (min-width: 860px) {
+    .sparte__cta-grid {
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: var(--space-6);
+    }
+  }
+</style>

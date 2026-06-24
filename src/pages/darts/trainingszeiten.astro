@@ -1,0 +1,14 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+import SparteHeader from "../../components/SparteHeader.astro";
+import SparteTrainingszeiten from "../../components/SparteTrainingszeiten.astro";
+import Footer from "../../components/Footer.astro";
+import { darts } from "../../data/sparten";
+---
+<Layout title="Darts – Trainingszeiten – FC Lübbecke" description="Trainingszeiten und Treffpunkt der Darts-Sparte des FC Lübbecke.">
+  <Header active="darts" />
+  <SparteHeader {...darts} active="trainingszeiten" />
+  <SparteTrainingszeiten data={darts} />
+  <Footer />
+</Layout>

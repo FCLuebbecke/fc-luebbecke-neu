@@ -1,0 +1,112 @@
+---
+/**
+ * "Mitglied werden"-Block (claude.md Abschnitt 6.6)
+ * Grüner Block über volle Breite mit Button.
+ * Sprungziel des Hero-/Header-Buttons (#mitglied-werden).
+ * Hinweis: "Mitglied werden" wird später eine eigene Seite – der Button
+ * verweist vorerst per mailto, bis die Seite existiert.
+ * Kontakt steht bewusst (noch) NICHT auf der Startseite.
+ */
+const vorteile = [
+  "Vier Sparten – ein Mitgliedsbeitrag",
+  "Probetraining jederzeit und unverbindlich",
+  "Familienfreundlich, von den Minis bis zu den Senioren",
+];
+---
+
+<section class="join" id="mitglied-werden" aria-labelledby="join-title">
+  <div class="container join__grid">
+    <div class="join__content">
+      <h2 id="join-title" class="join__title">Werde Teil des FC Lübbecke</h2>
+      <p class="join__text">
+        Ob Fußball, Badminton oder Darts – bei uns findest du dein Team.
+        Komm zum Probetraining, lern uns kennen und werde Mitglied.
+        Wir freuen uns auf dich.
+      </p>
+      <div class="join__actions">
+        <a class="btn btn--light" href="mailto:info@fc-luebbecke.de?subject=Mitglied%20werden">Jetzt Mitglied werden</a>
+      </div>
+    </div>
+
+    <ul class="join__benefits">
+      {vorteile.map((v) => (
+        <li class="join__benefit">
+          <span class="join__check" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 13l4 4L19 7"/>
+            </svg>
+          </span>
+          <span>{v}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .join {
+    background: linear-gradient(135deg, var(--color-green-700) 0%, var(--color-green-900) 100%);
+    color: #fff;
+    padding-block: var(--space-6);
+    /* Sticky-Header beim Ankersprung nicht überdecken */
+    scroll-margin-top: 88px;
+  }
+
+  .join__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    align-items: center;
+  }
+
+  .join__title {
+    color: #fff;
+    max-width: 18ch;
+  }
+  .join__text {
+    margin-top: var(--space-2);
+    color: rgba(255, 255, 255, 0.92);
+    max-width: 56ch;
+  }
+
+  .join__actions {
+    margin-top: var(--space-4);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .join__benefits {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+  .join__benefit {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: var(--font-head);
+    font-weight: 500;
+    font-size: var(--fs-h3);
+    line-height: 1.25;
+  }
+  .join__check {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+  }
+
+  @media (min-width: 860px) {
+    .join__grid {
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: var(--space-6);
+    }
+  }
+</style>

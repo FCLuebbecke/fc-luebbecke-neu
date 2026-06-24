@@ -1,0 +1,14 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+import SparteHeader from "../../components/SparteHeader.astro";
+import SparteMannschaften from "../../components/SparteMannschaften.astro";
+import Footer from "../../components/Footer.astro";
+import { badminton } from "../../data/sparten";
+---
+<Layout title="Badminton – Mannschaften – FC Lübbecke" description="Badminton beim FC Lübbecke: Mannschaften, Gruppen und Vorstellung der Sparte.">
+  <Header active="badminton" />
+  <SparteHeader {...badminton} active="mannschaften" />
+  <SparteMannschaften data={badminton} />
+  <Footer />
+</Layout>

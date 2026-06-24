@@ -1,0 +1,119 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+import SparteHeader from "../../components/SparteHeader.astro";
+import Footer from "../../components/Footer.astro";
+import { spielplan, FUSSBALL_DE_URL } from "../../data/spielplan";
+---
+
+<Layout title="Spielplan & Ergebnisse – Fußball – FC Lübbecke" description="Spielplan der 1. Mannschaft des FC Lübbecke in der Landesliga – die nächsten Spiele und der Link zum kompletten Spielplan auf FUSSBALL.DE.">
+  <Header active="fussball" />
+  <SparteHeader
+    name="Fußball"
+    claim="Die größte Sparte des FC Lübbecke – von der 1. Mannschaft bis zur Jugend."
+    basePath="/fussball"
+    tag="Größte Sparte"
+    withSpielplan
+    active="spielplan"
+  />
+
+  <main id="inhalt">
+    <section class="container section">
+      <h2 class="section-title">Nächste Spiele</h2>
+
+      <div class="tabelle-wrap">
+        <table class="tabelle">
+          <thead>
+            <tr>
+              <th scope="col">Datum</th>
+              <th scope="col">Anstoß</th>
+              <th scope="col">Begegnung</th>
+              <th scope="col">Wettbewerb</th>
+            </tr>
+          </thead>
+          <tbody>
+            {spielplan.map((s) => (
+              <tr>
+                <th scope="row">{s.datum}</th>
+                <td>{s.zeit} Uhr</td>
+                <td class:list={["begegnung", { "begegnung--heim": s.heim === "FC Lübbecke" }]}>
+                  <span class={s.heim === "FC Lübbecke" ? "ist-fcl" : ""}>{s.heim}</span>
+                  <span class="vs"> – </span>
+                  <span class={s.gast === "FC Lübbecke" ? "ist-fcl" : ""}>{s.gast}</span>
+                </td>
+                <td><span class="tag">{s.wettbewerb}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="ext">
+        <p class="prose">
+          Den vollständigen Spielplan, alle Ergebnisse und die aktuelle Tabelle
+          findest du jederzeit aktuell auf FUSSBALL.DE.
+        </p>
+        <a class="btn btn--primary" href={FUSSBALL_DE_URL} target="_blank" rel="noopener noreferrer">
+          Kompletter Spielplan auf FUSSBALL.DE
+          <span aria-hidden="true"> ↗</span>
+          <span class="sr-only"> (öffnet in neuem Fenster)</span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .section { padding-block: var(--space-6); }
+
+  .tabelle-wrap {
+    margin-top: var(--space-2);
+    overflow-x: auto;
+    border: 1px solid rgba(10, 80, 18, 0.10);
+    border-radius: var(--radius-md);
+  }
+  .tabelle {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 560px;
+  }
+  .tabelle th,
+  .tabelle td {
+    text-align: left;
+    padding: 0.8rem var(--space-3);
+    border-bottom: 1px solid rgba(10, 80, 18, 0.08);
+    vertical-align: middle;
+  }
+  .tabelle thead th {
+    background: var(--color-green-700);
+    color: #fff;
+    font-family: var(--font-head);
+    font-weight: 500;
+  }
+  .tabelle tbody th {
+    font-family: var(--font-head);
+    font-weight: 500;
+    color: var(--color-green-900);
+    white-space: nowrap;
+  }
+  .tabelle tbody tr:nth-child(even) { background: var(--color-green-050); }
+  .tabelle tbody tr:last-child th,
+  .tabelle tbody tr:last-child td { border-bottom: 0; }
+
+  .ist-fcl { font-weight: 600; color: var(--color-green-900); }
+  .vs { color: var(--color-muted); }
+
+  .ext { margin-top: var(--space-5); }
+  .ext .btn { margin-top: var(--space-3); }
+
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap; border: 0;
+  }
+</style>

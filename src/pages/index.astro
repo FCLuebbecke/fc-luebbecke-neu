@@ -1,0 +1,22 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Hero from "../components/Hero.astro";
+import Sparten from "../components/Sparten.astro";
+import InstagramFeed from "../components/InstagramFeed.astro";
+import Termine from "../components/Termine.astro";
+import MitgliedWerden from "../components/MitgliedWerden.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<Layout>
+  <Header active="start" />
+  <main id="inhalt">
+    <Hero />
+    <Sparten />
+    <InstagramFeed />
+    <Termine />
+    <MitgliedWerden />
+  </main>
+  <Footer />
+</Layout>

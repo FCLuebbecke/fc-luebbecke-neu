@@ -1,0 +1,106 @@
+---
+/**
+ * Einheitlicher Sektions-Kopf für ALLE Sparten (Fußball, Badminton, Darts).
+ * Hero-Band: im Hero steht immer die Sportart (H1) + Claim.
+ * Darunter sticky Unter-Tabs. Der aktive Tab zeigt die Unterseite.
+ */
+interface Props {
+  /** Name der Sportart – steht immer als H1 im Hero. */
+  name: string;
+  /** Claim/Untertitel – gleich auf allen Unterseiten der Sportart. */
+  claim: string;
+  /** Basis-Pfad, z. B. "/fussball" oder "/badminton". */
+  basePath: string;
+  /** aktiver Unterpunkt: mannschaften | trainingszeiten | spielplan | kontakt */
+  active: string;
+  /** kleines Etikett über dem Titel (Default: "Sparte"). */
+  tag?: string;
+  /** Fußball hat zusätzlich den Tab "Spielplan & Ergebnisse". */
+  withSpielplan?: boolean;
+}
+const { name, claim, basePath, active, tag = "Sparte", withSpielplan = false } = Astro.props as Props;
+
+const tabs = [
+  { id: "mannschaften", label: "Mannschaften", href: `${basePath}/mannschaften` },
+  { id: "trainingszeiten", label: "Trainingszeiten", href: `${basePath}/trainingszeiten` },
+  ...(withSpielplan
+    ? [{ id: "spielplan", label: "Spielplan & Ergebnisse", href: `${basePath}/spielplan` }]
+    : []),
+  { id: "kontakt", label: "Kontakt", href: `${basePath}/kontakt` },
+];
+---
+
+<section class="sp-hero" aria-labelledby="sp-title">
+  <div class="container">
+    <span class:list={["tag", { "tag--strong": withSpielplan }]}>{tag}</span>
+    <h1 id="sp-title">{name}</h1>
+    <p class="sp-hero__claim">{claim}</p>
+  </div>
+</section>
+
+<nav class="sp-tabs" aria-label={`${name}-Unterseiten`}>
+  <div class="container sp-tabs__row">
+    {tabs.map((t) => (
+      <a
+        class:list={["sp-tab", { "is-active": t.id === active }]}
+        href={t.href}
+        aria-current={t.id === active ? "page" : undefined}
+      >
+        {t.label}
+      </a>
+    ))}
+  </div>
+</nav>
+
+<style>
+  .sp-hero {
+    background: linear-gradient(135deg, var(--color-green-700) 0%, var(--color-green-900) 100%);
+    color: #fff;
+    padding-block: var(--space-5);
+  }
+  .sp-hero h1 {
+    color: #fff;
+    margin-top: var(--space-2);
+  }
+  .sp-hero__claim {
+    margin-top: var(--space-2);
+    font-size: var(--fs-h3);
+    color: rgba(255, 255, 255, 0.92);
+    max-width: 52ch;
+  }
+
+  .sp-tabs {
+    background: var(--color-white);
+    border-bottom: 1px solid rgba(10, 80, 18, 0.12);
+    position: sticky;
+    top: 76px;
+    z-index: 50;
+  }
+  .sp-tabs__row {
+    display: flex;
+    gap: 0.25rem;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+  .sp-tab {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding: 0.7rem 0.9rem;
+    font-family: var(--font-head);
+    font-weight: 500;
+    color: var(--color-green-900);
+    text-decoration: none;
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+  }
+  .sp-tab:hover {
+    color: var(--color-green-700);
+    background: var(--color-green-050);
+  }
+  .sp-tab.is-active {
+    color: var(--color-green-700);
+    border-bottom-color: var(--color-green-500);
+  }
+</style>

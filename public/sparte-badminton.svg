@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="700" viewBox="0 0 900 700" role="img" aria-label="Platzhalter Badminton">
+  <defs>
+    <linearGradient id="gb" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#16a626"/>
+      <stop offset="1" stop-color="#0a6e12"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="700" fill="url(#gb)"/>
+  <!-- Federball -->
+  <g transform="translate(450 320)">
+    <!-- Federn -->
+    <g fill="#ffffff" opacity="0.95">
+      <polygon points="0,-150 -22,-40 22,-40"/>
+      <polygon points="-70,-130 -34,-36 -6,-44"/>
+      <polygon points="70,-130 34,-36 6,-44"/>
+      <polygon points="-120,-90 -44,-22 -20,-36"/>
+      <polygon points="120,-90 44,-22 20,-36"/>
+    </g>
+    <!-- Korken -->
+    <circle cx="0" cy="-12" r="40" fill="#e7f3e8"/>
+    <circle cx="0" cy="-12" r="40" fill="none" stroke="#0a5012" stroke-width="4"/>
+  </g>
+  <text x="450" y="560" text-anchor="middle" font-family="'Oswald',sans-serif" font-size="36" font-weight="600" fill="#fff" letter-spacing="3">BADMINTON · FOTO FOLGT</text>
+</svg>
