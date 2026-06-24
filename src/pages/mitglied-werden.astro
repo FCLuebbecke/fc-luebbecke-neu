@@ -1,0 +1,413 @@
+---
+/**
+ * Mitglied-werden-Seite (claude.md Abschnitt 6.6 – jetzt als eigene Seite).
+ * Aufbau: grüner Header · Vorteile · "So wirst du Mitglied" (3 Schritte) ·
+ * Beiträge (Platzhalter) · Anmeldung · Fragen-CTA.
+ *
+ * ⚠️ Design-Phase: Beiträge, Kontakt und der Antrags-Link sind Platzhalter
+ *    und werden später durch echte Vereinsdaten ersetzt.
+ */
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+const MITGLIED_MAIL = "info@fc-luebbecke.de";
+
+const vorteile = [
+  {
+    titel: "Vier Sparten, ein Beitrag",
+    text: "Fußball, Badminton, Darts und Laufsport – als Mitglied steht dir der ganze Verein offen.",
+  },
+  {
+    titel: "Unverbindlich schnuppern",
+    text: "Komm jederzeit zum Probetraining. Erst reinschnuppern, dann entscheiden.",
+  },
+  {
+    titel: "Für jedes Alter",
+    text: "Von den Minis bis zu den Senioren – bei uns findet jeder sein Team.",
+  },
+  {
+    titel: "Echtes Vereinsleben",
+    text: "Feste, Turniere und Aktionen abseits des Platzes – Gemeinschaft, die trägt.",
+  },
+];
+
+const schritte = [
+  {
+    nr: 1,
+    titel: "Sparte aussuchen & melden",
+    text: "Schreib uns kurz, welche Sportart dich interessiert. Wir sagen dir, wann und wo das passende Team trainiert.",
+  },
+  {
+    nr: 2,
+    titel: "Zum Probetraining kommen",
+    text: "Schau unverbindlich vorbei, lern Trainer und Mannschaft kennen – ganz ohne Verpflichtung.",
+  },
+  {
+    nr: 3,
+    titel: "Aufnahmeantrag ausfüllen",
+    text: "Gefällt's dir, füllst du den Aufnahmeantrag aus – fertig. Willkommen im FC Lübbecke!",
+  },
+];
+
+// ⚠️ Beispielwerte – bitte durch die echte Beitragsordnung des Vereins ersetzen.
+const beitraege = [
+  { gruppe: "Kinder & Jugendliche", zusatz: "bis 18 Jahre", preis: "60", einheit: "€ / Jahr" },
+  { gruppe: "Erwachsene", zusatz: "ab 18 Jahre", preis: "120", einheit: "€ / Jahr", highlight: true },
+  { gruppe: "Familien", zusatz: "Eltern + Kinder", preis: "180", einheit: "€ / Jahr" },
+  { gruppe: "Fördernd / passiv", zusatz: "ohne aktive Teilnahme", preis: "ab 40", einheit: "€ / Jahr" },
+];
+---
+
+<Layout
+  title="Mitglied werden – FC Lübbecke"
+  description="Werde Mitglied im FC Lübbecke e.V. – Fußball, Badminton, Darts und Laufsport. So einfach geht der Beitritt, alle Vorteile und Beiträge auf einen Blick."
+>
+  <Header active="mitglied" />
+
+  <!-- Header / Bühne -->
+  <section class="mw-hero" aria-labelledby="mw-title">
+    <div class="container mw-hero__inner">
+      <span class="mw-kicker">FC Lübbecke e.V. · seit 1925</span>
+      <h1 id="mw-title">Mitglied werden</h1>
+      <p class="mw-hero__claim">Ein Verein, vier Sparten – dein Platz ist frei.</p>
+      <p class="mw-hero__lead">
+        Ob auf dem Rasen, in der Halle, an der Scheibe oder auf der Laufstrecke:
+        Beim FC Lübbecke ist jeder willkommen, der Sport und Gemeinschaft liebt.
+        Komm vorbei, schnupper rein und werde Teil des Vereins.
+      </p>
+      <div class="mw-hero__actions">
+        <a class="btn btn--light" href={`mailto:${MITGLIED_MAIL}?subject=Mitglied%20werden`}>
+          Jetzt anfragen
+        </a>
+        <a class="btn btn--ghost-light" href="#beitraege">Beiträge ansehen</a>
+      </div>
+    </div>
+  </section>
+
+  <main id="inhalt">
+    <!-- Vorteile -->
+    <section class="container section">
+      <h2 class="section-title">Darum FC Lübbecke</h2>
+      <ul class="mw-vorteile">
+        {vorteile.map((v) => (
+          <li class="mw-vorteil">
+            <span class="mw-vorteil__check" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 13l4 4L19 7" />
+              </svg>
+            </span>
+            <div>
+              <h3 class="mw-vorteil__titel">{v.titel}</h3>
+              <p class="mw-vorteil__text">{v.text}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- So wirst du Mitglied -->
+    <section class="mw-steps-wrap">
+      <div class="container section">
+        <h2 class="section-title">So wirst du Mitglied</h2>
+        <ol class="mw-steps">
+          {schritte.map((s) => (
+            <li class="mw-step">
+              <span class="mw-step__nr" aria-hidden="true">{s.nr}</span>
+              <h3 class="mw-step__titel">{s.titel}</h3>
+              <p class="mw-step__text">{s.text}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <!-- Beiträge -->
+    <section class="container section" id="beitraege">
+      <h2 class="section-title">Beiträge</h2>
+      <p class="mw-intro">
+        Ein Beitrag – alle Sparten. Faire Konditionen für Einzelmitglieder und Familien.
+      </p>
+      <ul class="mw-beitraege">
+        {beitraege.map((b) => (
+          <li class:list={["mw-beitrag", { "mw-beitrag--highlight": b.highlight }]}>
+            {b.highlight && <span class="mw-beitrag__badge">Beliebt</span>}
+            <h3 class="mw-beitrag__gruppe">{b.gruppe}</h3>
+            <p class="mw-beitrag__zusatz">{b.zusatz}</p>
+            <p class="mw-beitrag__preis">
+              <span class="mw-beitrag__zahl">{b.preis}</span>
+              <span class="mw-beitrag__einheit">{b.einheit}</span>
+            </p>
+          </li>
+        ))}
+      </ul>
+      <p class="mw-hinweis">
+        Alle Beträge sind Beispielwerte und werden durch die gültige
+        Beitragsordnung des Vereins ersetzt.
+      </p>
+    </section>
+
+    <!-- Anmeldung -->
+    <section class="mw-anmeldung-wrap">
+      <div class="container section">
+        <h2 class="section-title">Anmeldung</h2>
+        <div class="mw-anmeldung">
+          <div class="prose">
+            <p>
+              Am schnellsten geht's per E-Mail: Schreib uns, welche Sparte dich
+              interessiert und ein paar Eckdaten (Name, Alter), dann melden wir
+              uns mit allem Weiteren bei dir.
+            </p>
+            <p>
+              Lieber persönlich? Komm einfach zu einem Probetraining vorbei –
+              den Aufnahmeantrag gibt's auch direkt vor Ort.
+            </p>
+          </div>
+          <a class="btn btn--primary" href={`mailto:${MITGLIED_MAIL}?subject=Mitglied%20werden`}>
+            Anfrage per E-Mail senden
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Fragen-CTA -->
+    <section class="mw-cta">
+      <div class="container mw-cta__inner">
+        <div>
+          <h2 class="mw-cta__title">Noch Fragen?</h2>
+          <p class="mw-cta__text">
+            Melde dich gern – wir helfen dir weiter und finden gemeinsam dein Team.
+          </p>
+        </div>
+        <a class="btn btn--primary" href={`mailto:${MITGLIED_MAIL}`}>
+          {MITGLIED_MAIL}
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  /* ── Header / Bühne ── */
+  .mw-hero {
+    background: linear-gradient(135deg, var(--color-green-700) 0%, var(--color-green-900) 100%);
+    color: #fff;
+    padding-block: var(--space-6);
+  }
+  .mw-hero__inner { max-width: 60ch; }
+  .mw-kicker {
+    display: inline-block;
+    font-family: var(--font-head);
+    font-weight: 500;
+    font-size: var(--fs-small);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.9);
+  }
+  .mw-hero h1 { color: #fff; margin-top: var(--space-2); }
+  .mw-hero__claim {
+    margin-top: var(--space-2);
+    font-family: var(--font-head);
+    font-weight: 500;
+    font-size: var(--fs-h2);
+    color: rgba(255, 255, 255, 0.95);
+  }
+  .mw-hero__lead {
+    margin-top: var(--space-3);
+    color: rgba(255, 255, 255, 0.88);
+  }
+  .mw-hero__actions {
+    margin-top: var(--space-4);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .section { padding-block: var(--space-6); }
+  .mw-intro { margin-top: var(--space-2); color: var(--color-muted); max-width: 60ch; }
+
+  /* ── Vorteile ── */
+  .mw-vorteile {
+    list-style: none;
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+  .mw-vorteil {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    background: var(--color-green-050);
+    border: 1px solid rgba(10, 80, 18, 0.12);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-4);
+  }
+  .mw-vorteil__check {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    background: var(--color-green-700);
+    color: #fff;
+  }
+  .mw-vorteil__titel { color: var(--color-green-900); }
+  .mw-vorteil__text { margin-top: 0.25rem; color: var(--color-muted); }
+
+  /* ── Schritte ── */
+  .mw-steps-wrap { background: var(--color-green-050); }
+  .mw-steps {
+    list-style: none;
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    counter-reset: step;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+  .mw-step {
+    position: relative;
+    background: #fff;
+    border: 1px solid rgba(10, 80, 18, 0.10);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-soft);
+    padding: var(--space-4);
+  }
+  .mw-step__nr {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    background: var(--color-green-700);
+    color: #fff;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 1.3rem;
+    margin-bottom: var(--space-2);
+  }
+  .mw-step__titel { color: var(--color-green-900); }
+  .mw-step__text { margin-top: 0.4rem; color: var(--color-muted); }
+
+  /* ── Beiträge ── */
+  .mw-beitraege {
+    list-style: none;
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+  .mw-beitrag {
+    position: relative;
+    background: var(--color-white);
+    border: 1px solid rgba(10, 80, 18, 0.12);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-soft);
+    padding: var(--space-4);
+    text-align: center;
+  }
+  .mw-beitrag--highlight {
+    border-color: var(--color-green-500);
+    border-width: 2px;
+    box-shadow: var(--shadow-card);
+  }
+  .mw-beitrag__badge {
+    position: absolute;
+    top: -0.7rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-green-500);
+    color: #fff;
+    font-family: var(--font-head);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.7rem;
+    border-radius: 999px;
+  }
+  .mw-beitrag__gruppe { color: var(--color-green-900); }
+  .mw-beitrag__zusatz {
+    margin-top: 0.2rem;
+    color: var(--color-muted);
+    font-size: var(--fs-small);
+  }
+  .mw-beitrag__preis {
+    margin-top: var(--space-3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+  }
+  .mw-beitrag__zahl {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 2.4rem;
+    line-height: 1;
+    color: var(--color-green-700);
+  }
+  .mw-beitrag__einheit {
+    font-size: var(--fs-small);
+    color: var(--color-muted);
+  }
+  .mw-hinweis {
+    margin-top: var(--space-3);
+    font-size: var(--fs-small);
+    color: var(--color-muted);
+    font-style: italic;
+  }
+
+  /* ── Anmeldung ── */
+  .mw-anmeldung-wrap { background: var(--color-green-050); }
+  .mw-anmeldung {
+    margin-top: var(--space-3);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    align-items: start;
+  }
+  .mw-anmeldung .btn { align-self: start; }
+
+  /* ── CTA ── */
+  .mw-cta { background: var(--color-white); padding-block: var(--space-6); }
+  .mw-cta__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    background: var(--color-green-050);
+    border: 1px solid rgba(10, 80, 18, 0.12);
+    border-radius: var(--radius-md);
+    padding: var(--space-4) var(--space-5);
+  }
+  .mw-cta__title { color: var(--color-green-700); }
+  .mw-cta__text { margin-top: var(--space-2); color: var(--color-ink); }
+
+  /* Sticky-Header beim Ankersprung zu #beitraege nicht überdecken */
+  #beitraege { scroll-margin-top: 88px; }
+
+  @media (max-width: 520px) {
+    .mw-hero__actions .btn { width: 100%; }
+  }
+
+  @media (min-width: 640px) {
+    .mw-vorteile { grid-template-columns: repeat(2, 1fr); }
+    .mw-steps { grid-template-columns: repeat(3, 1fr); }
+    .mw-beitraege { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 960px) {
+    .mw-beitraege { grid-template-columns: repeat(4, 1fr); }
+    .mw-anmeldung {
+      grid-template-columns: 1.4fr 0.6fr;
+      gap: var(--space-6);
+      align-items: center;
+    }
+  }
+</style>
