@@ -303,10 +303,9 @@ const sparten = [
     }
   }
 
-  /* Mobil: Siegel kleiner, CTAs volle Breite */
+  /* Mobil: „1925"-Siegel ausblenden (stört auf kleinen Screens), CTAs volle Breite */
   @media (max-width: 640px) {
-    .hero__seal { width: 72px; height: 72px; top: var(--space-3); right: var(--space-3); }
-    .hero__seal-year { font-size: 1.3rem; }
+    .hero__seal { display: none; }
   }
   @media (max-width: 520px) {
     .hero__actions .btn { width: 100%; }

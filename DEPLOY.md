@@ -16,7 +16,16 @@ Pflege im Studio (/admin)  ──▶  Sanity Webhook  ──▶  Vercel Deploy H
 4. **Environment Variables** hinzufügen (für alle Environments):
    - `PUBLIC_SANITY_PROJECT_ID` = `u7v527gk`
    - `PUBLIC_SANITY_DATASET` = `production`
+   - `ADMIN_USER` = frei wählbarer Benutzername fürs Studio-Login
+   - `ADMIN_PASSWORD` = frei wählbares Passwort fürs Studio-Login
 5. **Deploy** klicken. Nach dem ersten Build gibt es eine `…vercel.app`-URL.
+
+> 🔒 **Studio-Schutz:** `/admin` ist über eine Vercel **Edge Middleware**
+> (`middleware.ts` im Projekt-Root) mit HTTP Basic Auth geschützt. Beim Aufruf
+> von `…/admin` fragt der Browser nach `ADMIN_USER` / `ADMIN_PASSWORD`. Sind die
+> beiden Variablen **nicht** gesetzt, bleibt `/admin` komplett gesperrt
+> (fail closed). Lokal (`npm run dev`) greift die Middleware nicht – dort ist das
+> Studio zum Entwickeln offen erreichbar.
 
 ## Schritt 2 – CORS in Sanity für die Live-Domain
 
