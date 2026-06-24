@@ -115,3 +115,29 @@ export async function getSparteInfo(sparte: string): Promise<SparteInfoDoc | nul
     return null;
   }
 }
+
+/** Sponsor / Partner (Sponsoren-Sektion der Startseite). */
+export interface SponsorDoc {
+  name: string;
+  stufe?: 'premium' | 'normal';
+  website?: string;
+  logo?: SanityImage;
+}
+
+const SPONSOREN_QUERY = `*[_type == "sponsor"] | order(reihenfolge asc, name asc){
+  name, stufe, website, logo
+}`;
+
+/**
+ * Alle Sponsoren aus Sanity. Liefert `[]` bei fehlender Konfiguration/Fehler
+ * → die Sektion nutzt ihre Platzhalter.
+ */
+export async function getSponsoren(): Promise<SponsorDoc[]> {
+  try {
+    return await sanityClient.fetch<SponsorDoc[]>(SPONSOREN_QUERY);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn(`[sanity] Sponsoren nicht geladen – Fallback aktiv (${msg})`);
+    return [];
+  }
+}

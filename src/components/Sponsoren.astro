@@ -1,0 +1,167 @@
+---
+/**
+ * Sponsoren-/Partner-Sektion der Startseite (ersetzt "Nächste Termine").
+ * Inhalte aus Sanity (Doc-Typ `sponsor`); Fallback = Platzhalter, damit nie leer.
+ * Zwei Stufen: Premium-Partner (groß) + normale Sponsoren (Raster).
+ */
+import { getSponsoren, urlFor } from "../lib/sanity";
+
+const fallback = [
+  { name: "Homedeluxe", stufe: "premium" as const },
+  { name: "Autohaus Lübbecke", stufe: "premium" as const },
+  { name: "Bäckerei Beispiel", stufe: "normal" as const },
+  { name: "Sparkasse", stufe: "normal" as const },
+  { name: "Getränke Müller", stufe: "normal" as const },
+  { name: "Bauunternehmen Schmidt", stufe: "normal" as const },
+  { name: "Musterfirma GmbH", stufe: "normal" as const },
+];
+
+const cms = await getSponsoren();
+const sponsoren = cms.length > 0 ? cms : fallback;
+const premium = sponsoren.filter((s) => s.stufe === "premium");
+const normal = sponsoren.filter((s) => s.stufe !== "premium");
+---
+
+<section class="sponsoren" aria-labelledby="sponsoren-title">
+  <div class="container">
+    <header class="sponsoren__head">
+      <h2 id="sponsoren-title" class="section-title">Unsere Sponsoren</h2>
+      <p class="sponsoren__intro">
+        Ohne die Unterstützung heimischer Unternehmen wäre unser Vereinsleben nicht
+        möglich – herzlichen Dank an unsere Partner!
+      </p>
+    </header>
+
+    {premium.length > 0 && (
+      <>
+        <h3 class="sponsoren__label">Premium-Partner</h3>
+        <ul class="sponsoren__grid sponsoren__grid--premium">
+          {premium.map((s) => {
+            const logoUrl = s.logo?.asset
+              ? urlFor(s.logo).width(600).fit("max").auto("format").url()
+              : null;
+            const inner = logoUrl ? (
+              <img class="sponsor__logo" src={logoUrl} alt={s.logo?.alt || s.name} loading="lazy" />
+            ) : (
+              <span class="sponsor__name">{s.name}</span>
+            );
+            return (
+              <li class="sponsor sponsor--premium">
+                {s.website ? (
+                  <a class="sponsor__link" href={s.website} target="_blank" rel="noopener noreferrer" aria-label={`${s.name} (öffnet in neuem Fenster)`}>{inner}</a>
+                ) : (
+                  <div class="sponsor__link">{inner}</div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </>
+    )}
+
+    {normal.length > 0 && (
+      <>
+        {premium.length > 0 && <h3 class="sponsoren__label">Weitere Sponsoren</h3>}
+        <ul class="sponsoren__grid">
+          {normal.map((s) => {
+            const logoUrl = s.logo?.asset
+              ? urlFor(s.logo).width(400).fit("max").auto("format").url()
+              : null;
+            const inner = logoUrl ? (
+              <img class="sponsor__logo" src={logoUrl} alt={s.logo?.alt || s.name} loading="lazy" />
+            ) : (
+              <span class="sponsor__name">{s.name}</span>
+            );
+            return (
+              <li class="sponsor">
+                {s.website ? (
+                  <a class="sponsor__link" href={s.website} target="_blank" rel="noopener noreferrer" aria-label={`${s.name} (öffnet in neuem Fenster)`}>{inner}</a>
+                ) : (
+                  <div class="sponsor__link">{inner}</div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </>
+    )}
+  </div>
+</section>
+
+<style>
+  .sponsoren {
+    background: var(--color-green-050);
+    padding-block: var(--space-6);
+  }
+  .sponsoren__head { margin-bottom: var(--space-4); }
+  .sponsoren__intro {
+    margin-top: var(--space-2);
+    color: var(--color-muted);
+    max-width: 60ch;
+  }
+  .sponsoren__label {
+    color: var(--color-green-900);
+    margin: var(--space-5) 0 var(--space-3);
+  }
+  .sponsoren__label:first-of-type { margin-top: 0; }
+
+  .sponsoren__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+  }
+  /* Normale Sponsoren: feste Kachelbreite, mittig umbrechend (keine „einsame“ Reihe). */
+  .sponsoren__grid:not(.sponsoren__grid--premium) > .sponsor {
+    flex: 1 1 170px;
+    max-width: 230px;
+  }
+
+  .sponsor__link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 110px;
+    padding: var(--space-3);
+    background: var(--color-white);
+    border: 1px solid rgba(10, 80, 18, 0.10);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-soft);
+    text-decoration: none;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  }
+  a.sponsor__link:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-card);
+    border-color: rgba(10, 80, 18, 0.20);
+  }
+  .sponsor__logo {
+    max-width: 100%;
+    max-height: 72px;
+    object-fit: contain;
+    display: block;
+  }
+  .sponsor__name {
+    font-family: var(--font-head);
+    font-weight: 600;
+    color: var(--color-green-900);
+    text-align: center;
+  }
+
+  /* ── Premium: jeweils volle Breite, einzeln & groß ── */
+  .sponsoren__grid--premium {
+    flex-direction: column;
+    margin-bottom: var(--space-2);
+  }
+  .sponsor--premium { width: 100%; }
+  .sponsor--premium .sponsor__link {
+    min-height: 190px;
+    padding: var(--space-5);
+  }
+  .sponsor--premium .sponsor__logo { max-height: 140px; }
+  .sponsor--premium .sponsor__name { font-size: var(--fs-h2); }
+</style>
