@@ -9,12 +9,7 @@ const { data } = Astro.props as Props;
 
 <main id="inhalt">
   <section class="container section">
-    <div class="intro">
-      <h2 class="section-title">Über die Sparte</h2>
-      <p class="prose intro__text">{data.intro}</p>
-    </div>
-
-    <h2 class="section-title teams-title">Mannschaften &amp; Gruppen</h2>
+    <h2 class="section-title">Mannschaften &amp; Gruppen</h2>
     <div class="teams">
       {data.teams.map((t) => (
         <article class="team">
@@ -33,28 +28,11 @@ const { data } = Astro.props as Props;
         </article>
       ))}
     </div>
-
-    {data.fotos.length > 0 && (
-      <>
-        <h2 class="section-title teams-title">Einblicke</h2>
-        <div class="fotos">
-          {data.fotos.map((f) => (
-            <figure class="foto">
-              <img src={f.src} alt={f.alt} width="900" height="675" loading="lazy" />
-              <figcaption class="foto__cap">{f.alt}</figcaption>
-            </figure>
-          ))}
-        </div>
-      </>
-    )}
   </section>
 </main>
 
 <style>
   .section { padding-block: var(--space-6); }
-  .teams-title { margin-top: var(--space-6); }
-
-  .intro__text { margin-top: var(--space-3); font-size: var(--fs-h3); color: var(--color-ink); }
 
   .teams {
     margin-top: var(--space-3);
@@ -114,38 +92,7 @@ const { data } = Astro.props as Props;
     font-style: italic;
   }
 
-  .fotos {
-    margin-top: var(--space-3);
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-3);
-  }
-  .foto {
-    position: relative;
-    margin: 0;
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    box-shadow: var(--shadow-soft);
-    aspect-ratio: 4 / 3;
-  }
-  .foto img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.4s ease;
-  }
-  .foto:hover img { transform: scale(1.05); }
-  .foto__cap {
-    position: absolute;
-    inset: auto 0 0 0;
-    padding: 1.4rem 0.9rem 0.7rem;
-    font-size: var(--fs-small);
-    color: #fff;
-    background: linear-gradient(to top, rgba(10, 80, 18, 0.78), transparent);
-  }
-
   @media (min-width: 760px) {
     .teams { grid-template-columns: repeat(2, 1fr); }
-    .fotos { grid-template-columns: repeat(3, 1fr); }
   }
 </style>
