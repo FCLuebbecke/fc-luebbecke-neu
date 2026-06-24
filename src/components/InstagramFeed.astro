@@ -3,25 +3,23 @@
  * Instagram-Feed mit DSGVO-konformer 2-Klick-Lösung (claude.md Abschnitt 10).
  * Ersetzt den klassischen News-Block: zeigt die neuesten Fußball-Beiträge.
  *
- * Instagram lädt ERST nach aktiver Zustimmung. Die Zustimmung wird in
- * localStorage gemerkt, sodass der Feed bei weiteren Besuchen direkt erscheint.
- *
- * Einrichtung (vom Verein zu liefern):
- *  - handle / profileUrl: der Fußball-Instagram-Account
- *  - widgetSrc: iframe-URL des Feed-Widgets (z. B. von lightwidget.com)
+ * Daten: Behold.so-API (src/lib/instagram.ts), geholt zur BUILD-ZEIT –
+ * es entsteht KEINE Laufzeit-Verbindung zu Meta. Die Bilder werden dennoch
+ * erst nach aktiver Zustimmung geladen (data-src → src) und die Zustimmung
+ * in localStorage gemerkt.
  */
+import { getInstagramPosts } from "../lib/instagram";
+
 interface Props {
   handle?: string;
   profileUrl?: string;
-  /** iframe-URL des Feed-Widgets. Solange leer → Hinweis statt Feed. */
-  widgetSrc?: string;
 }
-
 const {
-  handle = "@fcluebbecke", // TODO: echten Fußball-Handle eintragen
-  profileUrl = "https://www.instagram.com/fcluebbecke/", // TODO: echte Profil-URL
-  widgetSrc = "", // TODO: LightWidget-iframe-URL eintragen
+  handle = "@fcluebbecke", // TODO: echten Fußball-Handle bestätigen
+  profileUrl = "https://www.instagram.com/fcluebbecke/", // TODO: echte Profil-URL bestätigen
 } = Astro.props;
+
+const posts = await getInstagramPosts(6);
 ---
 
 <section class="ig" aria-labelledby="ig-title">
@@ -34,12 +32,7 @@ const {
       </p>
     </header>
 
-    <div
-      class="ig__widget"
-      data-ig-widget
-      data-ig-src={widgetSrc}
-      data-ig-title={`Instagram-Feed von ${handle}`}
-    >
+    <div class="ig__widget" data-ig-widget>
       <!-- Zustimmungs-Ansicht (vor dem Laden) -->
       <div class="ig__consent" data-ig-consent>
         <span class="ig__glyph" aria-hidden="true">
@@ -51,10 +44,10 @@ const {
         </span>
         <h3 class="ig__consent-title">Instagram-Beiträge anzeigen</h3>
         <p class="ig__consent-text">
-          Hier zeigen wir unsere neuesten Instagram-Beiträge. Beim Laden wird eine
-          Verbindung zu Instagram (Meta Platforms) hergestellt und dabei können
-          personenbezogene Daten (z. B. deine IP-Adresse) übertragen werden.
-          Mehr dazu in unserer <a href="/datenschutz">Datenschutzerklärung</a>.
+          Hier zeigen wir unsere neuesten Instagram-Beiträge. Beim Laden werden
+          die Bilder nachgeladen und dabei können personenbezogene Daten
+          (z. B. deine IP-Adresse) an Dritte übertragen werden. Mehr dazu in
+          unserer <a href="/datenschutz">Datenschutzerklärung</a>.
         </p>
         <div class="ig__consent-actions">
           <button class="btn btn--primary" type="button" data-ig-load>
@@ -76,8 +69,30 @@ const {
         </label>
       </div>
 
-      <!-- Hierhin wird der Feed nach Zustimmung geladen -->
-      <div class="ig__embed" data-ig-embed hidden></div>
+      <!-- Feed-Grid: nach Zustimmung sichtbar; Bilder erst dann nachgeladen -->
+      {posts.length > 0 ? (
+        <ul class="ig__grid" data-ig-embed hidden>
+          {posts.map((p) => (
+            <li class="ig__item">
+              <a href={p.permalink} target="_blank" rel="noopener noreferrer">
+                <img
+                  data-src={p.sizes.medium.mediaUrl}
+                  alt={(p.prunedCaption ?? p.caption ?? "Instagram-Beitrag des FC Lübbecke").slice(0, 140)}
+                  width={p.sizes.medium.width}
+                  height={p.sizes.medium.height}
+                  loading="lazy"
+                />
+                {p.mediaType === "VIDEO" && <span class="ig__badge" aria-hidden="true">▶</span>}
+                {p.mediaType === "CAROUSEL_ALBUM" && <span class="ig__badge" aria-hidden="true">▦</span>}
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div class="ig__embed-note" data-ig-embed hidden>
+          <p>Aktuell konnten keine Beiträge geladen werden. Schau direkt auf unserem Profil vorbei.</p>
+        </div>
+      )}
     </div>
 
     <div class="ig__follow">
@@ -153,15 +168,40 @@ const {
     cursor: pointer;
   }
 
-  /* ---- Geladener Feed ---- */
-  .ig__embed { width: 100%; }
-  .ig__embed :global(iframe) {
+  /* ---- Geladener Feed (natives Grid) ---- */
+  .ig__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
     width: 100%;
-    border: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+  }
+  .ig__item { position: relative; margin: 0; }
+  .ig__item a {
     display: block;
-    min-height: 480px;
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+  }
+  .ig__item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+  .ig__item a:hover img { transform: scale(1.05); }
+  .ig__badge {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.6rem;
+    color: #fff;
+    font-size: 0.95rem;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   }
   .ig__embed-note {
+    margin: auto;
     padding: var(--space-4);
     text-align: center;
     color: var(--color-muted);
@@ -178,6 +218,10 @@ const {
     padding: 0; margin: -1px; overflow: hidden;
     clip: rect(0 0 0 0); white-space: nowrap; border: 0;
   }
+
+  @media (min-width: 640px) {
+    .ig__grid { grid-template-columns: repeat(3, 1fr); }
+  }
 </style>
 
 <script>
@@ -188,26 +232,14 @@ const {
     const embed = widget.querySelector<HTMLElement>("[data-ig-embed]");
     const loadBtn = widget.querySelector<HTMLButtonElement>("[data-ig-load]");
     const remember = widget.querySelector<HTMLInputElement>("[data-ig-remember]");
-    const src = widget.getAttribute("data-ig-src") || "";
-    const title = widget.getAttribute("data-ig-title") || "Instagram-Feed";
 
     function showFeed() {
       if (!consent || !embed) return;
-      if (src) {
-        const iframe = document.createElement("iframe");
-        iframe.src = src;
-        iframe.title = title;
-        iframe.loading = "lazy";
-        iframe.setAttribute("scrolling", "no");
-        embed.appendChild(iframe);
-      } else {
-        // Noch kein Widget hinterlegt – ehrlicher Hinweis statt leerem Kasten.
-        const note = document.createElement("p");
-        note.className = "ig__embed-note";
-        note.textContent =
-          "Instagram-Feed noch nicht eingerichtet. Sobald die Widget-URL hinterlegt ist, erscheinen hier die neuesten Beiträge.";
-        embed.appendChild(note);
-      }
+      // Bilder erst jetzt laden: data-src → src
+      embed.querySelectorAll<HTMLImageElement>("img[data-src]").forEach((img) => {
+        img.src = img.dataset.src || "";
+        img.removeAttribute("data-src");
+      });
       consent.hidden = true;
       embed.hidden = false;
     }

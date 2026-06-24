@@ -3,7 +3,20 @@ import Layout from "../../layouts/Layout.astro";
 import Header from "../../components/Header.astro";
 import SparteHeader from "../../components/SparteHeader.astro";
 import Footer from "../../components/Footer.astro";
-import { spielplan, FUSSBALL_DE_URL } from "../../data/spielplan";
+import { spielplan as fallback, FUSSBALL_DE_URL } from "../../data/spielplan";
+import { getNextMatches } from "../../lib/fussball";
+
+// Live von FUSSBALL.DE (zur Build-Zeit). Fällt auf die gepflegte Liste zurück,
+// falls fußball.de beim Build nicht erreichbar ist oder nichts liefert.
+let matches = await getNextMatches();
+const liveDaten = matches.length > 0;
+if (!liveDaten) {
+  matches = fallback.map((s) => ({
+    ...s,
+    istHeimspiel: s.heim.toLowerCase().includes("lübbecke"),
+  }));
+}
+const istFCL = (name: string) => name.toLowerCase().includes("lübbecke");
 ---
 
 <Layout title="Spielplan & Ergebnisse – Fußball – FC Lübbecke" description="Spielplan der 1. Mannschaft des FC Lübbecke in der Landesliga – die nächsten Spiele und der Link zum kompletten Spielplan auf FUSSBALL.DE.">
@@ -32,14 +45,14 @@ import { spielplan, FUSSBALL_DE_URL } from "../../data/spielplan";
             </tr>
           </thead>
           <tbody>
-            {spielplan.map((s) => (
+            {matches.map((s) => (
               <tr>
                 <th scope="row">{s.datum}</th>
                 <td>{s.zeit} Uhr</td>
-                <td class:list={["begegnung", { "begegnung--heim": s.heim === "FC Lübbecke" }]}>
-                  <span class={s.heim === "FC Lübbecke" ? "ist-fcl" : ""}>{s.heim}</span>
+                <td class:list={["begegnung", { "begegnung--heim": istFCL(s.heim) }]}>
+                  <span class={istFCL(s.heim) ? "ist-fcl" : ""}>{s.heim}</span>
                   <span class="vs"> – </span>
-                  <span class={s.gast === "FC Lübbecke" ? "ist-fcl" : ""}>{s.gast}</span>
+                  <span class={istFCL(s.gast) ? "ist-fcl" : ""}>{s.gast}</span>
                 </td>
                 <td><span class="tag">{s.wettbewerb}</span></td>
               </tr>
