@@ -1,0 +1,414 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+
+// Inhalte übernommen von der bisherigen Vereinsseite /foerderverein/.
+const FOERDER_MAIL = "foerderverein@fcluebbecke.de";
+
+// Vorstand & Team des Jugendfördervereins (Fotos in /public/foerderverein/).
+const team = [
+  { name: "Philipp Knappmeyer", rolle: "1. Vorsitzender", img: "/foerderverein/knappmeyer.jpg" },
+  { name: "Michael Brehm", rolle: "Stellvertreter", img: "/foerderverein/brehm.jpg" },
+  { name: "Tasso Keller", rolle: "Kassierer", img: "/foerderverein/keller.jpg" },
+  { name: "Sven Kütenbrink", rolle: "Beirat", img: "/foerderverein/kuetenbrink.jpg" },
+  {
+    name: "Oliver Rose",
+    img: "/foerderverein/rose.jpg",
+    zitat:
+      "Ich bin in Lübbecke geboren und hatte schon als kleiner Junge immer großen Spaß am Sport. Für mich ist es ungeheuer wichtig, dass Kinder und Jugendliche regelmäßig in Bewegung sind und sich auspowern können – ganz egal in welcher Sportart. Eine gute Jugendarbeit ist ein wichtiger Grundstein zu einem fitten und aktiven Leben mit Sport, die ich deshalb gerne unterstütze.",
+  },
+  {
+    name: "Sina Steinmann",
+    rolle: "Familienzentrum Mosaik",
+    img: "/foerderverein/steinmann.jpg",
+    zitat:
+      "Wir als Familienzentrum wollen Kinder motorisch früh fördern und Türen zum Vereinssport öffnen – die Kooperation mit dem FC ist da eine tolle Sache.",
+  },
+  {
+    name: "Max Wegner",
+    img: "/foerderverein/wegner.jpg",
+    zitat:
+      "Mein Weg zum Fußballprofi begann beim FC Lübbecke. Kinder im Sport zu fördern, ihre Talente zu entwickeln und im FC Lübbecke ein Stück Heimat zu finden liegt mir am Herzen.",
+  },
+  {
+    name: "Janis Wagner",
+    rolle: "Beirat",
+    img: "/foerderverein/wagner.jpg",
+    zitat:
+      "Als Vater von 2 Kindern liegt mir besonders die Jugendarbeit in meiner Heimatstadt Lübbecke und des FC Lübbecke sehr am Herzen. Eine gute Jugendarbeit kann nur unter gesunden Rahmenbedingungen stattfinden. Der Jugendförderverein bietet die Chance mitzuhelfen, diese Rahmenbedingungen zu schaffen und die Jugendarbeit in unserer Stadt aktiv mitzugestalten.",
+  },
+];
+---
+
+<Layout
+  title="Jugendförderverein – FC Lübbecke"
+  description="Der Jugendförderverein des FC Lübbecke e.V. – starker Partner für eine starke Jugend. Vorstand, Team und wie du Mitglied wirst."
+>
+  <Header active="fussball" />
+
+  <!-- Hero -->
+  <section class="jfv-hero" aria-labelledby="jfv-title">
+    <div class="container jfv-hero__inner">
+      <img class="jfv-hero__logo" src="/foerderverein/logo-foerderverein.jpg" alt="Logo Jugendförderverein FC Lübbecke" width="220" height="200" />
+      <div>
+        <span class="tag tag--strong">FC Lübbecke e.V.</span>
+        <h1 id="jfv-title">Jugendförderverein</h1>
+        <p class="jfv-hero__claim">Starker Partner für eine starke Jugend</p>
+      </div>
+    </div>
+  </section>
+
+  <main id="inhalt">
+    <!-- Mitgliederversammlung (Dokumente, ganz oben) -->
+    <section class="container jfv-top-docs">
+      <div class="jfv-docs">
+        <h2 class="jfv-docs__title">Mitgliederversammlung</h2>
+        <ul class="jfv-doclist">
+          <li>
+            <a href="/foerderverein/einladung-mv-2025.pdf" target="_blank" rel="noopener noreferrer">
+              Einladung der Mitgliederversammlung 2025 (PDF)
+              <span aria-hidden="true">↗</span>
+              <span class="sr-only"> (öffnet in neuem Fenster)</span>
+            </a>
+          </li>
+          <li>
+            <a href="/foerderverein/protokoll-mv-2024.pdf" target="_blank" rel="noopener noreferrer">
+              Protokoll der Mitgliederversammlung 2024 (PDF)
+              <span aria-hidden="true">↗</span>
+              <span class="sr-only"> (öffnet in neuem Fenster)</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Vorstellung / Zweck -->
+    <section class="container section">
+      <h2 class="section-title">Die Jugendarbeit im FC Lübbecke wächst seit Jahren stetig</h2>
+      <div class="prose">
+        <p>
+          Mittlerweile stellt der FC Lübbecke e.V. im Spielbetrieb der
+          Jugendmannschaften des Fußballkreises Lübbecke die meisten Teams.
+        </p>
+        <p>
+          Immer mehr Trainer, Betreuer und Helfer gestalten Woche für Woche die
+          sportliche und außersportliche Jugendarbeit im Verein.
+        </p>
+        <p>
+          Um erfolgreich dem Ehrenamt nachkommen zu können, bedarf es
+          Qualifizierung, Würdigung, einer guten Infrastruktur und moderner
+          Ausstattung für Sportler und Trainer. Der Jugendförderverein wurde
+          <strong>1999 gegründet</strong> und unterstützt seitdem gezielt die
+          Jugendarbeit des Vereins.
+        </p>
+        <p>
+          Darüber hinaus ist der Jugendförderverein bestrebt, seine Jugendarbeit
+          konzeptionell abgestimmt zu entwickeln – Trainertagungen und
+          Teamsitzungen gehören selbstverständlich dazu.
+        </p>
+        <p>
+          Gemeinsam mit dem Jugendförderverein verfügt der FC Lübbecke e.V. über
+          ein hervorragendes Netzwerk im Innenstadtgebiet. Seit vielen Jahren ist
+          insbesondere das <strong>Familienzentrum Mosaik</strong> ein wichtiger
+          Partner. Gemeinsame Aktionen im Rahmen von „Lübbecke läuft", dem KIBAZ
+          (Kinderbewegungsabzeichen) und dem Kita-Cup bringen das gemeinsame
+          Verständnis für eine bewegte Kindheit zum Ausdruck.
+        </p>
+      </div>
+    </section>
+
+    <!-- Team -->
+    <section class="jfv-team-wrap">
+      <div class="container section">
+        <h2 class="section-title">Das Team des Fördervereins</h2>
+        <ul class="jfv-team">
+          {team.map((m) => (
+            <li class="member">
+              <img class="member__foto" src={m.img} alt={`Foto von ${m.name}`} loading="lazy" />
+              <div class="member__body">
+                <h3 class="member__name">{m.name}</h3>
+                {m.rolle && <p class="member__rolle">{m.rolle}</p>}
+                {m.zitat && <blockquote class="member__zitat">„{m.zitat}"</blockquote>}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <!-- Partner / Mitglied werden -->
+    <section class="container section">
+      <h2 class="section-title">Der Förderverein als Partner in jeder Hinsicht</h2>
+      <p class="prose">
+        Der Förderverein möchte die herausragende Entwicklung kontinuierlich
+        unterstützen. Wer viel erreichen will, braucht auch starke Partner –
+        sowohl ideell als auch finanziell.
+      </p>
+
+      <div class="jfv-cards">
+        <article class="jfv-card">
+          <h3 class="jfv-card__title">Mitglied werden</h3>
+          <p>
+            Die Basis dafür sind auch im Förderverein zu allererst Mitglieder!
+            Deswegen brauchen wir weitere Mitglieder und freuen uns über jeden
+            Beitritt.
+          </p>
+          <a class="jfv-card__link" href="/foerderverein/beitritt.pdf" target="_blank" rel="noopener noreferrer">
+            Beitrittserklärung (PDF)
+            <span aria-hidden="true">↗</span>
+            <span class="sr-only"> (öffnet in neuem Fenster)</span>
+          </a>
+        </article>
+        <article class="jfv-card">
+          <h3 class="jfv-card__title">Doppelpass 100+</h3>
+          <p>
+            Darüber hinaus möchten wir Partner als kontinuierliche Unterstützer im
+            Jugendförderverein gewinnen.
+          </p>
+          <a class="jfv-card__link" href="/foerderverein/doppelpass-100plus.pdf" target="_blank" rel="noopener noreferrer">
+            Doppelpass 100+ (PDF)
+            <span aria-hidden="true">↗</span>
+            <span class="sr-only"> (öffnet in neuem Fenster)</span>
+          </a>
+        </article>
+      </div>
+    </section>
+
+    <!-- Projekte des Vereins -->
+    <section class="jfv-projekte-wrap">
+      <div class="container section">
+        <h2 class="section-title">Projekte des Vereins</h2>
+        <div class="jfv-projekte">
+          <img
+            class="jfv-projekte__img"
+            src="/foerderverein/projekte.jpg"
+            alt="Aktion des Jugendfördervereins FC Lübbecke"
+            loading="lazy"
+          />
+          <div class="jfv-projekte__text">
+            <h3 class="jfv-projekte__h">Fußballkulturelle Lesebühne 19/20 – Fßbll.Kltr.Lbbck.</h3>
+            <p>
+              Der Förderverein richtet 2019/2020 sechs Lesungen rund um den Fußball
+              mit hoch attraktiven Autoren aus, u. a. Ansgar Brinkmann (Der weiße
+              Brasilianer), Jens Kirschneck (11 Freunde) und Irene Margil (eine
+              Lesung nur für Kinder).
+            </p>
+            <h3 class="jfv-projekte__h">Fundraisingprojekt – 20 Jahre Förderverein</h3>
+            <p>
+              2019 wird der Jugendförderverein 20 Jahre alt. Für jedes Mitglied, das
+              dem JFV in 2019 neu beitritt, verdoppelt die Deutsche Vermögensberatung
+              (DVAG) Alexander Rehfeld einmalig den Mitgliedsbeitrag!
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Kontakt-CTA -->
+    <section class="jfv-cta">
+      <div class="container jfv-cta__inner">
+        <div>
+          <h2 class="jfv-cta__title">Noch Fragen?</h2>
+          <p class="jfv-cta__text">
+            Bei allen Fragen wenden Sie sich gerne direkt an den Jugendförderverein.
+          </p>
+        </div>
+        <a class="btn btn--primary" href={`mailto:${FOERDER_MAIL}`}>
+          {FOERDER_MAIL}
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  /* ── Hero ── */
+  .jfv-hero {
+    background: linear-gradient(135deg, var(--color-green-700) 0%, var(--color-green-900) 100%);
+    color: #fff;
+    padding-block: var(--space-5);
+  }
+  .jfv-hero__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+  }
+  .jfv-hero__logo {
+    width: 120px;
+    height: auto;
+    border-radius: var(--radius-md);
+    background: #fff;
+    padding: 0.5rem;
+    flex: none;
+  }
+  .jfv-hero h1 { color: #fff; margin-top: var(--space-2); }
+  .jfv-hero__claim {
+    margin-top: var(--space-2);
+    font-size: var(--fs-h3);
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .section { padding-block: var(--space-6); }
+  .prose p { margin-top: var(--space-3); max-width: 70ch; }
+  .prose p:first-child { margin-top: var(--space-3); }
+
+  /* ── Team ── */
+  .jfv-team-wrap { background: var(--color-green-050); }
+  .jfv-team {
+    list-style: none;
+    margin: var(--space-3) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+  .member {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid rgba(10, 80, 18, 0.10);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+  }
+  .member__foto {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    object-position: center 25%;
+    display: block;
+  }
+  .member__body { padding: var(--space-3) var(--space-4) var(--space-4); }
+  .member__name { color: var(--color-green-900); }
+  .member__rolle {
+    color: var(--color-green-700);
+    font-family: var(--font-head);
+    font-weight: 500;
+    margin-top: 0.15rem;
+  }
+  .member__zitat {
+    margin: var(--space-2) 0 0;
+    padding-left: var(--space-3);
+    border-left: 3px solid var(--color-green-500);
+    color: var(--color-ink);
+    font-style: italic;
+    font-size: var(--fs-small);
+  }
+
+  /* ── Partner-Karten ── */
+  .jfv-cards {
+    margin-top: var(--space-4);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+  .jfv-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-green-050);
+    border: 1px solid rgba(10, 80, 18, 0.12);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+  }
+  .jfv-card__title { color: var(--color-green-900); }
+  .jfv-card p { margin-top: var(--space-2); }
+  .jfv-card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: auto;
+    padding-top: var(--space-3);
+    font-family: var(--font-head);
+    font-weight: 600;
+    color: var(--color-green-700);
+    text-decoration: none;
+  }
+  .jfv-card__link:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap; border: 0;
+  }
+
+  /* ── Dokumente (Mitgliederversammlung, ganz oben) ── */
+  .jfv-top-docs { padding-top: var(--space-5); }
+  .jfv-docs {
+    background: var(--color-green-050);
+    border: 1px solid rgba(10, 80, 18, 0.12);
+    border-left: 4px solid var(--color-green-500);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+  }
+  .jfv-docs__title { color: var(--color-green-900); margin-bottom: var(--space-2); }
+  .jfv-doclist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+  .jfv-doclist a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-head);
+    font-weight: 500;
+    color: var(--color-green-700);
+    text-decoration: none;
+  }
+  .jfv-doclist a:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+  /* ── Projekte ── */
+  .jfv-projekte-wrap { background: var(--color-green-050); }
+  .jfv-projekte {
+    margin-top: var(--space-3);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    align-items: start;
+  }
+  .jfv-projekte__img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-soft);
+  }
+  .jfv-projekte__h { color: var(--color-green-900); margin-top: var(--space-3); }
+  .jfv-projekte__h:first-child { margin-top: 0; }
+  .jfv-projekte__text p { margin-top: var(--space-2); max-width: 60ch; }
+
+  /* ── CTA ── */
+  .jfv-cta { background: var(--color-white); padding-block: var(--space-6); }
+  .jfv-cta__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    background: var(--color-green-050);
+    border: 1px solid rgba(10, 80, 18, 0.12);
+    border-radius: var(--radius-md);
+    padding: var(--space-4) var(--space-5);
+  }
+  .jfv-cta__title { color: var(--color-green-700); }
+  .jfv-cta__text { margin-top: var(--space-2); color: var(--color-ink); }
+
+  @media (min-width: 640px) {
+    .jfv-team { grid-template-columns: repeat(2, 1fr); }
+    .jfv-cards { grid-template-columns: repeat(2, 1fr); }
+    .jfv-doclist { grid-template-columns: repeat(2, 1fr); }
+    .jfv-projekte { grid-template-columns: 0.9fr 1.1fr; gap: var(--space-5); }
+  }
+  @media (min-width: 960px) {
+    .jfv-team { grid-template-columns: repeat(4, 1fr); }
+  }
+</style>

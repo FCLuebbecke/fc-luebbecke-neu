@@ -21,6 +21,7 @@ const nav = [
     sub: [
       { label: "Mannschaften", href: "/fussball/mannschaften" },
       { label: "Spielplan", href: "/fussball/spielplan" },
+      { label: "Jugendförderverein", href: "/fussball/foerderverein" },
       { label: "Kontakt", href: "/fussball/kontakt" },
     ],
   },
@@ -86,6 +87,7 @@ const nav = [
               aria-current={item.id === active ? "page" : undefined}
               target={item.external ? "_blank" : undefined}
               rel={item.external ? "noopener noreferrer" : undefined}
+              aria-expanded={item.sub ? "false" : undefined}
             >
               {item.label}
               {item.external && <span class="nav__ext" aria-hidden="true">↗</span>}
@@ -324,6 +326,8 @@ const nav = [
     }
 
     .nav__link {
+      display: flex;
+      width: 100%;
       font-size: 1.25rem;
       padding: 0.85rem 0.6rem;
       border-bottom: 1px solid rgba(10, 80, 18, 0.08);
@@ -336,7 +340,7 @@ const nav = [
       padding-left: 0.85rem;
     }
 
-    /* Untermenü mobil: eingerückt, immer ausgeklappt */
+    /* Untermenü mobil: standardmäßig EINGEKLAPPT, per Tippen aufklappen */
     .nav__sub {
       position: static;
       opacity: 1;
@@ -346,8 +350,18 @@ const nav = [
       border: 0;
       padding: 0 0 0.4rem 1rem;
       min-width: 0;
+      display: none;
     }
-    .nav__caret { display: none; }
+    .nav__item.is-sub-open > .nav__sub { display: block; }
+
+    /* Pfeil rechts, dreht sich beim Aufklappen */
+    .nav__caret {
+      display: inline-block;
+      margin-left: auto;
+      font-size: 0.9em;
+      transition: transform 0.2s ease;
+    }
+    .nav__item.is-sub-open > .nav__link .nav__caret { transform: rotate(180deg); }
 
     .nav__item--cta {
       margin: var(--space-3) 0 0;
@@ -382,5 +396,28 @@ const nav = [
   const mq = window.matchMedia("(min-width: 860px)");
   mq.addEventListener("change", (e) => {
     if (e.matches) setOpen(false);
+  });
+
+  // Untermenüs auf dem Handy ein-/ausklappen (Desktop: Hover-Dropdown, unverändert)
+  const mqMobile = window.matchMedia("(max-width: 859px)");
+  document
+    .querySelectorAll<HTMLAnchorElement>(".nav__item--has-sub > .nav__link")
+    .forEach((link) => {
+      link.addEventListener("click", (e) => {
+        if (!mqMobile.matches) return; // Desktop: normaler Link
+        e.preventDefault();
+        const item = link.parentElement as HTMLElement;
+        const open = item.classList.toggle("is-sub-open");
+        link.setAttribute("aria-expanded", String(open));
+      });
+    });
+
+  // Beim Wechsel auf Desktop alle aufgeklappten Untermenüs zurücksetzen
+  mq.addEventListener("change", (e) => {
+    if (!e.matches) return;
+    document.querySelectorAll(".nav__item.is-sub-open").forEach((item) => {
+      item.classList.remove("is-sub-open");
+      item.querySelector(".nav__link")?.setAttribute("aria-expanded", "false");
+    });
   });
 </script>
