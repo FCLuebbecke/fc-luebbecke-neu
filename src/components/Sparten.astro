@@ -49,7 +49,7 @@ const kleineSparten = [
 
 <section class="sparten" id="sparten" aria-labelledby="sparten-title">
   <div class="container">
-    <header class="sparten__head" data-reveal>
+    <header class="sparten__head">
       <h2 id="sparten-title" class="section-title">Unsere Sparten</h2>
       <p class="sparten__intro">
         Ein Verein, vier Wege, aktiv zu sein. Such dir aus, was zu dir passt –
@@ -58,7 +58,7 @@ const kleineSparten = [
     </header>
 
     <!-- Fußball: große Karte über volle Breite -->
-    <div class="feature-wrap" data-reveal>
+    <div class="feature-wrap">
       <span class="feature-wrap__band" aria-hidden="true"></span>
       <article class="card card--feature">
         <div class="card--feature__media">
@@ -87,7 +87,7 @@ const kleineSparten = [
     <!-- Badminton · Darts · Laufsport: drei gleichwertige Karten -->
     <div class="sparten__grid">
       {kleineSparten.map((s, i) => (
-        <article class="card" data-reveal style={`--reveal-delay:${0.08 * (i + 1)}s`}>
+        <article class="card">
           <div class="card__icon">
             <i class:list={["fi", s.icon]} aria-hidden="true"></i>
           </div>
@@ -311,21 +311,6 @@ const kleineSparten = [
     white-space: nowrap; border: 0;
   }
 
-  /* ---- Scroll-Reveal (gestaffeltes Einblenden) ----
-     Versteckt wird nur, wenn JS den Zustand setzt (.reveal-ready am <section>),
-     daher ohne JS alles sofort sichtbar. */
-  .reveal-ready [data-reveal] {
-    opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-    transition-delay: var(--reveal-delay, 0s);
-  }
-  .reveal-ready [data-reveal].is-visible {
-    opacity: 1;
-    transform: none;
-  }
-
   /* ---- Desktop ---- */
   @media (min-width: 760px) {
     .sparten__grid {
@@ -352,37 +337,8 @@ const kleineSparten = [
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .reveal-ready [data-reveal] {
-      opacity: 1;
-      transform: none;
-      transition: none;
-    }
     .card:hover { transform: none; }
     .card:hover .card__icon::before { transform: translate(-50%, -50%); }
     .card:hover .card__icon i { transform: none; }
   }
 </style>
-
-<script>
-  // Progressive Enhancement: erst hier den Versteckt-Zustand aktivieren,
-  // damit ohne JS nichts unsichtbar bleibt.
-  const section = document.getElementById("sparten");
-  const items = section ? Array.from(section.querySelectorAll("[data-reveal]")) : [];
-  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  if (section && items.length && !reduce && "IntersectionObserver" in window) {
-    section.classList.add("reveal-ready");
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            io.unobserve(entry.target);
-          }
-        }
-      },
-      { threshold: 0.15, rootMargin: "0px 0px -10% 0px" }
-    );
-    items.forEach((el) => io.observe(el));
-  }
-</script>

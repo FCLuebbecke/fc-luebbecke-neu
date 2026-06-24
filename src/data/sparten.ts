@@ -10,6 +10,10 @@ export interface Training {
 export interface Team {
   name: string;
   info: string;
+  /** Spielklasse/Liga (optional) – wird als Tag angezeigt. */
+  liga?: string;
+  /** Externer Link zu Spielplan/Tabelle (optional) – z. B. DBV-Turnierseite. */
+  href?: string;
   platzhalter?: boolean;
 }
 export interface Foto {
@@ -46,8 +50,18 @@ export const badminton: SparteData = {
   heroImg: "/sparte-badminton.svg",
   heroAlt: "Federball beim Badminton",
   teams: [
-    { name: "Hobby- & Freizeitgruppe", info: "Offenes Spiel für alle – ohne Druck, mit viel Spaß am Federball.", platzhalter: true },
-    { name: "Wettkampfgruppe", info: "Für ambitionierte Spielerinnen und Spieler mit Punktspielbetrieb.", platzhalter: true },
+    {
+      name: "Mannschaft 1",
+      liga: "Landesliga Nord 2b",
+      info: "Unsere Erste startet in der Saison 25/26 in der Landesliga Nord 2b – der höchsten Spielklasse der Abteilung.",
+      href: "https://dbv.turnier.de/sport/draw.aspx?id=925D6245-1FA1-496D-9810-1439487E5801&draw=13",
+    },
+    {
+      name: "Mannschaft 2",
+      liga: "Kreisklasse Nord 2",
+      info: "Die Zweite spielt in der Kreisklasse – perfekt für ambitionierte Hobbyspieler mit Wettkampflust.",
+      href: "https://dbv.turnier.de/sport/draw.aspx?id=925D6245-1FA1-496D-9810-1439487E5801&draw=94",
+    },
   ],
   fotos: [
     { src: "/sparte-badminton.svg", alt: "Spielszene aus dem Badminton-Training" },
@@ -78,8 +92,12 @@ export const darts: SparteData = {
   heroImg: "/sparte-darts.svg",
   heroAlt: "Dartscheibe mit Pfeilen",
   teams: [
-    { name: "Liga-Mannschaft", info: "Unser Team im Punktspielbetrieb der Dart-Liga.", platzhalter: true },
-    { name: "Hobby-Runde", info: "Lockeres Werfen für alle – einfach vorbeikommen und mitmachen.", platzhalter: true },
+    {
+      name: "FC Lübbecke Darts",
+      liga: "Kreisliga NRW",
+      info: "Unser Team im Punktspielbetrieb der Dart-Kreisliga – rund 12 aktive Spieler, gespielt wird im Modus 501.",
+    },
+    { name: "Hobby-Runde", info: "Lockeres Werfen für alle – einfach vorbeikommen und mitmachen, ganz ohne Vorkenntnisse.", platzhalter: true },
   ],
   fotos: [
     { src: "/sparte-darts.svg", alt: "Dartscheibe im Vereinsheim" },

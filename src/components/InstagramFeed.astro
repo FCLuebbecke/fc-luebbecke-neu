@@ -1,12 +1,10 @@
 ---
 /**
- * Instagram-Feed mit DSGVO-konformer 2-Klick-Lösung (claude.md Abschnitt 10).
- * Ersetzt den klassischen News-Block: zeigt die neuesten Fußball-Beiträge.
+ * Instagram-Feed: zeigt die neuesten Fußball-Beiträge als volles Raster.
  *
- * Daten: Behold.so-API (src/lib/instagram.ts), geholt zur BUILD-ZEIT –
- * es entsteht KEINE Laufzeit-Verbindung zu Meta. Die Bilder werden dennoch
- * erst nach aktiver Zustimmung geladen (data-src → src) und die Zustimmung
- * in localStorage gemerkt.
+ * Daten: Behold.so-API (src/lib/instagram.ts), geholt zur BUILD-ZEIT.
+ * Die Einwilligung (DSGVO) wird NICHT mehr hier per 2-Klick geregelt,
+ * sondern zentral über das Cookie-/Consent-Banner der Seite.
  */
 import { getInstagramPosts } from "../lib/instagram";
 
@@ -32,51 +30,14 @@ const posts = await getInstagramPosts(6);
       </p>
     </header>
 
-    <div class="ig__widget" data-ig-widget>
-      <!-- Zustimmungs-Ansicht (vor dem Laden) -->
-      <div class="ig__consent" data-ig-consent>
-        <span class="ig__glyph" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="5"/>
-            <circle cx="12" cy="12" r="4"/>
-            <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/>
-          </svg>
-        </span>
-        <h3 class="ig__consent-title">Instagram-Beiträge anzeigen</h3>
-        <p class="ig__consent-text">
-          Hier zeigen wir unsere neuesten Instagram-Beiträge. Beim Laden werden
-          die Bilder nachgeladen und dabei können personenbezogene Daten
-          (z. B. deine IP-Adresse) an Dritte übertragen werden. Mehr dazu in
-          unserer <a href="/datenschutz">Datenschutzerklärung</a>.
-        </p>
-        <div class="ig__consent-actions">
-          <button class="btn btn--primary" type="button" data-ig-load>
-            Beiträge laden
-          </button>
-          <a
-            class="btn btn--secondary"
-            href={profileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Direkt auf Instagram ansehen <span aria-hidden="true">↗</span>
-            <span class="sr-only"> (öffnet in neuem Fenster)</span>
-          </a>
-        </div>
-        <label class="ig__remember">
-          <input type="checkbox" data-ig-remember checked />
-          Zustimmung für künftige Besuche merken
-        </label>
-      </div>
-
-      <!-- Feed-Grid: nach Zustimmung sichtbar; Bilder erst dann nachgeladen -->
+    <div class="ig__widget">
       {posts.length > 0 ? (
-        <ul class="ig__grid" data-ig-embed hidden>
+        <ul class="ig__grid">
           {posts.map((p) => (
             <li class="ig__item">
               <a href={p.permalink} target="_blank" rel="noopener noreferrer">
                 <img
-                  data-src={p.sizes.medium.mediaUrl}
+                  src={p.sizes.medium.mediaUrl}
                   alt={(p.prunedCaption ?? p.caption ?? "Instagram-Beitrag des FC Lübbecke").slice(0, 140)}
                   width={p.sizes.medium.width}
                   height={p.sizes.medium.height}
@@ -89,7 +50,7 @@ const posts = await getInstagramPosts(6);
           ))}
         </ul>
       ) : (
-        <div class="ig__embed-note" data-ig-embed hidden>
+        <div class="ig__embed-note">
           <p>Aktuell konnten keine Beiträge geladen werden. Schau direkt auf unserem Profil vorbei.</p>
         </div>
       )}
@@ -118,65 +79,22 @@ const posts = await getInstagramPosts(6);
   }
 
   .ig__widget {
+    position: relative;
     background: var(--color-white);
     border: 1px solid rgba(10, 80, 18, 0.10);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-card);
     overflow: hidden;
-    min-height: 280px;
-    display: flex;
   }
 
-  /* ---- Zustimmungs-Ansicht ---- */
-  .ig__consent {
-    margin: auto;
-    max-width: 52ch;
-    text-align: center;
-    padding: var(--space-5) var(--space-3);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.8rem;
-  }
-  .ig__glyph {
-    display: inline-grid;
-    place-items: center;
-    width: 64px; height: 64px;
-    border-radius: var(--radius-md);
-    color: #fff;
-    background: linear-gradient(135deg, #0a6e12, #16a626);
-  }
-  .ig__consent-title { color: var(--color-green-900); }
-  .ig__consent-text {
-    color: var(--color-muted);
-    font-size: var(--fs-small);
-    line-height: 1.55;
-  }
-  .ig__consent-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    justify-content: center;
-    margin-top: 0.3rem;
-  }
-  .ig__remember {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    font-size: var(--fs-small);
-    color: var(--color-muted);
-    cursor: pointer;
-  }
-
-  /* ---- Geladener Feed (natives Grid) ---- */
+  /* ---- Raster: füllt die ganze Card (3×2 Desktop, 2×3 Mobil) ---- */
   .ig__grid {
     list-style: none;
     margin: 0;
     padding: 0;
-    width: 100%;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 2px;
+    gap: 3px;
   }
   .ig__item { position: relative; margin: 0; }
   .ig__item a {
@@ -184,6 +102,7 @@ const posts = await getInstagramPosts(6);
     position: relative;
     aspect-ratio: 1 / 1;
     overflow: hidden;
+    background: var(--color-green-050); /* Platzhalter, bis Bild geladen */
   }
   .ig__item img {
     width: 100%;
@@ -200,9 +119,9 @@ const posts = await getInstagramPosts(6);
     font-size: 0.95rem;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   }
+
   .ig__embed-note {
-    margin: auto;
-    padding: var(--space-4);
+    padding: var(--space-5) var(--space-4);
     text-align: center;
     color: var(--color-muted);
     font-size: var(--fs-small);
@@ -223,37 +142,3 @@ const posts = await getInstagramPosts(6);
     .ig__grid { grid-template-columns: repeat(3, 1fr); }
   }
 </style>
-
-<script>
-  const STORAGE_KEY = "ig-consent-fcl";
-
-  document.querySelectorAll<HTMLElement>("[data-ig-widget]").forEach((widget) => {
-    const consent = widget.querySelector<HTMLElement>("[data-ig-consent]");
-    const embed = widget.querySelector<HTMLElement>("[data-ig-embed]");
-    const loadBtn = widget.querySelector<HTMLButtonElement>("[data-ig-load]");
-    const remember = widget.querySelector<HTMLInputElement>("[data-ig-remember]");
-
-    function showFeed() {
-      if (!consent || !embed) return;
-      // Bilder erst jetzt laden: data-src → src
-      embed.querySelectorAll<HTMLImageElement>("img[data-src]").forEach((img) => {
-        img.src = img.dataset.src || "";
-        img.removeAttribute("data-src");
-      });
-      consent.hidden = true;
-      embed.hidden = false;
-    }
-
-    // Bereits zugestimmt? Dann direkt laden.
-    try {
-      if (localStorage.getItem(STORAGE_KEY) === "yes") showFeed();
-    } catch {}
-
-    loadBtn?.addEventListener("click", () => {
-      if (remember?.checked) {
-        try { localStorage.setItem(STORAGE_KEY, "yes"); } catch {}
-      }
-      showFeed();
-    });
-  });
-</script>

@@ -11,6 +11,8 @@ export type FussballMatch = {
   gast: string;
   istHeimspiel: boolean;
   wettbewerb: string;
+  /** Link zur fußball.de-Spielseite (dort steht der – verschlüsselte – Spielstand). */
+  spielUrl?: string;
 };
 
 const TEAM_ID = "011MIFCCRK000000VTVG0001VTR8C1K7";
@@ -84,6 +86,8 @@ function parseMatchesFromHtml(html: string): FussballMatch[] {
     const gast = decodeEntities(clubNames[1][1].trim());
     if (!heim || !gast) continue;
 
+    const urlMatch = row.match(/href="(https:\/\/www\.fussball\.de\/spiel\/[^"]+)"/i);
+
     matches.push({
       datum: currentDate,
       zeit: currentTime,
@@ -91,6 +95,7 @@ function parseMatchesFromHtml(html: string): FussballMatch[] {
       gast,
       istHeimspiel: heim.toLowerCase().includes("lübbecke"),
       wettbewerb: currentWettbewerb,
+      spielUrl: urlMatch ? urlMatch[1] : undefined,
     });
 
     currentDate = "";

@@ -1,0 +1,28 @@
+name: Täglicher Rebuild (Spielplan aktualisieren)
+
+# Der Spielplan von fußball.de wird zur Build-Zeit geholt (siehe src/lib/fussball.ts).
+# Dieser Workflow stößt einmal täglich einen neuen Vercel-Build an, damit der
+# Spielplan automatisch aktuell bleibt – ohne manuelles Deployen.
+
+on:
+  schedule:
+    # Täglich 04:00 UTC (= 06:00 Sommerzeit / 05:00 Winterzeit in Deutschland).
+    # Cron-Zeiten in GitHub Actions sind immer UTC.
+    - cron: "0 4 * * *"
+  # Erlaubt zusätzlich das manuelle Auslösen über den Actions-Tab.
+  workflow_dispatch:
+
+jobs:
+  trigger-vercel-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Vercel Deploy Hook aufrufen
+        run: |
+          if [ -z "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}" ]; then
+            echo "Fehler: Secret VERCEL_DEPLOY_HOOK_URL ist nicht gesetzt."
+            echo "Anleitung siehe Workflow-Beschreibung."
+            exit 1
+          fi
+          echo "Stoße neuen Vercel-Build an…"
+          curl -fsS -X POST "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}"
+          echo "Build ausgelöst."

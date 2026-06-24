@@ -15,16 +15,28 @@ interface Props {
   active: string;
   /** kleines Etikett über dem Titel (Default: "Sparte"). */
   tag?: string;
-  /** Fußball hat zusätzlich den Tab "Spielplan & Ergebnisse". */
+  /** Fußball hat zusätzlich den Tab "Spielplan". */
   withSpielplan?: boolean;
+  /** Trainingszeiten-Tab anzeigen (Default: an; bei Fußball aus). */
+  withTrainingszeiten?: boolean;
 }
-const { name, claim, basePath, active, tag = "Sparte", withSpielplan = false } = Astro.props as Props;
+const {
+  name,
+  claim,
+  basePath,
+  active,
+  tag = "Sparte",
+  withSpielplan = false,
+  withTrainingszeiten = true,
+} = Astro.props as Props;
 
 const tabs = [
   { id: "mannschaften", label: "Mannschaften", href: `${basePath}/mannschaften` },
-  { id: "trainingszeiten", label: "Trainingszeiten", href: `${basePath}/trainingszeiten` },
+  ...(withTrainingszeiten
+    ? [{ id: "trainingszeiten", label: "Trainingszeiten", href: `${basePath}/trainingszeiten` }]
+    : []),
   ...(withSpielplan
-    ? [{ id: "spielplan", label: "Spielplan & Ergebnisse", href: `${basePath}/spielplan` }]
+    ? [{ id: "spielplan", label: "Spielplan", href: `${basePath}/spielplan` }]
     : []),
   { id: "kontakt", label: "Kontakt", href: `${basePath}/kontakt` },
 ];

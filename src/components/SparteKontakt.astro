@@ -21,7 +21,7 @@ const initialen = data.ansprechName
         <h2 class="sparte__cta-title">Lust mitzumachen?</h2>
         <p class="sparte__cta-text">{data.schnupper}</p>
         <a
-          class="btn btn--light"
+          class="btn btn--primary"
           href={`mailto:${data.ansprechMail}?subject=Schnuppertraining%20${encodeURIComponent(data.name)}`}
         >
           Schnuppertraining anfragen
@@ -51,8 +51,8 @@ const initialen = data.ansprechName
 
 <style>
   .sparte__cta {
-    background: linear-gradient(135deg, var(--color-green-700) 0%, var(--color-green-900) 100%);
-    color: #fff;
+    background: var(--color-white);
+    color: var(--color-ink);
     padding-block: var(--space-6);
   }
   .sparte__cta-grid {
@@ -61,16 +61,16 @@ const initialen = data.ansprechName
     gap: var(--space-4);
     align-items: start;
   }
-  .sparte__cta-title { color: #fff; }
+  .sparte__cta-title { color: var(--color-green-700); }
   .sparte__cta-text {
     margin: var(--space-2) 0 var(--space-4);
-    color: rgba(255, 255, 255, 0.92);
+    color: var(--color-ink);
     max-width: 50ch;
   }
 
   .ansprech {
-    background: rgba(255, 255, 255, 0.10);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: var(--color-green-050);
+    border: 1px solid rgba(10, 80, 18, 0.12);
     border-radius: var(--radius-md);
     padding: var(--space-4);
   }
@@ -81,8 +81,8 @@ const initialen = data.ansprechName
     width: 64px;
     height: 64px;
     border-radius: 50%;
-    background: #fff;
-    color: var(--color-green-900);
+    background: var(--color-green-700);
+    color: #fff;
     font-family: var(--font-head);
     font-weight: 600;
     font-size: 1.5rem;
@@ -90,7 +90,7 @@ const initialen = data.ansprechName
     margin-bottom: var(--space-2);
   }
   .ansprech__rolle {
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--color-muted);
     font-size: var(--fs-small);
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -100,6 +100,7 @@ const initialen = data.ansprechName
     font-weight: 500;
     font-size: var(--fs-h3);
     margin-top: 0.15rem;
+    color: var(--color-ink);
   }
   .ansprech__kontakt {
     margin-top: var(--space-2);
@@ -110,10 +111,10 @@ const initialen = data.ansprechName
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    color: #fff;
+    color: var(--color-green-700);
     text-decoration: none;
   }
-  .ansprech__kontakt a:hover { color: var(--color-green-050); text-decoration: underline; text-underline-offset: 2px; }
+  .ansprech__kontakt a:hover { color: var(--color-green-900); text-decoration: underline; text-underline-offset: 2px; }
   .ansprech__ico { width: 1.1em; height: 1.1em; flex: none; opacity: 0.85; }
 
   @media (min-width: 860px) {

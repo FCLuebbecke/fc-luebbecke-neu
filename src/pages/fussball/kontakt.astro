@@ -27,6 +27,7 @@ const kontakte = [
     basePath="/fussball"
     tag="Größte Sparte"
     withSpielplan
+    withTrainingszeiten={false}
     active="kontakt"
   />
 
@@ -40,7 +41,7 @@ const kontakte = [
             Probetraining auf unsere Anlage an der Obernfelder Allee. Schreib uns
             kurz, dann sagen wir dir, wann das passende Team trainiert.
           </p>
-          <a class="btn btn--light" href="mailto:fussball@fc-luebbecke.de?subject=Probetraining%20Fu%C3%9Fball">
+          <a class="btn btn--primary" href="mailto:fussball@fc-luebbecke.de?subject=Probetraining%20Fu%C3%9Fball">
             Probetraining anfragen
           </a>
         </div>
@@ -77,8 +78,8 @@ const kontakte = [
 
 <style>
   .sparte__cta {
-    background: linear-gradient(135deg, var(--color-green-700) 0%, var(--color-green-900) 100%);
-    color: #fff;
+    background: var(--color-white);
+    color: var(--color-ink);
     padding-block: var(--space-6);
   }
   .sparte__cta-grid {
@@ -87,10 +88,10 @@ const kontakte = [
     gap: var(--space-4);
     align-items: start;
   }
-  .sparte__cta-title { color: #fff; }
+  .sparte__cta-title { color: var(--color-green-700); }
   .sparte__cta-text {
     margin: var(--space-2) 0 var(--space-4);
-    color: rgba(255, 255, 255, 0.92);
+    color: var(--color-ink);
     max-width: 52ch;
   }
 
@@ -99,30 +100,30 @@ const kontakte = [
     gap: var(--space-3);
   }
   .kontakt {
-    background: rgba(255, 255, 255, 0.10);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: var(--color-green-050);
+    border: 1px solid rgba(10, 80, 18, 0.12);
     border-radius: var(--radius-md);
     padding: var(--space-3) var(--space-4);
     transition: transform 0.18s ease, background-color 0.18s ease;
   }
   .kontakt:hover {
     transform: translateY(-2px);
-    background: rgba(255, 255, 255, 0.16);
+    background: #dcecdd;
   }
-  .kontakt__titel { color: #fff; }
+  .kontakt__titel { color: var(--color-ink); }
   .kontakt__ico { width: 1.05em; height: 1.05em; flex: none; vertical-align: -0.18em; margin-right: 0.4rem; opacity: 0.85; }
   .kontakt__text {
     margin-top: 0.3rem;
-    color: rgba(255, 255, 255, 0.85);
+    color: var(--color-muted);
     font-size: var(--fs-small);
   }
   .kontakt__mail { margin-top: 0.5rem; }
   .kontakt a {
-    color: #fff;
+    color: var(--color-green-700);
     text-decoration: underline;
     text-underline-offset: 2px;
   }
-  .kontakt a:hover { color: var(--color-green-050); }
+  .kontakt a:hover { color: var(--color-green-900); }
   .kontakt__adresse {
     font-style: normal;
     margin-top: 0.3rem;

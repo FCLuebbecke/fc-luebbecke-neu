@@ -18,8 +18,17 @@ const { data } = Astro.props as Props;
     <div class="teams">
       {data.teams.map((t) => (
         <article class="team">
-          <h3 class="team__name">{t.name}</h3>
+          <div class="team__head">
+            <h3 class="team__name">{t.name}</h3>
+            {t.liga && <span class="tag">{t.liga}</span>}
+          </div>
           <p class="team__info">{t.info}</p>
+          {t.href && (
+            <a class="team__link" href={t.href} target="_blank" rel="noopener noreferrer">
+              Spielplan &amp; Tabelle <span aria-hidden="true">↗</span>
+              <span class="sr-only"> (öffnet in neuem Fenster)</span>
+            </a>
+          )}
           {t.platzhalter && <p class="platzhalter">Daten folgen</p>}
         </article>
       ))}
@@ -76,8 +85,28 @@ const { data } = Astro.props as Props;
     box-shadow: var(--shadow-card);
     border-color: rgba(10, 80, 18, 0.18);
   }
+  .team__head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
   .team__name { color: var(--color-green-900); }
   .team__info { margin-top: 0.6rem; }
+  .team__link {
+    display: inline-block;
+    margin-top: 0.8rem;
+    font-family: var(--font-head);
+    font-weight: 500;
+    color: var(--color-green-700);
+    text-decoration: none;
+  }
+  .team__link:hover { text-decoration: underline; text-underline-offset: 2px; }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
   .platzhalter {
     margin-top: 0.75rem;
     font-size: var(--fs-small);
