@@ -75,7 +75,7 @@ const [ersteMannschaft, ...weitereHerren] = herren;
           {ersteMannschaft.foto?.asset && (
             <img
               class="team-star__foto"
-              src={urlFor(ersteMannschaft.foto).width(1400).height(933).fit("crop").auto("format").url()}
+              src={urlFor(ersteMannschaft.foto).width(1600).height(900).fit("crop").auto("format").url()}
               alt={ersteMannschaft.foto.alt || `Mannschaftsfoto ${ersteMannschaft.name}`}
               loading="lazy"
             />
@@ -197,7 +197,6 @@ const [ersteMannschaft, ...weitereHerren] = herren;
   }
   .team-star__body {
     padding: var(--space-4);
-    align-self: center;
   }
 
   /* ---- Weitere Herren-Teams: kompakte Daten-Karten ---- */
@@ -298,8 +297,6 @@ const [ersteMannschaft, ...weitereHerren] = herren;
   .jcard__label { color: var(--color-muted); }
 
   @media (min-width: 760px) {
-    .team-star { grid-template-columns: 3fr 2fr; }
-    .team-star__foto { aspect-ratio: auto; }
     .teams-mini { grid-template-columns: repeat(3, 1fr); }
     .jugend { grid-template-columns: repeat(3, 1fr); }
   }
