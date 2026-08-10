@@ -8,12 +8,15 @@ const { data } = Astro.props as Props;
 const telHref = data.ansprechTel ? `tel:${data.ansprechTel.replace(/[^+\d]/g, "")}` : null;
 // mailto mit Punycode-Domain (sichere Zustellung auch in älteren Mailclients)
 const mailHref = `mailto:${data.ansprechMail.replace("fclübbecke.de", "xn--fclbbecke-s9a.de")}`;
-const initialen = data.ansprechName
-  .split(" ")
-  .map((w) => w[0])
-  .join("")
-  .slice(0, 2)
-  .toUpperCase();
+// "FC Lübbecke e.V." → "FC"; bei Personennamen die Initialen (z. B. "AB")
+const initialen = data.ansprechName.startsWith("FC")
+  ? "FC"
+  : data.ansprechName
+      .split(" ")
+      .map((w) => w[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
 ---
 
 <main id="inhalt">

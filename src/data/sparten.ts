@@ -81,10 +81,9 @@ export const badminton: SparteData = {
   ],
   ortName: "Sporthalle Kollegienwall",
   ortAdresse: "Kollegienwall 1, 32312 Lübbecke",
-  ansprechName: "Anna Beispiel",
-  ansprechRolle: "Spartenleitung Badminton",
+  ansprechName: "FC Lübbecke e.V.",
+  ansprechRolle: "Kontakt Badminton",
   ansprechMail: "kontakt@fclübbecke.de",
-  ansprechTel: "05741 / 123 456 7",
   schnupper:
     "Schau einfach zu einem Training vorbei – Schläger zum Ausleihen sind da. Die ersten Male sind kostenlos und unverbindlich. Melde dich kurz vorher, dann freuen wir uns auf dich.",
 };
@@ -117,10 +116,9 @@ export const darts: SparteData = {
   ],
   ortName: "Vereinsheim FC Lübbecke – Clubraum",
   ortAdresse: "Obernfelder Allee 42, 32312 Lübbecke",
-  ansprechName: "Tom Beispiel",
-  ansprechRolle: "Spartenleitung Darts",
+  ansprechName: "FC Lübbecke e.V.",
+  ansprechRolle: "Kontakt Darts",
   ansprechMail: "kontakt@fclübbecke.de",
-  ansprechTel: "05741 / 123 456 7",
   schnupper:
     "Komm einfach zum offenen Training vorbei – Pfeile zum Ausprobieren sind vorhanden. Kein Anmelden, kein Druck: reinschauen, mitwerfen, Spaß haben.",
 };
