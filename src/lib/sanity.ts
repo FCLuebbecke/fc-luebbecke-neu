@@ -31,6 +31,9 @@ export interface MannschaftDoc {
   text?: string;
   jahrgang?: string;
   trainer?: string;
+  /** Neue Struktur: mehrere Einheiten, je mit Ort. */
+  training?: { zeit: string; ort?: string }[];
+  /** Alt (eine Zeile) – Fallback, solange Dokumente noch nicht umgezogen sind. */
   trainingszeiten?: string;
   foto?: SanityImage;
   platzhalter?: boolean;
@@ -38,6 +41,7 @@ export interface MannschaftDoc {
 
 const MANNSCHAFTEN_QUERY = `*[_type == "mannschaft"] | order(reihenfolge asc, name asc){
   name, kategorie, liga, text, jahrgang, trainer, trainingszeiten, platzhalter,
+  training[]{ zeit, ort },
   foto
 }`;
 

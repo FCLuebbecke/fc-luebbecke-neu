@@ -1,4 +1,4 @@
-import { defineField, defineType } from 'sanity';
+import { defineArrayMember, defineField, defineType } from 'sanity';
 
 /**
  * Fußball-Mannschaft (Herren & Senioren ODER Jugend / Nachwuchs).
@@ -84,10 +84,46 @@ export const mannschaft = defineType({
       initialValue: 'N. N.',
     }),
     defineField({
-      name: 'trainingszeiten',
+      name: 'training',
       title: 'Trainingszeiten',
+      description:
+        'Ein Eintrag pro Einheit – mit „+ Add item“ weitere hinzufügen (z. B. Mittwoch UND Freitag).',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'einheit',
+          title: 'Trainingseinheit',
+          fields: [
+            defineField({
+              name: 'zeit',
+              title: 'Tag & Uhrzeit',
+              type: 'string',
+              description: 'z. B. „Mittwoch, 19:30–21:00 Uhr“',
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: 'ort',
+              title: 'Ort',
+              type: 'string',
+              description: 'z. B. „Sportplatz Obernfelder Allee“ oder „Sporthalle …“',
+            }),
+          ],
+          preview: {
+            select: { title: 'zeit', subtitle: 'ort' },
+          },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'trainingszeiten',
+      title: 'Trainingszeiten (alt, eine Zeile)',
       type: 'string',
-      description: 'z. B. „Montag, 17:00–18:30 Uhr“',
+      description: 'Veraltet – bitte oben das neue Feld „Trainingszeiten“ verwenden.',
+      deprecated: {
+        reason: 'Durch die Liste „Trainingszeiten“ (mit Ort) ersetzt.',
+      },
+      hidden: ({ parent }) => !parent?.trainingszeiten,
     }),
     defineField({
       name: 'platzhalter',

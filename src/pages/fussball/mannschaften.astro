@@ -51,6 +51,14 @@ const jugend = jugendCms.length > 0 ? jugendCms : jugendFallback;
 // Die erste Mannschaft (per Reihenfolge sortiert) wird als breite Karte mit
 // Foto hervorgehoben; alle weiteren Herren-Teams kompakt nur mit Daten.
 const [ersteMannschaft, ...weitereHerren] = herren;
+
+// Trainingszeilen: neue Struktur (mehrere Einheiten mit Ort) bevorzugt,
+// sonst der alte Ein-Zeilen-Text – so bleibt Bestandspflege gültig.
+type MitTraining = { training?: { zeit: string; ort?: string }[]; trainingszeiten?: string };
+function trainingZeilen(m: MitTraining): string[] {
+  if (m.training?.length) return m.training.map((t) => (t.ort ? `${t.zeit} · ${t.ort}` : t.zeit));
+  return m.trainingszeiten ? [m.trainingszeiten] : [];
+}
 ---
 
 <Layout title="Mannschaften – Fußball – FC Lübbecke" description="Die Fußball-Mannschaften des FC Lübbecke: Herren (1. Mannschaft Landesliga, 2. Mannschaft, Alte Herren) und Jugend von den Bambinis bis zur A-Jugend.">
@@ -86,7 +94,7 @@ const [ersteMannschaft, ...weitereHerren] = herren;
               {ersteMannschaft.liga && <span class="tag tag--strong">{ersteMannschaft.liga}</span>}
             </div>
             {ersteMannschaft.text && <p class="team__text">{ersteMannschaft.text}</p>}
-            {(ersteMannschaft.trainer || ersteMannschaft.trainingszeiten) && (
+            {(ersteMannschaft.trainer || trainingZeilen(ersteMannschaft).length > 0) && (
               <dl class="team__meta">
                 {ersteMannschaft.trainer && (
                   <div class="team__meta-row">
@@ -94,10 +102,14 @@ const [ersteMannschaft, ...weitereHerren] = herren;
                     <dd>{ersteMannschaft.trainer}</dd>
                   </div>
                 )}
-                {ersteMannschaft.trainingszeiten && (
+                {trainingZeilen(ersteMannschaft).length > 0 && (
                   <div class="team__meta-row">
                     <dt>Training</dt>
-                    <dd>{ersteMannschaft.trainingszeiten}</dd>
+                    <dd>
+                      {trainingZeilen(ersteMannschaft).map((z) => (
+                        <span class="training-zeile">{z}</span>
+                      ))}
+                    </dd>
                   </div>
                 )}
               </dl>
@@ -122,10 +134,14 @@ const [ersteMannschaft, ...weitereHerren] = herren;
                     <dd>{t.trainer}</dd>
                   </div>
                 )}
-                {t.trainingszeiten && (
+                {trainingZeilen(t).length > 0 && (
                   <div class="team__meta-row">
                     <dt>Training</dt>
-                    <dd>{t.trainingszeiten}</dd>
+                    <dd>
+                      {trainingZeilen(t).map((z) => (
+                        <span class="training-zeile">{z}</span>
+                      ))}
+                    </dd>
                   </div>
                 )}
               </dl>
@@ -147,9 +163,9 @@ const [ersteMannschaft, ...weitereHerren] = herren;
             <h3 class="jcard__name">{j.name}</h3>
             <p class="jcard__jahrgang">{j.jahrgang}</p>
             <p class="jcard__trainer"><span class="jcard__label">Trainer:</span> {j.trainer}</p>
-            {j.trainingszeiten && (
-              <p class="jcard__training"><span class="jcard__label">Training:</span> {j.trainingszeiten}</p>
-            )}
+            {trainingZeilen(j).map((z) => (
+              <p class="jcard__training"><span class="jcard__label">Training:</span> {z}</p>
+            ))}
             {j.platzhalter && <p class="platzhalter">Daten folgen</p>}
           </article>
         ))}
@@ -256,6 +272,8 @@ const [ersteMannschaft, ...weitereHerren] = herren;
     margin: 0;
     color: var(--color-ink);
   }
+  /* mehrere Trainingseinheiten: eine pro Zeile */
+  .training-zeile { display: block; }
   .platzhalter {
     margin-top: 0.5rem;
     font-size: var(--fs-small);
