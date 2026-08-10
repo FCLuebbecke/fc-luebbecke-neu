@@ -18,6 +18,13 @@ const {
 } = Astro.props;
 
 const posts = await getInstagramPosts(6);
+
+// Bild-Quelle je Post: Beholds Proxy-URLs (p.sizes.*) liefern für diesen Feed
+// nur noch HTTP 400 ("Missing Instagram src") – daher direkt die Instagram-
+// CDN-URLs nutzen. Bei Videos ist mediaUrl die Videodatei, also thumbnailUrl.
+function bildUrl(p: (typeof posts)[number]): string {
+  return (p.mediaType === "VIDEO" ? p.thumbnailUrl : undefined) ?? p.mediaUrl;
+}
 ---
 
 <section class="ig" aria-labelledby="ig-title">
@@ -37,10 +44,10 @@ const posts = await getInstagramPosts(6);
             <li class="ig__item">
               <a href={p.permalink} target="_blank" rel="noopener noreferrer">
                 <img
-                  src={p.sizes.medium.mediaUrl}
+                  src={bildUrl(p)}
                   alt={(p.prunedCaption ?? p.caption ?? "Instagram-Beitrag des FC Lübbecke").slice(0, 140)}
-                  width={p.sizes.medium.width}
-                  height={p.sizes.medium.height}
+                  width={p.sizes?.medium?.width ?? 640}
+                  height={p.sizes?.medium?.height ?? 640}
                   loading="lazy"
                 />
                 {p.mediaType === "VIDEO" && <span class="ig__badge" aria-hidden="true">▶</span>}
