@@ -58,6 +58,14 @@ const nav = [
 <header class="header">
   <a class="skip-link" href="#inhalt">Zum Inhalt springen</a>
 
+  <!-- Vereinsband: rutscht beim Scrollen weg (sticky top ist negativ) -->
+  <div class="header__band">
+    <div class="container header__band-row">
+      <span>FC Lübbecke e.V. · seit 1925</span>
+      <span class="header__band-motto">Ein Verein · vier Sparten</span>
+    </div>
+  </div>
+
   <div class="container header__bar">
     <!-- Logo -->
     <a class="header__logo" href="/" aria-label="FC Lübbecke – zur Startseite">
@@ -117,20 +125,37 @@ const nav = [
 
 <style>
   .header {
+    /* Band (34px) rutscht beim Scrollen weg, die weiße Leiste bleibt kleben */
     position: sticky;
-    top: 0;
+    top: calc(-1 * var(--band-h, 34px));
     z-index: 100;
     background: var(--color-white);
     border-bottom: 1px solid rgba(10, 80, 18, 0.12);
-    box-shadow: 0 1px 8px rgba(10, 80, 18, 0.06);
+    box-shadow: none;
+    transition: box-shadow 0.2s ease;
+  }
+  .header.is-scrolled {
+    box-shadow: 0 2px 14px rgba(10, 80, 18, 0.10);
   }
 
-  /* schmaler grüner Markenstreifen ganz oben */
-  .header::before {
-    content: "";
-    display: block;
-    height: 4px;
-    background: var(--color-green-700);
+  /* ---- Vereinsband ---- */
+  .header__band {
+    height: var(--band-h, 34px);
+    background: var(--color-green-900);
+    color: rgba(255, 255, 255, 0.88);
+  }
+  .header__band-row {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    font-family: var(--font-head);
+    font-weight: 400;
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    white-space: nowrap;
   }
 
   .header__bar {
@@ -165,31 +190,41 @@ const nav = [
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    padding: 0.55rem 0.7rem;
+    padding: 0.55rem 0.8rem;
     min-height: var(--tap);
     font-family: var(--font-head);
     font-weight: 500;
-    font-size: 1.0625rem;
+    font-size: 0.95rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     color: var(--color-green-900);
     text-decoration: none;
     border-radius: var(--radius-sm);
     position: relative;
+    transition: color 0.15s ease;
   }
   .nav__link:hover {
     color: var(--color-green-700);
-    background: var(--color-green-050);
   }
 
-  /* aktiver Menüpunkt: Akzentgrün unterstrichen (claude.md Abschnitt 5) */
-  .nav__link.is-active::after {
+  /* Akzentgrüne Unterstreichung: aktiv = sichtbar, Hover = wächst von links
+     (claude.md Abschnitt 5) */
+  .nav__link::after {
     content: "";
     position: absolute;
-    left: 0.7rem;
-    right: 0.7rem;
-    bottom: 0.3rem;
+    left: 0.8rem;
+    right: 0.8rem;
+    bottom: 0.28rem;
     height: 3px;
     background: var(--color-green-500);
     border-radius: 2px;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.18s ease;
+  }
+  .nav__link:hover::after,
+  .nav__link.is-active::after {
+    transform: scaleX(1);
   }
 
   .nav__ext { font-size: 0.85em; }
@@ -208,7 +243,8 @@ const nav = [
     min-width: 240px;
     background: var(--color-white);
     border: 1px solid rgba(10, 80, 18, 0.12);
-    border-radius: var(--radius-md);
+    border-top: 3px solid var(--color-green-500);
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
     box-shadow: var(--shadow-card);
     opacity: 0;
     visibility: hidden;
@@ -234,6 +270,7 @@ const nav = [
   .nav__sublink:hover {
     background: var(--color-green-050);
     color: var(--color-green-700);
+    box-shadow: inset 3px 0 0 var(--color-green-500);
   }
 
   .nav__item--cta { margin-left: 0.5rem; }
@@ -304,9 +341,21 @@ const nav = [
   @media (max-width: 859px) {
     .header__burger { display: inline-flex; }
 
+    /* Mobil: kein Band (Platz), dafür schmaler Markenstreifen oben */
+    .header {
+      top: 0;
+    }
+    .header__band { display: none; }
+    .header::before {
+      content: "";
+      display: block;
+      height: 4px;
+      background: var(--color-green-700);
+    }
+
     .nav {
       position: fixed;
-      inset: calc(76px + 4px) 0 0 0; /* unter dem Header */
+      inset: calc(72px + 4px) 0 0 0; /* unter dem Header (4px Streifen + 72px Leiste) */
       background: var(--color-white);
       padding: var(--space-3);
       overflow-y: auto;
@@ -328,12 +377,12 @@ const nav = [
     .nav__link {
       display: flex;
       width: 100%;
-      font-size: 1.25rem;
+      font-size: 1.1rem;
       padding: 0.85rem 0.6rem;
       border-bottom: 1px solid rgba(10, 80, 18, 0.08);
       border-radius: 0;
     }
-    .nav__link.is-active::after { display: none; }
+    .nav__link::after { display: none; }
     .nav__link.is-active {
       color: var(--color-green-700);
       border-left: 4px solid var(--color-green-500);
@@ -373,6 +422,12 @@ const nav = [
 <script>
   const burger = document.querySelector<HTMLButtonElement>(".header__burger");
   const nav = document.querySelector<HTMLElement>("#hauptnavigation");
+
+  // Schatten erst, wenn die Seite gescrollt ist (oben bleibt der Header flach)
+  const header = document.querySelector<HTMLElement>(".header");
+  const onScroll = () => header?.classList.toggle("is-scrolled", window.scrollY > 8);
+  onScroll();
+  document.addEventListener("scroll", onScroll, { passive: true });
 
   function setOpen(open: boolean) {
     if (!burger || !nav) return;

@@ -96,8 +96,12 @@ const tabs = [
     background: var(--color-white);
     border-bottom: 1px solid rgba(10, 80, 18, 0.12);
     position: sticky;
-    top: 76px;
+    top: 76px; /* mobil: 4px Streifen + 72px Header-Leiste */
     z-index: 50;
+  }
+  @media (min-width: 860px) {
+    /* Desktop: Vereinsband scrollt weg, kleben bleibt nur die 72px-Leiste */
+    .sp-tabs { top: 72px; }
   }
   .sp-tabs__row {
     display: flex;
