@@ -1,6 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import Header from "../../components/Header.astro";
+import SparteHeader from "../../components/SparteHeader.astro";
 import Footer from "../../components/Footer.astro";
 
 // Inhalte übernommen von der bisherigen Vereinsseite /foerderverein/.
@@ -58,6 +59,18 @@ const team = [
       </div>
     </div>
   </section>
+
+  <SparteHeader
+    name="Fußball"
+    claim="Die größte Sparte des FC Lübbecke – von der 1. Mannschaft bis zur Jugend."
+    basePath="/fussball"
+    tag="Größte Sparte"
+    withSpielplan
+    withTrainingszeiten={false}
+    withFoerderverein
+    showHero={false}
+    active="foerderverein"
+  />
 
   <main id="inhalt">
     <!-- Mitgliederversammlung (Dokumente, ganz oben) -->

@@ -19,6 +19,10 @@ interface Props {
   withSpielplan?: boolean;
   /** Trainingszeiten-Tab anzeigen (Default: an; bei Fußball aus). */
   withTrainingszeiten?: boolean;
+  /** Fußball hat zusätzlich den Tab "Jugendförderverein". */
+  withFoerderverein?: boolean;
+  /** Hero-Band anzeigen (Default: an; aus, wenn die Seite einen eigenen Hero hat). */
+  showHero?: boolean;
 }
 const {
   name,
@@ -28,6 +32,8 @@ const {
   tag = "Sparte",
   withSpielplan = false,
   withTrainingszeiten = true,
+  withFoerderverein = false,
+  showHero = true,
 } = Astro.props as Props;
 
 const tabs = [
@@ -38,17 +44,22 @@ const tabs = [
   ...(withSpielplan
     ? [{ id: "spielplan", label: "Spielplan", href: `${basePath}/spielplan` }]
     : []),
+  ...(withFoerderverein
+    ? [{ id: "foerderverein", label: "Jugendförderverein", href: `${basePath}/foerderverein` }]
+    : []),
   { id: "kontakt", label: "Kontakt", href: `${basePath}/kontakt` },
 ];
 ---
 
-<section class="sp-hero" aria-labelledby="sp-title">
-  <div class="container">
-    <span class:list={["tag", { "tag--strong": withSpielplan }]}>{tag}</span>
-    <h1 id="sp-title">{name}</h1>
-    <p class="sp-hero__claim">{claim}</p>
-  </div>
-</section>
+{showHero && (
+  <section class="sp-hero" aria-labelledby="sp-title">
+    <div class="container">
+      <span class:list={["tag", { "tag--strong": withSpielplan }]}>{tag}</span>
+      <h1 id="sp-title">{name}</h1>
+      <p class="sp-hero__claim">{claim}</p>
+    </div>
+  </section>
+)}
 
 <nav class="sp-tabs" aria-label={`${name}-Unterseiten`}>
   <div class="container sp-tabs__row">
