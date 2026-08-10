@@ -9,21 +9,21 @@
  * Karte, dezenter Grün-Schleier auf dem Foto, gestaffeltes Einblenden beim
  * Scrollen. Ohne JS / bei "reduce" sind alle Inhalte sofort sichtbar.
  */
+import SparteIcon from "./SparteIcon.astro";
+
 const LAUFSPORT_URL = "https://luebbecker-bergloewen.de/";
 
 /**
- * Sparten-Icons aus „Flaticon UIcons" (Stil Bold Rounded), als Icon-Font per
- * CDN eingebunden (siehe Layout.astro). Klassen-Schema: `fi fi-br-<name>`.
- * Werden über `color`/`font-size` gesteuert → übernehmen das Vereinsgrün und
- * die Hover-Animation. Dekorativ → aria-hidden (der Kartentitel benennt die Sparte).
- * Lizenz: Free-Tier mit Attribution (Hinweis im Footer).
+ * Sparten-Icons als Inline-SVG (SparteIcon.astro). Werden über
+ * `color`/`font-size` gesteuert → übernehmen das Vereinsgrün und die
+ * Hover-Animation. Dekorativ → aria-hidden (der Kartentitel benennt die Sparte).
  */
 const kleineSparten = [
   {
     label: "Sparte",
     title: "Badminton",
     text: "Schnell, dynamisch und für jedes Alter. Trainiere mit uns in der Halle – ganz unverbindlich zum Schnuppern.",
-    icon: "fi-br-shuttlecock",
+    icon: "badminton",
     href: "/badminton/mannschaften",
     cta: "Zum Badminton",
   },
@@ -31,7 +31,7 @@ const kleineSparten = [
     label: "Sparte",
     title: "Darts",
     text: "Präzision trifft Gemeinschaft. Ob Anfänger oder Routinier – wirf mit und werde Teil der Runde.",
-    icon: "fi-br-bullseye-arrow",
+    icon: "darts",
     href: "/darts/mannschaften",
     cta: "Zu Darts",
   },
@@ -39,7 +39,7 @@ const kleineSparten = [
     label: "Extern",
     title: "Laufsport",
     text: "Die Lübbecker Berglöwen – unsere Laufgruppe für alle, die gern an der frischen Luft unterwegs sind.",
-    icon: "fi-br-running",
+    icon: "laufsport",
     href: LAUFSPORT_URL,
     cta: "Zur Website",
     external: true,
@@ -63,11 +63,12 @@ const kleineSparten = [
       <article class="card card--feature">
         <div class="card--feature__media">
           <img
-            src="/sparte-fussball.webp"
+            src="/sparte-fussball-1200.webp"
             alt="Abgenutzter Fußball auf dem taubedeckten Rasen des Vereinsplatzes"
-            width="1600"
-            height="1200"
+            width="1200"
+            height="900"
             loading="lazy"
+            decoding="async"
           />
           <span class="card--feature__overlay" aria-hidden="true"></span>
         </div>
@@ -89,7 +90,7 @@ const kleineSparten = [
       {kleineSparten.map((s, i) => (
         <article class="card">
           <div class="card__icon">
-            <i class:list={["fi", s.icon]} aria-hidden="true"></i>
+            <span class="card__icon-svg" aria-hidden="true"><SparteIcon name={s.icon} /></span>
           </div>
           <div class="card__body">
             <span class:list={["tag", { "tag--ext": s.external }]}>{s.label}</span>
@@ -181,7 +182,7 @@ const kleineSparten = [
     box-shadow: var(--shadow-soft);
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .card__icon i {
+  .card__icon-svg {
     position: relative;
     z-index: 1;
     display: block;
@@ -192,7 +193,7 @@ const kleineSparten = [
   .card:hover .card__icon::before {
     transform: translate(-50%, -50%) scale(1.06);
   }
-  .card:hover .card__icon i {
+  .card:hover .card__icon-svg {
     transform: scale(1.1) rotate(-3deg);
     color: var(--color-green-900);
   }
@@ -339,6 +340,6 @@ const kleineSparten = [
   @media (prefers-reduced-motion: reduce) {
     .card:hover { transform: none; }
     .card:hover .card__icon::before { transform: translate(-50%, -50%); }
-    .card:hover .card__icon i { transform: none; }
+    .card:hover .card__icon-svg { transform: none; }
   }
 </style>

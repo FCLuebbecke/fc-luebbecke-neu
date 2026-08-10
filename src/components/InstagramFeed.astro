@@ -49,6 +49,7 @@ function bildUrl(p: (typeof posts)[number]): string {
                   width={p.sizes?.medium?.width ?? 640}
                   height={p.sizes?.medium?.height ?? 640}
                   loading="lazy"
+                  decoding="async"
                 />
                 {p.mediaType === "VIDEO" && <span class="ig__badge" aria-hidden="true">▶</span>}
                 {p.mediaType === "CAROUSEL_ALBUM" && <span class="ig__badge" aria-hidden="true">▦</span>}

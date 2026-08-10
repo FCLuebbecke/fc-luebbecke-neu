@@ -1,6 +1,15 @@
 ---
 import "../styles/global.css";
 
+// Schriften selbst gehostet (@fontsource): keine Google-Server, kein
+// render-blockierendes externes CSS, DSGVO-sauber. Nur genutzte Gewichte.
+import "@fontsource/oswald/500.css";
+import "@fontsource/oswald/600.css";
+import "@fontsource/oswald/700.css";
+import "@fontsource/source-sans-3/400.css";
+import "@fontsource/source-sans-3/400-italic.css";
+import "@fontsource/source-sans-3/600.css";
+
 interface Props {
   title?: string;
   description?: string;
@@ -20,21 +29,6 @@ const {
     <meta name="description" content={description} />
     <title>{title}</title>
 
-    <!-- Google Fonts: Oswald (Überschriften) + Source Sans 3 (Fließtext) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-
-    <!-- Flaticon UIcons (Bold Rounded) – Sparten-Icons. Version gepinnt für Stabilität.
-         Lizenzhinweis/Attribution steht im Footer (Free-Tier-Pflicht). -->
-    <link rel="preconnect" href="https://cdn-uicons.flaticon.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://cdn-uicons.flaticon.com/2.6.0/uicons-bold-rounded/css/uicons-bold-rounded.css"
-    />
   </head>
   <body>
     <slot />

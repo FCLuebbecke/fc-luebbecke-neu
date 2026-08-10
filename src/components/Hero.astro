@@ -14,31 +14,52 @@ interface Props {
   imageAlt?: string;
 }
 
+import SparteIcon from "./SparteIcon.astro";
+
 const {
   image = "/hero.jpg",
   imageAlt = "Luftaufnahme des Vereinsgeländes des FC Lübbecke im Abendlicht",
 } = Astro.props;
 
 /* Die vier Sportangebote als Signatur im Hero – „ein Verein, vier Sparten".
-   Icons wie im Sparten-Block (Flaticon UIcons, siehe Layout.astro). */
+   Icons wie im Sparten-Block (Inline-SVG, siehe SparteIcon.astro). */
 const sparten = [
-  { label: "Fußball", icon: "fi-br-football" },
-  { label: "Badminton", icon: "fi-br-shuttlecock" },
-  { label: "Darts", icon: "fi-br-bullseye-arrow" },
-  { label: "Laufsport", icon: "fi-br-running" },
-];
+  { label: "Fußball", icon: "fussball" },
+  { label: "Badminton", icon: "badminton" },
+  { label: "Darts", icon: "darts" },
+  { label: "Laufsport", icon: "laufsport" },
+] as const;
 ---
 
 <section class="hero" aria-labelledby="hero-title">
-  <!-- Foto füllt die volle Fläche -->
-  <img
-    class="hero__bg"
-    src={image}
-    alt={imageAlt}
-    width="2000"
-    height="1200"
-    fetchpriority="high"
-  />
+  <!-- Foto füllt die volle Fläche. Standardbild: responsive WebP-Varianten,
+       damit Handys nicht das 1920er-Bild laden; eigenes Bild via Prop = 1:1. -->
+  {image === "/hero.jpg" ? (
+    <picture>
+      <source
+        type="image/webp"
+        srcset="/hero-768.webp 768w, /hero-1280.webp 1280w, /hero-1920.webp 1920w"
+        sizes="100vw"
+      />
+      <img
+        class="hero__bg"
+        src="/hero-1920.jpg"
+        alt={imageAlt}
+        width="1920"
+        height="1152"
+        fetchpriority="high"
+      />
+    </picture>
+  ) : (
+    <img
+      class="hero__bg"
+      src={image}
+      alt={imageAlt}
+      width="2000"
+      height="1200"
+      fetchpriority="high"
+    />
+  )}
   <span class="hero__veil" aria-hidden="true"></span>
 
   <div class="container hero__inner">
@@ -66,7 +87,7 @@ const sparten = [
       <ul class="hero__sparten" aria-label="Unsere vier Sportangebote">
         {sparten.map((s) => (
           <li class="hero__sparte">
-            <i class:list={["fi", s.icon]} aria-hidden="true"></i>
+            <span class="hero__sparte-icon" aria-hidden="true"><SparteIcon name={s.icon} /></span>
             <span>{s.label}</span>
           </li>
         ))}
@@ -217,12 +238,12 @@ const sparten = [
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.92);
   }
-  .hero__sparte i {
+  .hero__sparte-icon {
     display: inline-grid;
     place-items: center;
     width: 2rem;
     height: 2rem;
-    font-size: 1rem;
+    font-size: 1.05rem;
     line-height: 1;
     color: var(--color-white);
     background: rgba(255, 255, 255, 0.12);
@@ -288,6 +309,15 @@ const sparten = [
   @keyframes hero-rise {
     from { opacity: 0; transform: translateY(28px); }
     to   { opacity: 1; transform: none; }
+  }
+
+  /* Schwache/kleine Geräte: Dauer-Zoom (Ken Burns) kostet dort spürbar
+     GPU/Akku – Foto steht, Einblenden bleibt. */
+  @media (max-width: 767px) {
+    .hero__bg {
+      animation: none;
+      will-change: auto;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

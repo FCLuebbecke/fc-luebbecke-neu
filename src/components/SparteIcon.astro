@@ -1,0 +1,52 @@
+---
+/**
+ * Sparten-Icons als Inline-SVG (eigene Zeichnungen im Stil kräftiger,
+ * runder Linien). Ersetzt die frühere Flaticon-Icon-Font vom CDN:
+ * kein externes CSS/Font-Download mehr, keine Attribution nötig.
+ *
+ * Größe folgt der font-size des Elterncontainers (width/height = 1em),
+ * Farbe via currentColor – verhält sich wie das alte <i class="fi …">.
+ */
+interface Props {
+  name: "fussball" | "badminton" | "darts" | "laufsport";
+}
+const { name } = Astro.props;
+---
+
+{name === "fussball" && (
+  <svg class="sp-icon" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="9.2" />
+    <path d="M12 7.6 8.2 10.4l1.5 4.5h4.6l1.5-4.5Z" />
+    <path d="M12 7.6V2.8M8.2 10.4l-4.6-1.5M9.7 14.9l-2.8 3.8M14.3 14.9l2.8 3.8M15.8 10.4l4.6-1.5" />
+  </svg>
+)}
+
+{name === "badminton" && (
+  <svg class="sp-icon" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="6.4" cy="17.6" r="2.3" />
+    <path d="M8.2 15.8 17.4 4.1" />
+    <path d="M9.4 16.9 20 7.3" />
+    <path d="M17.4 4.1c2 .7 3 1.9 3.3 3.2" />
+    <path d="M8.8 16.4 18.9 5.6" />
+  </svg>
+)}
+
+{name === "darts" && (
+  <svg class="sp-icon" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M20.6 8.6A9.2 9.2 0 1 1 15.4 3.4" />
+    <path d="M16.6 11a5 5 0 1 1-3.6-3.6" />
+    <path d="M12 12l7-7M19 5l.4-2.9L22 4.6 19 5Z" />
+  </svg>
+)}
+
+{name === "laufsport" && (
+  <svg class="sp-icon" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="15.5" cy="4.5" r="1.9" />
+    <path d="M6.5 20.5 10 16l1-4.5 3.5 2.5 2 5" />
+    <path d="M11 11.5 13 7.5l3.5 1 2.5 2.5M13 7.5 9 8 6.5 10.5" />
+  </svg>
+)}
+
+<style>
+  .sp-icon { display: block; }
+</style>
