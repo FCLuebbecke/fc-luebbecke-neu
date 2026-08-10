@@ -6,6 +6,8 @@ import type { SparteData } from "../data/sparten";
 interface Props { data: SparteData; }
 const { data } = Astro.props as Props;
 const telHref = data.ansprechTel ? `tel:${data.ansprechTel.replace(/[^+\d]/g, "")}` : null;
+// mailto mit Punycode-Domain (sichere Zustellung auch in älteren Mailclients)
+const mailHref = `mailto:${data.ansprechMail.replace("fclübbecke.de", "xn--fclbbecke-s9a.de")}`;
 const initialen = data.ansprechName
   .split(" ")
   .map((w) => w[0])
@@ -22,7 +24,7 @@ const initialen = data.ansprechName
         <p class="sparte__cta-text">{data.schnupper}</p>
         <a
           class="btn btn--primary"
-          href={`mailto:${data.ansprechMail}?subject=Schnuppertraining%20${encodeURIComponent(data.name)}`}
+          href={`${mailHref}?subject=Schnuppertraining%20${encodeURIComponent(data.name)}`}
         >
           Schnuppertraining anfragen
         </a>
@@ -33,7 +35,7 @@ const initialen = data.ansprechName
         <p class="ansprech__rolle">{data.ansprechRolle}</p>
         <p class="ansprech__name">{data.ansprechName}</p>
         <p class="ansprech__kontakt">
-          <a href={`mailto:${data.ansprechMail}`}>
+          <a href={mailHref}>
             <svg class="ansprech__ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 7l9 6 9-6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
             {data.ansprechMail}
           </a>

@@ -83,7 +83,7 @@ export const badminton: SparteData = {
   ortAdresse: "Kollegienwall 1, 32312 Lübbecke",
   ansprechName: "Anna Beispiel",
   ansprechRolle: "Spartenleitung Badminton",
-  ansprechMail: "badminton@fc-luebbecke.de",
+  ansprechMail: "kontakt@fclübbecke.de",
   ansprechTel: "05741 / 123 456 7",
   schnupper:
     "Schau einfach zu einem Training vorbei – Schläger zum Ausleihen sind da. Die ersten Male sind kostenlos und unverbindlich. Melde dich kurz vorher, dann freuen wir uns auf dich.",
@@ -119,7 +119,7 @@ export const darts: SparteData = {
   ortAdresse: "Obernfelder Allee 42, 32312 Lübbecke",
   ansprechName: "Tom Beispiel",
   ansprechRolle: "Spartenleitung Darts",
-  ansprechMail: "darts@fc-luebbecke.de",
+  ansprechMail: "kontakt@fclübbecke.de",
   ansprechTel: "05741 / 123 456 7",
   schnupper:
     "Komm einfach zum offenen Training vorbei – Pfeile zum Ausprobieren sind vorhanden. Kein Anmelden, kein Druck: reinschauen, mitwerfen, Spaß haben.",

@@ -3,18 +3,19 @@ import Layout from "../../layouts/Layout.astro";
 import Header from "../../components/Header.astro";
 import SparteHeader from "../../components/SparteHeader.astro";
 import Footer from "../../components/Footer.astro";
-// Belegt: Mails fussball@/jugend@fc-luebbecke.de, Anschrift Obernfelder Allee 42.
+import { KONTAKT_MAIL, KONTAKT_MAILTO } from "../../data/kontakt";
+// Belegt: Vereins-Mail kontakt@fclübbecke.de, Anschrift Obernfelder Allee 42.
 
 const kontakte = [
   {
     titel: "Fußballabteilung",
     text: "Für alle Fragen rund um die Herren- und Senioren-Teams.",
-    mail: "fussball@fc-luebbecke.de",
+    mail: KONTAKT_MAIL,
   },
   {
     titel: "Jugendabteilung",
     text: "Für den Nachwuchs von den Bambinis bis zur A-Jugend.",
-    mail: "jugend@fc-luebbecke.de",
+    mail: KONTAKT_MAIL,
   },
 ];
 ---
@@ -42,7 +43,7 @@ const kontakte = [
             Probetraining auf unsere Anlage an der Obernfelder Allee. Schreib uns
             kurz, dann sagen wir dir, wann das passende Team trainiert.
           </p>
-          <a class="btn btn--primary" href="mailto:fussball@fc-luebbecke.de?subject=Probetraining%20Fu%C3%9Fball">
+          <a class="btn btn--primary" href={`${KONTAKT_MAILTO}?subject=Probetraining%20Fu%C3%9Fball`}>
             Probetraining anfragen
           </a>
         </div>
@@ -53,7 +54,7 @@ const kontakte = [
               <h3 class="kontakt__titel">{k.titel}</h3>
               <p class="kontakt__text">{k.text}</p>
               <p class="kontakt__mail">
-                <a href={`mailto:${k.mail}`}>
+                <a href={KONTAKT_MAILTO}>
                   <svg class="kontakt__ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 7l9 6 9-6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
                   {k.mail}
                 </a>

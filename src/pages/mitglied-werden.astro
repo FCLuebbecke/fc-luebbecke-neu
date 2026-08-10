@@ -8,8 +8,7 @@
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-
-const MITGLIED_MAIL = "info@fc-luebbecke.de";
+import { KONTAKT_MAIL, KONTAKT_MAILTO } from "../data/kontakt";
 
 const vorteile = [
   {
@@ -92,7 +91,7 @@ const service = [
         Komm vorbei, schnupper rein und werde Teil des Vereins.
       </p>
       <div class="mw-hero__actions">
-        <a class="btn btn--light" href={`mailto:${MITGLIED_MAIL}?subject=Mitglied%20werden`}>
+        <a class="btn btn--light" href={`${KONTAKT_MAILTO}?subject=Mitglied%20werden`}>
           Jetzt anfragen
         </a>
         <a class="btn btn--ghost-light" href="#service">Satzung & Anträge</a>
@@ -176,7 +175,7 @@ const service = [
               den Aufnahmeantrag gibt's auch direkt vor Ort.
             </p>
           </div>
-          <a class="btn btn--primary" href={`mailto:${MITGLIED_MAIL}?subject=Mitglied%20werden`}>
+          <a class="btn btn--primary" href={`${KONTAKT_MAILTO}?subject=Mitglied%20werden`}>
             Anfrage per E-Mail senden
           </a>
         </div>
@@ -192,8 +191,8 @@ const service = [
             Melde dich gern – wir helfen dir weiter und finden gemeinsam dein Team.
           </p>
         </div>
-        <a class="btn btn--primary" href={`mailto:${MITGLIED_MAIL}`}>
-          {MITGLIED_MAIL}
+        <a class="btn btn--primary" href={KONTAKT_MAILTO}>
+          {KONTAKT_MAIL}
         </a>
       </div>
     </section>
