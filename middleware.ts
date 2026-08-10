@@ -21,7 +21,10 @@ export const config = {
   matcher: ['/admin', '/admin/:path*'],
 };
 
-const REALM = 'FC Lübbecke – Inhaltspflege';
+// Nur ASCII verwenden: Sonderzeichen (ü, –) sind in HTTP-Headern ungültig,
+// die Edge-Runtime verwirft den WWW-Authenticate-Header dann komplett und
+// der Browser zeigt kein Login-Popup.
+const REALM = 'FC Luebbecke - Inhaltspflege';
 
 function unauthorized() {
   return new Response('Zugang nur für die Vereins-Inhaltspflege.', {
