@@ -58,14 +58,6 @@ const nav = [
 <header class="header">
   <a class="skip-link" href="#inhalt">Zum Inhalt springen</a>
 
-  <!-- Vereinsband: rutscht beim Scrollen weg (sticky top ist negativ) -->
-  <div class="header__band">
-    <div class="container header__band-row">
-      <span>FC Lübbecke e.V. · seit 1925</span>
-      <span class="header__band-motto">Ein Verein · vier Sparten</span>
-    </div>
-  </div>
-
   <div class="container header__bar">
     <!-- Logo -->
     <a class="header__logo" href="/" aria-label="FC Lübbecke – zur Startseite">
@@ -125,9 +117,8 @@ const nav = [
 
 <style>
   .header {
-    /* Band (34px) rutscht beim Scrollen weg, die weiße Leiste bleibt kleben */
     position: sticky;
-    top: calc(-1 * var(--band-h, 34px));
+    top: 0;
     z-index: 100;
     background: var(--color-white);
     border-bottom: 1px solid rgba(10, 80, 18, 0.12);
@@ -138,24 +129,12 @@ const nav = [
     box-shadow: 0 2px 14px rgba(10, 80, 18, 0.10);
   }
 
-  /* ---- Vereinsband ---- */
-  .header__band {
-    height: var(--band-h, 34px);
-    background: var(--color-green-900);
-    color: rgba(255, 255, 255, 0.88);
-  }
-  .header__band-row {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-2);
-    font-family: var(--font-head);
-    font-weight: 400;
-    font-size: 0.78rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    white-space: nowrap;
+  /* schmaler grüner Markenstreifen ganz oben */
+  .header::before {
+    content: "";
+    display: block;
+    height: 4px;
+    background: var(--color-green-700);
   }
 
   .header__bar {
@@ -340,18 +319,6 @@ const nav = [
      ========================================================= */
   @media (max-width: 859px) {
     .header__burger { display: inline-flex; }
-
-    /* Mobil: kein Band (Platz), dafür schmaler Markenstreifen oben */
-    .header {
-      top: 0;
-    }
-    .header__band { display: none; }
-    .header::before {
-      content: "";
-      display: block;
-      height: 4px;
-      background: var(--color-green-700);
-    }
 
     .nav {
       position: fixed;
