@@ -3,8 +3,9 @@
  * Footer (claude.md Abschnitt 6.7)
  * Spalte 1: Logo + kurzer Vereinssatz
  * Spalte 2: alle Sparten als Textlinks (inkl. Laufsport ↗)
- * Spalte 3: Kontakt & Anschrift
- * Spalte 4: Social Media
+ * Spalte 3: Service (Satzung & Anträge als PDF, Mitgliederantrag → DFBnet)
+ * Spalte 4: Kontakt & Anschrift
+ * Spalte 5: Social Media
  * Unterste Zeile: Impressum · Datenschutz (Pflicht)
  * ⚠️ Anschrift/Kontakt/Social-Links sind Platzhalter – später ersetzen.
  */
@@ -20,6 +21,15 @@ const sparten = [
 
 const verein = [
   { label: "Mitglied werden", href: "/mitglied-werden" },
+];
+
+// Service-Downloads (PDFs von der alten Vereinsseite übernommen, liegen in
+// public/service/). Der Mitgliederantrag ist ein Online-Formular beim DFBnet.
+const service = [
+  { label: "Vereinssatzung (PDF)", href: "/service/vereinssatzung.pdf", external: true },
+  { label: "Mitgliederantrag", href: "https://verein.dfbnet.org/mitgliedsantrag/fcluebbecke", external: true },
+  { label: "Passantrag (PDF)", href: "/service/passantrag.pdf", external: true },
+  { label: "Stellv. Abmeldung (PDF)", href: "/service/stellvertretende-abmeldung.pdf", external: true },
 ];
 
 const social = [
@@ -62,7 +72,23 @@ const social = [
       </ul>
     </nav>
 
-    <!-- Spalte 3: Kontakt & Anschrift -->
+    <!-- Spalte 3: Service (Satzung, Anträge) -->
+    <nav class="footer__col" aria-label="Service">
+      <h2 class="footer__title">Service</h2>
+      <ul class="footer__links">
+        {service.map((s) => (
+          <li>
+            <a href={s.href} target="_blank" rel="noopener noreferrer">
+              {s.label}
+              <span aria-hidden="true"> ↗</span>
+              <span class="sr-only"> (öffnet in neuem Fenster)</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <!-- Spalte 4: Kontakt & Anschrift -->
     <div class="footer__col">
       <h2 class="footer__title">Kontakt</h2>
       <address class="footer__address">
@@ -74,7 +100,7 @@ const social = [
       </address>
     </div>
 
-    <!-- Spalte 4: Social Media -->
+    <!-- Spalte 5: Social Media -->
     <nav class="footer__col" aria-label="Social Media">
       <h2 class="footer__title">Folge uns</h2>
       <ul class="footer__links">
@@ -246,10 +272,10 @@ const social = [
     }
   }
   @media (min-width: 960px) {
-    /* Desktop: alles in einer Reihe (Marke + drei Spalten) */
+    /* Desktop: alles in einer Reihe (Marke + vier Spalten) */
     .footer__grid {
-      grid-template-columns: 1.6fr 1fr 1.2fr 1fr;
-      gap: var(--space-5);
+      grid-template-columns: 1.5fr 0.9fr 1.1fr 1.1fr 0.9fr;
+      gap: var(--space-4);
     }
     .footer__brand {
       grid-column: auto;
