@@ -4,8 +4,7 @@
  * Spalte 1: Logo + kurzer Vereinssatz
  * Spalte 2: alle Sparten als Textlinks (inkl. Laufsport ↗)
  * Spalte 3: Service (Satzung & Anträge als PDF, Mitgliederantrag → DFBnet)
- * Spalte 4: Kontakt & Anschrift
- * Spalte 5: Social Media
+ * Spalte 4: Social Media
  * Unterste Zeile: Impressum · Datenschutz (Pflicht)
  * ⚠️ Anschrift/Kontakt/Social-Links sind Platzhalter – später ersetzen.
  */
@@ -88,19 +87,7 @@ const social = [
       </ul>
     </nav>
 
-    <!-- Spalte 4: Kontakt & Anschrift -->
-    <div class="footer__col">
-      <h2 class="footer__title">Kontakt</h2>
-      <address class="footer__address">
-        FC Lübbecke e.V.<br />
-        Musterstraße 1<br />
-        32312 Lübbecke<br />
-        <a href="tel:+4957411234567">05741 / 123 456 7</a><br />
-        <a href="mailto:info@fc-luebbecke.de">info@fc-luebbecke.de</a>
-      </address>
-    </div>
-
-    <!-- Spalte 5: Social Media -->
+    <!-- Spalte 4: Social Media -->
     <nav class="footer__col" aria-label="Social Media">
       <h2 class="footer__title">Folge uns</h2>
       <ul class="footer__links">
@@ -184,13 +171,11 @@ const social = [
     display: grid;
     gap: 0.6rem;
   }
-  .footer__links a,
-  .footer__address a {
+  .footer__links a {
     color: rgba(255, 255, 255, 0.85);
     text-decoration: none;
   }
-  .footer__links a:hover,
-  .footer__address a:hover {
+  .footer__links a:hover {
     color: #fff;
     text-decoration: underline;
   }
@@ -199,12 +184,6 @@ const social = [
     display: inline-flex;
     align-items: center;
     min-height: 32px;
-  }
-
-  .footer__address {
-    font-style: normal;
-    line-height: 1.8;
-    font-size: var(--fs-small);
   }
 
   /* Pflichtzeile */
@@ -272,10 +251,10 @@ const social = [
     }
   }
   @media (min-width: 960px) {
-    /* Desktop: alles in einer Reihe (Marke + vier Spalten) */
+    /* Desktop: alles in einer Reihe (Marke + drei Spalten) */
     .footer__grid {
-      grid-template-columns: 1.5fr 0.9fr 1.1fr 1.1fr 0.9fr;
-      gap: var(--space-4);
+      grid-template-columns: 1.6fr 1fr 1.2fr 1fr;
+      gap: var(--space-5);
     }
     .footer__brand {
       grid-column: auto;
