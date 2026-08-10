@@ -47,6 +47,10 @@ const jugendCms = docs.filter((d) => d.kategorie === "jugend");
 
 const herren = herrenCms.length > 0 ? herrenCms : herrenFallback;
 const jugend = jugendCms.length > 0 ? jugendCms : jugendFallback;
+
+// Die erste Mannschaft (per Reihenfolge sortiert) wird als breite Karte mit
+// Foto hervorgehoben; alle weiteren Herren-Teams kompakt nur mit Daten.
+const [ersteMannschaft, ...weitereHerren] = herren;
 ---
 
 <Layout title="Mannschaften – Fußball – FC Lübbecke" description="Die Fußball-Mannschaften des FC Lübbecke: Herren (1. Mannschaft Landesliga, 2. Mannschaft, Alte Herren) und Jugend von den Bambinis bis zur A-Jugend.">
@@ -65,44 +69,71 @@ const jugend = jugendCms.length > 0 ? jugendCms : jugendFallback;
   <main id="inhalt">
     <section class="container section">
       <h2 class="section-title">Herren & Senioren</h2>
-      <div class="teams">
-        {herren.map((t) => (
-          <article class="team">
-            {t.foto?.asset && (
-              <img
-                class="team__foto"
-                src={urlFor(t.foto).width(1000).height(563).fit("crop").auto("format").url()}
-                alt={t.foto.alt || `Mannschaftsfoto ${t.name}`}
-                loading="lazy"
-              />
+
+      {ersteMannschaft && (
+        <article class="team-star">
+          {ersteMannschaft.foto?.asset && (
+            <img
+              class="team-star__foto"
+              src={urlFor(ersteMannschaft.foto).width(1400).height(933).fit("crop").auto("format").url()}
+              alt={ersteMannschaft.foto.alt || `Mannschaftsfoto ${ersteMannschaft.name}`}
+              loading="lazy"
+            />
+          )}
+          <div class="team-star__body">
+            <div class="team__head">
+              <h3 class="team__name">{ersteMannschaft.name}</h3>
+              {ersteMannschaft.liga && <span class="tag tag--strong">{ersteMannschaft.liga}</span>}
+            </div>
+            {ersteMannschaft.text && <p class="team__text">{ersteMannschaft.text}</p>}
+            {(ersteMannschaft.trainer || ersteMannschaft.trainingszeiten) && (
+              <dl class="team__meta">
+                {ersteMannschaft.trainer && (
+                  <div class="team__meta-row">
+                    <dt>Trainer</dt>
+                    <dd>{ersteMannschaft.trainer}</dd>
+                  </div>
+                )}
+                {ersteMannschaft.trainingszeiten && (
+                  <div class="team__meta-row">
+                    <dt>Training</dt>
+                    <dd>{ersteMannschaft.trainingszeiten}</dd>
+                  </div>
+                )}
+              </dl>
             )}
-            <div class="team__body">
+            {ersteMannschaft.platzhalter && <p class="platzhalter">Daten folgen – Kader & Trainer werden ergänzt.</p>}
+          </div>
+        </article>
+      )}
+
+      {weitereHerren.length > 0 && (
+        <div class="teams-mini">
+          {weitereHerren.map((t) => (
+            <article class="mcard">
               <div class="team__head">
-                <h3 class="team__name">{t.name}</h3>
+                <h3 class="mcard__name">{t.name}</h3>
                 {t.liga && <span class="tag">{t.liga}</span>}
               </div>
-              {t.text && <p class="team__text">{t.text}</p>}
-              {(t.trainer || t.trainingszeiten) && (
-                <dl class="team__meta">
-                  {t.trainer && (
-                    <div class="team__meta-row">
-                      <dt>Trainer</dt>
-                      <dd>{t.trainer}</dd>
-                    </div>
-                  )}
-                  {t.trainingszeiten && (
-                    <div class="team__meta-row">
-                      <dt>Training</dt>
-                      <dd>{t.trainingszeiten}</dd>
-                    </div>
-                  )}
-                </dl>
-              )}
-              {t.platzhalter && <p class="platzhalter">Daten folgen – Kader & Trainer werden ergänzt.</p>}
-            </div>
-          </article>
-        ))}
-      </div>
+              <dl class="mcard__meta">
+                {t.trainer && (
+                  <div class="team__meta-row">
+                    <dt>Trainer</dt>
+                    <dd>{t.trainer}</dd>
+                  </div>
+                )}
+                {t.trainingszeiten && (
+                  <div class="team__meta-row">
+                    <dt>Training</dt>
+                    <dd>{t.trainingszeiten}</dd>
+                  </div>
+                )}
+              </dl>
+              {t.platzhalter && <p class="platzhalter">Daten folgen</p>}
+            </article>
+          ))}
+        </div>
+      )}
 
       <h2 class="section-title jugend-title">Jugend / Nachwuchs</h2>
       <p class="prose">
@@ -137,24 +168,19 @@ const jugend = jugendCms.length > 0 ? jugendCms : jugendFallback;
 <style>
   .section { padding-block: var(--space-6); }
 
-  .teams {
+  /* ---- 1. Mannschaft: breite, hervorgehobene Karte ---- */
+  .team-star {
+    position: relative;
     margin-top: var(--space-3);
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--space-3);
-  }
-  .team {
-    position: relative;
-    display: flex;
-    flex-direction: column;
     background: #fff;
     border: 1px solid rgba(10, 80, 18, 0.10);
     border-radius: var(--radius-md);
-    box-shadow: var(--shadow-soft);
+    box-shadow: var(--shadow-card);
     overflow: hidden;
-    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
   }
-  .team::before {
+  .team-star::before {
     content: "";
     position: absolute;
     inset: 0 0 auto 0;
@@ -162,20 +188,43 @@ const jugend = jugendCms.length > 0 ? jugendCms : jugendFallback;
     background: var(--color-green-500);
     z-index: 1;
   }
-  .team:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-card);
-    border-color: rgba(10, 80, 18, 0.18);
-  }
-  .team__foto {
+  .team-star__foto {
     display: block;
     width: 100%;
+    height: 100%;
     aspect-ratio: 16 / 9;
     object-fit: cover;
   }
-  .team__body {
+  .team-star__body {
     padding: var(--space-4);
-    padding-top: calc(var(--space-4) + 4px);
+    align-self: center;
+  }
+
+  /* ---- Weitere Herren-Teams: kompakte Daten-Karten ---- */
+  .teams-mini {
+    margin-top: var(--space-3);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+  .mcard {
+    background: #fff;
+    border: 1px solid rgba(10, 80, 18, 0.10);
+    border-left: 4px solid var(--color-green-500);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-soft);
+    padding: var(--space-3);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .mcard:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-card);
+  }
+  .mcard__name { color: var(--color-green-900); }
+  .mcard__meta {
+    margin-top: 0.6rem;
+    display: grid;
+    gap: 0.35rem;
   }
   .team__head {
     display: flex;
@@ -249,7 +298,9 @@ const jugend = jugendCms.length > 0 ? jugendCms : jugendFallback;
   .jcard__label { color: var(--color-muted); }
 
   @media (min-width: 760px) {
-    .teams { grid-template-columns: repeat(3, 1fr); }
+    .team-star { grid-template-columns: 3fr 2fr; }
+    .team-star__foto { aspect-ratio: auto; }
+    .teams-mini { grid-template-columns: repeat(3, 1fr); }
     .jugend { grid-template-columns: repeat(3, 1fr); }
   }
 </style>
