@@ -22,3 +22,7 @@ pnpm-debug.log*
 .DS_Store
 .vercel
 .env*
+
+# FCL-LIVE WordPress-Plugin (nur Referenz, nicht Teil der Seite)
+fcl-live-3.0.73/
+fcl-live-3.0.73.zip

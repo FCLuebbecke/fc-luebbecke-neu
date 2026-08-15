@@ -3,6 +3,7 @@ import { mannschaft } from './mannschaft';
 import { badmintonMannschaft, dartsMannschaft } from './sparteMannschaft';
 import { badmintonInfo, dartsInfo } from './sparteInfo';
 import { sponsor } from './sponsor';
+import { liveVideo, liveEinstellungen, liveKauf } from './live';
 
 /** Alle Dokument-/Objekttypen des Studios. Nach und nach erweitern. */
 export const schemaTypes: SchemaTypeDefinition[] = [
@@ -12,4 +13,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   badmintonInfo,
   dartsInfo,
   sponsor,
+  liveVideo,
+  liveEinstellungen,
+  liveKauf,
 ];
