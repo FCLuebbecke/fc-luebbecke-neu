@@ -381,6 +381,8 @@ interface FussballMatch {
   zeit: string;
   heim: string;
   gast: string;
+  heimLogo: string | null;
+  gastLogo: string | null;
   istHeimspiel: boolean;
   wettbewerb: string;
 }
@@ -437,11 +439,19 @@ function parseMatchesFromHtml(html: string): FussballMatch[] {
     const gast = decodeEntities(clubNames[1][1].trim());
     if (!heim || !gast) continue;
 
+    // Wappen: je Verein ein data-responsive-image im club-logo-Block
+    // (protokoll-relativ, z. B. //www.fussball.de/export.media/…/getLogo/…)
+    const logos = [...row.matchAll(/data-responsive-image="([^"]+)"/gi)].map((m) =>
+      m[1].startsWith('//') ? `https:${m[1]}` : m[1],
+    );
+
     matches.push({
       datum: currentDate,
       zeit: currentTime,
       heim,
       gast,
+      heimLogo: logos[0] ?? null,
+      gastLogo: logos[1] ?? null,
       istHeimspiel: heim.toLowerCase().includes('lübbecke'),
       wettbewerb: currentWettbewerb,
     });
