@@ -33,7 +33,6 @@
  */
 import { createHmac, randomUUID, randomBytes } from 'node:crypto';
 import { createClient } from '@sanity/client';
-import { getNextMatches, type FussballMatch } from '../../src/lib/fussball';
 
 // ---------------------------------------------------------------- Umgebung
 
@@ -373,6 +372,100 @@ function accessKeyForKauf(k: KaufDoc): string {
 }
 
 // ---------------------------------------------------------------- Spielplan
+// Kopie der Parse-Logik aus src/lib/fussball.ts: Vercel-Functions im
+// api/-Ordner werden einzeln kompiliert und können zur Laufzeit keine
+// Module aus src/ auflösen – die Function muss selbständig sein.
+
+interface FussballMatch {
+  datum: string;
+  zeit: string;
+  heim: string;
+  gast: string;
+  istHeimspiel: boolean;
+  wettbewerb: string;
+}
+
+const FUSSBALLDE_TEAM_ID = '011MIFCCRK000000VTVG0001VTR8C1K7';
+
+function decodeEntities(str: string): string {
+  return str
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&uuml;/g, 'ü')
+    .replace(/&ouml;/g, 'ö')
+    .replace(/&auml;/g, 'ä')
+    .replace(/&Uuml;/g, 'Ü')
+    .replace(/&Ouml;/g, 'Ö')
+    .replace(/&Auml;/g, 'Ä')
+    .replace(/&szlig;/g, 'ß')
+    .replace(/&nbsp;/g, ' ');
+}
+
+function extractText(html: string): string {
+  return decodeEntities(html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim());
+}
+
+function parseMatchesFromHtml(html: string): FussballMatch[] {
+  const matches: FussballMatch[] = [];
+  const rows = html.split(/<tr[\s>]/i).slice(1);
+
+  let currentDate = '';
+  let currentTime = '';
+  let currentWettbewerb = 'Landesliga';
+
+  for (const row of rows) {
+    if (row.includes('row-headline visible-small')) {
+      const tdMatch = row.match(/<td[^>]*>([\s\S]*?)<\/td>/i);
+      if (tdMatch) {
+        const text = extractText(tdMatch[1]);
+        currentDate = text.match(/(\d{2}\.\d{2}\.\d{4})/)?.[1] ?? '';
+        currentTime = text.match(/(\d{2}:\d{2})/)?.[1] ?? '';
+        currentWettbewerb = text.match(/\|\s*(.+)$/)?.[1]?.trim() ?? 'Landesliga';
+      }
+      continue;
+    }
+    if (row.includes('row-competition') || row.includes('thead') || row.includes('<th')) continue;
+    if (!row.includes('club-name') || !currentDate) continue;
+
+    const clubNames = [...row.matchAll(/<div class="club-name">\s*([\s\S]*?)\s*<\/div>/gi)];
+    if (clubNames.length < 2) continue;
+
+    const heim = decodeEntities(clubNames[0][1].trim());
+    const gast = decodeEntities(clubNames[1][1].trim());
+    if (!heim || !gast) continue;
+
+    matches.push({
+      datum: currentDate,
+      zeit: currentTime,
+      heim,
+      gast,
+      istHeimspiel: heim.toLowerCase().includes('lübbecke'),
+      wettbewerb: currentWettbewerb,
+    });
+    currentDate = '';
+    currentTime = '';
+    currentWettbewerb = 'Landesliga';
+  }
+  return matches;
+}
+
+async function getNextMatches(): Promise<FussballMatch[]> {
+  const url = `https://www.fussball.de/ajax.team.next.games/-/mode/PAGE/team-id/${FUSSBALLDE_TEAM_ID}`;
+  const res = await fetch(url, {
+    headers: {
+      'User-Agent':
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      'Accept-Language': 'de-DE,de;q=0.9,en;q=0.8',
+      Referer: 'https://www.fussball.de/',
+    },
+  });
+  if (!res.ok) return [];
+  return parseMatchesFromHtml(await res.text());
+}
 
 let spieleCache: { value: FussballMatch[]; until: number } | null = null;
 
