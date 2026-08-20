@@ -3,9 +3,12 @@
  * Instagram-Feed: zeigt die neuesten Fußball-Beiträge als volles Raster.
  *
  * Daten: Behold.so-API (src/lib/instagram.ts), geholt zur BUILD-ZEIT.
- * Die Einwilligung (DSGVO) wird NICHT mehr hier per 2-Klick geregelt,
- * sondern zentral über das Cookie-/Consent-Banner der Seite.
+ * Die Bilder werden per <Image> beim Build vom Instagram-CDN heruntergeladen
+ * und selbst gehostet (/_astro/). Nötig, weil die signierten Meta-URLs nach
+ * kurzer Zeit ablaufen (403) – und DSGVO-sauber: Besucher-Browser kontaktieren
+ * keine Meta-Server, daher kein 2-Klick/Consent-Banner nötig.
  */
+import { Image } from "astro:assets";
 import { getInstagramPosts } from "../lib/instagram";
 
 interface Props {
@@ -43,11 +46,13 @@ function bildUrl(p: (typeof posts)[number]): string {
           {posts.map((p) => (
             <li class="ig__item">
               <a href={p.permalink} target="_blank" rel="noopener noreferrer">
-                <img
+                <Image
                   src={bildUrl(p)}
                   alt={(p.prunedCaption ?? p.caption ?? "Instagram-Beitrag des FC Lübbecke").slice(0, 140)}
-                  width={p.sizes?.medium?.width ?? 640}
-                  height={p.sizes?.medium?.height ?? 640}
+                  width={640}
+                  height={640}
+                  fit="cover"
+                  format="webp"
                   loading="lazy"
                   decoding="async"
                 />
@@ -112,13 +117,15 @@ function bildUrl(p: (typeof posts)[number]): string {
     overflow: hidden;
     background: var(--color-green-050); /* Platzhalter, bis Bild geladen */
   }
-  .ig__item img {
+  /* :global – das <img> kommt aus der Astro-<Image>-Komponente und trägt
+     daher nicht das Scope-Attribut dieser Komponente. */
+  .ig__item :global(img) {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.4s ease;
   }
-  .ig__item a:hover img { transform: scale(1.05); }
+  .ig__item a:hover :global(img) { transform: scale(1.05); }
   .ig__badge {
     position: absolute;
     top: 0.5rem;
