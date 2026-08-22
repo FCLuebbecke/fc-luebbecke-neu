@@ -26,6 +26,10 @@ export const config = {
 // der Browser zeigt kein Login-Popup.
 const REALM = 'FC Luebbecke - Inhaltspflege';
 
+// ⚠️ TEMPORÄR: Passwortschutz für /admin ausgeschaltet, solange die Seite
+// noch nicht öffentlich ist. VOR DEM LIVEGANG wieder auf `false` setzen!
+const AUTH_DISABLED = true;
+
 function unauthorized() {
   return new Response('Zugang nur für die Vereins-Inhaltspflege.', {
     status: 401,
@@ -36,6 +40,8 @@ function unauthorized() {
 }
 
 export default function middleware(request: Request) {
+  if (AUTH_DISABLED) return next();
+
   const user = process.env.ADMIN_USER;
   const pass = process.env.ADMIN_PASSWORD;
 
