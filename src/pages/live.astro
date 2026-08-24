@@ -10,11 +10,19 @@
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+
+// ⚠️ TEMPORÄR: Mediathek & „Meine Käufe“ sind vorerst ausgeblendet – die Seite
+// zeigt nur Livestream + Spiele. Zum Wiedereinschalten auf `true` setzen.
+const MEDIATHEK_AKTIV = false;
 ---
 
 <Layout
-  title="FCL LIVE – Livestream & Mediathek – FC Lübbecke"
-  description="Spiele des FC Lübbecke live und in der Mediathek ansehen: komplette Spiele, Highlights und Tore – sicher bezahlen mit PayPal, sofort ansehen, den Verein unterstützen."
+  title={MEDIATHEK_AKTIV
+    ? "FCL LIVE – Livestream & Mediathek – FC Lübbecke"
+    : "FCL LIVE – Livestream – FC Lübbecke"}
+  description={MEDIATHEK_AKTIV
+    ? "Spiele des FC Lübbecke live und in der Mediathek ansehen: komplette Spiele, Highlights und Tore – sicher bezahlen mit PayPal, sofort ansehen, den Verein unterstützen."
+    : "Spiele des FC Lübbecke im Livestream ansehen – sicher bezahlen mit PayPal, sofort ansehen, den Verein unterstützen."}
 >
   <Header />
 
@@ -26,14 +34,14 @@ import Footer from "../components/Footer.astro";
           <p class="hero__kicker">FC Lübbecke</p>
           <h1 class="hero__title">FCL <span>LIVE</span></h1>
           <p class="hero__claim">
-            Unsere Spiele im Livestream und in der Mediathek – komplette
-            Spiele, Highlights und Tore. Jeder Kauf unterstützt direkt die
-            Vereinsarbeit des FC Lübbecke.
+            {MEDIATHEK_AKTIV
+              ? "Unsere Spiele im Livestream und in der Mediathek – komplette Spiele, Highlights und Tore. Jeder Kauf unterstützt direkt die Vereinsarbeit des FC Lübbecke."
+              : "Unsere Spiele im Livestream – live dabei sein, wo immer du bist. Jeder Kauf unterstützt direkt die Vereinsarbeit des FC Lübbecke."}
           </p>
           <nav class="hero__nav" aria-label="LIVE-Bereiche">
             <a href="#livestream">Nächste Spiele</a>
-            <a href="#mediathek">Mediathek</a>
-            <a href="#meine-kaeufe">Meine Käufe</a>
+            {MEDIATHEK_AKTIV && <a href="#mediathek">Mediathek</a>}
+            {MEDIATHEK_AKTIV && <a href="#meine-kaeufe">Meine Käufe</a>}
           </nav>
         </div>
 
@@ -116,56 +124,6 @@ import Footer from "../components/Footer.astro";
       <p id="fcl-spiele-leer" class="leer" hidden>
         Zurzeit sind keine kommenden Spiele eingetragen.
       </p>
-    </section>
-
-    <!-- ── Mediathek ── -->
-    <section id="mediathek" class="mediathek">
-      <div class="container section">
-        <h2 class="section-title">Mediathek</h2>
-        <p class="quelle">
-          Komplette Spiele, Highlights und Tore – einzeln kaufen und sofort
-          ansehen.
-        </p>
-        <div id="fcl-mediathek"></div>
-        <p id="fcl-mediathek-leer" class="leer" hidden>
-          Die Mediathek wird gerade gefüllt – schau bald wieder vorbei!
-        </p>
-      </div>
-    </section>
-
-    <!-- ── Meine Käufe ── -->
-    <section id="meine-kaeufe" class="container section">
-      <h2 class="section-title">Meine Käufe</h2>
-      <p class="quelle">
-        Deine Käufe werden in diesem Browser gespeichert – ganz ohne Konto.
-      </p>
-
-      <ul id="fcl-kaeufe" class="kaeufe"></ul>
-      <p id="fcl-kaeufe-leer" class="leer">
-        Noch keine Käufe auf diesem Gerät.
-      </p>
-
-      <details class="restore">
-        <summary>Früheren Kauf wiederherstellen</summary>
-        <p>
-          Gib deinen Wiederherstellungscode (<code>FCL-XXXXXXXX</code>) oder
-          deine PayPal-Order-ID ein, um ein gekauftes Video auf diesem Gerät
-          zu öffnen.
-        </p>
-        <form id="fcl-restore-form">
-          <label class="sr-only" for="fcl-restore-code">Wiederherstellungscode</label>
-          <input
-            id="fcl-restore-code"
-            name="code"
-            type="text"
-            placeholder="FCL-XXXXXXXX"
-            autocomplete="off"
-            required
-          />
-          <button class="btn btn--primary" type="submit">Wiederherstellen</button>
-        </form>
-        <p id="fcl-restore-status" role="status"></p>
-      </details>
 
       <p class="datenschutz">
         Hinweis: Beim Kauf werden PayPal (Zahlung) und Cloudflare (Video)
@@ -173,6 +131,60 @@ import Footer from "../components/Footer.astro";
         <a href="/datenschutz">Datenschutzerklärung</a>.
       </p>
     </section>
+
+    <!-- ── Mediathek (temporär ausgeblendet, siehe MEDIATHEK_AKTIV) ── -->
+    {MEDIATHEK_AKTIV && (
+      <section id="mediathek" class="mediathek">
+        <div class="container section">
+          <h2 class="section-title">Mediathek</h2>
+          <p class="quelle">
+            Komplette Spiele, Highlights und Tore – einzeln kaufen und sofort
+            ansehen.
+          </p>
+          <div id="fcl-mediathek"></div>
+          <p id="fcl-mediathek-leer" class="leer" hidden>
+            Die Mediathek wird gerade gefüllt – schau bald wieder vorbei!
+          </p>
+        </div>
+      </section>
+    )}
+
+    <!-- ── Meine Käufe (temporär ausgeblendet, siehe MEDIATHEK_AKTIV) ── -->
+    {MEDIATHEK_AKTIV && (
+      <section id="meine-kaeufe" class="container section">
+        <h2 class="section-title">Meine Käufe</h2>
+        <p class="quelle">
+          Deine Käufe werden in diesem Browser gespeichert – ganz ohne Konto.
+        </p>
+
+        <ul id="fcl-kaeufe" class="kaeufe"></ul>
+        <p id="fcl-kaeufe-leer" class="leer">
+          Noch keine Käufe auf diesem Gerät.
+        </p>
+
+        <details class="restore">
+          <summary>Früheren Kauf wiederherstellen</summary>
+          <p>
+            Gib deinen Wiederherstellungscode (<code>FCL-XXXXXXXX</code>) oder
+            deine PayPal-Order-ID ein, um ein gekauftes Video auf diesem Gerät
+            zu öffnen.
+          </p>
+          <form id="fcl-restore-form">
+            <label class="sr-only" for="fcl-restore-code">Wiederherstellungscode</label>
+            <input
+              id="fcl-restore-code"
+              name="code"
+              type="text"
+              placeholder="FCL-XXXXXXXX"
+              autocomplete="off"
+              required
+            />
+            <button class="btn btn--primary" type="submit">Wiederherstellen</button>
+          </form>
+          <p id="fcl-restore-status" role="status"></p>
+        </details>
+      </section>
+    )}
   </main>
 
   <Footer />
@@ -288,8 +300,8 @@ import Footer from "../components/Footer.astro";
       data = await res.json();
     } catch {
       $("#fcl-offline")?.removeAttribute("hidden");
-      $("#fcl-kaeufe-leer")!.textContent =
-        "Käufe können gerade nicht geladen werden.";
+      const kaeufeLeer = $("#fcl-kaeufe-leer");
+      if (kaeufeLeer) kaeufeLeer.textContent = "Käufe können gerade nicht geladen werden.";
       return;
     }
 
