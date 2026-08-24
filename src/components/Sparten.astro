@@ -330,6 +330,14 @@ const kleineSparten = [
       flex: 1 1 56%;
       aspect-ratio: auto;
     }
+    /* Safari-Fix: ein img mit height:100% in einem gestreckten Flex-Item fällt
+       in WebKit auf seine natürliche Höhe zurück (4:3 des Fotos) und macht die
+       Bildspalte höher als den Text – die Karte „verrutscht“. Absolut
+       positioniert zählt die Bildhöhe nicht mehr für die Layoutberechnung. */
+    .card--feature__media img {
+      position: absolute;
+      inset: 0;
+    }
     .card--feature__body {
       flex: 1 1 44%;
       justify-content: center;
