@@ -40,7 +40,7 @@ export const mannschaft = defineType({
       title: 'Mannschaftsfoto',
       type: 'image',
       description:
-        'Wird oben auf der Karte angezeigt. Gedacht v. a. für die 1. & 2. Mannschaft.',
+        'Wird oben auf der Karte angezeigt – bei der 1. Mannschaft groß, bei allen weiteren Herren-Teams als Kartenbild. Hotspot setzen, damit beim 16:9-Zuschnitt keine Köpfe fehlen.',
       options: { hotspot: true },
       fields: [
         defineField({

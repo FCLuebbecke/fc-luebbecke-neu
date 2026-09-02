@@ -1,13 +1,13 @@
 ---
 nummer: 002
 titel: Mannschaftsfotos für 2. Mannschaft und Alte Herren
-status: geplant
+status: in-arbeit
 bereich: fussball
 prio: mittel
 angelegt: 2026-09-02
-gestartet:
+gestartet: 2026-09-02
 erledigt:
-branch:
+branch: spec/002-fotos-weitere-herren
 commit:
 verantwortlich:
 ---
