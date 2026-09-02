@@ -3,7 +3,8 @@ import Layout from "../../layouts/Layout.astro";
 import Header from "../../components/Header.astro";
 import SparteHeader from "../../components/SparteHeader.astro";
 import Footer from "../../components/Footer.astro";
-import { getMannschaften, urlFor } from "../../lib/sanity";
+import TrainerListe from "../../components/TrainerListe.astro";
+import { getMannschaften, urlFor, type TrainerEintrag } from "../../lib/sanity";
 
 // Gepflegte Fallback-Daten: greifen, solange in Sanity noch keine Mannschaften
 // angelegt sind (oder der Build offline läuft).
@@ -33,7 +34,13 @@ const jugendFallback = [
   { name: "A-Jugend", jahrgang: "17–18 Jahre", trainer: "N. N.", platzhalter: true },
   { name: "B-Jugend", jahrgang: "15–16 Jahre", trainer: "N. N.", platzhalter: true },
   { name: "C-Jugend", jahrgang: "13–14 Jahre", trainer: "N. N.", platzhalter: true },
-  { name: "D-Jugend (D1)", jahrgang: "11–12 Jahre", trainer: "Peter Dahm (Cheftrainer)", trainingszeiten: "Montag, 17:00–18:30 Uhr", platzhalter: false },
+  {
+    name: "D-Jugend (D1)",
+    jahrgang: "11–12 Jahre",
+    trainerteam: [{ name: "Peter Dahm", rolle: "Cheftrainer" }],
+    trainingszeiten: "Montag, 17:00–18:30 Uhr",
+    platzhalter: false,
+  },
   { name: "E-Jugend", jahrgang: "9–10 Jahre", trainer: "N. N.", platzhalter: true },
   { name: "F-Jugend", jahrgang: "7–8 Jahre", trainer: "N. N.", platzhalter: true },
   { name: "Bambini / G-Jugend", jahrgang: "bis 6 Jahre", trainer: "N. N.", platzhalter: true },
@@ -58,6 +65,14 @@ type MitTraining = { training?: { zeit: string; ort?: string }[]; trainingszeite
 function trainingZeilen(m: MitTraining): string[] {
   if (m.training?.length) return m.training.map((t) => (t.ort ? `${t.zeit} · ${t.ort}` : t.zeit));
   return m.trainingszeiten ? [m.trainingszeiten] : [];
+}
+
+// Trainerliste: neue Struktur (Personen mit Rolle & Kontakt) bevorzugt,
+// sonst der alte Ein-Zeilen-Name – Bestandsdokumente bleiben gültig.
+type MitTrainer = { trainerteam?: TrainerEintrag[]; trainer?: string };
+function trainerListe(m: MitTrainer): TrainerEintrag[] {
+  if (m.trainerteam?.length) return m.trainerteam;
+  return m.trainer ? [{ name: m.trainer }] : [];
 }
 ---
 
@@ -94,12 +109,12 @@ function trainingZeilen(m: MitTraining): string[] {
               {ersteMannschaft.liga && <span class="tag tag--strong">{ersteMannschaft.liga}</span>}
             </div>
             {ersteMannschaft.text && <p class="team__text">{ersteMannschaft.text}</p>}
-            {(ersteMannschaft.trainer || trainingZeilen(ersteMannschaft).length > 0) && (
+            {(trainerListe(ersteMannschaft).length > 0 || trainingZeilen(ersteMannschaft).length > 0) && (
               <dl class="team__meta">
-                {ersteMannschaft.trainer && (
+                {trainerListe(ersteMannschaft).length > 0 && (
                   <div class="team__meta-row">
                     <dt>Trainer</dt>
-                    <dd>{ersteMannschaft.trainer}</dd>
+                    <dd><TrainerListe trainer={trainerListe(ersteMannschaft)} /></dd>
                   </div>
                 )}
                 {trainingZeilen(ersteMannschaft).length > 0 && (
@@ -128,10 +143,10 @@ function trainingZeilen(m: MitTraining): string[] {
                 {t.liga && <span class="tag">{t.liga}</span>}
               </div>
               <dl class="mcard__meta">
-                {t.trainer && (
+                {trainerListe(t).length > 0 && (
                   <div class="team__meta-row">
                     <dt>Trainer</dt>
-                    <dd>{t.trainer}</dd>
+                    <dd><TrainerListe trainer={trainerListe(t)} /></dd>
                   </div>
                 )}
                 {trainingZeilen(t).length > 0 && (
@@ -162,7 +177,12 @@ function trainingZeilen(m: MitTraining): string[] {
           <article class="jcard">
             <h3 class="jcard__name">{j.name}</h3>
             <p class="jcard__jahrgang">{j.jahrgang}</p>
-            <p class="jcard__trainer"><span class="jcard__label">Trainer:</span> {j.trainer}</p>
+            {trainerListe(j).length > 0 && (
+              <div class="jcard__trainer">
+                <span class="jcard__label">Trainer:</span>
+                <TrainerListe trainer={trainerListe(j)} />
+              </div>
+            )}
             {trainingZeilen(j).map((z) => (
               <p class="jcard__training"><span class="jcard__label">Training:</span> {z}</p>
             ))}
@@ -310,7 +330,12 @@ function trainingZeilen(m: MitTraining): string[] {
     font-size: var(--fs-small);
     margin-top: 0.2rem;
   }
-  .jcard__trainer { margin-top: 0.6rem; }
+  .jcard__trainer {
+    margin-top: 0.6rem;
+    display: flex;
+    gap: 0.35rem;
+    align-items: baseline;
+  }
   .jcard__training { margin-top: 0.3rem; }
   .jcard__label { color: var(--color-muted); }
 

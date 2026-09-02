@@ -1,14 +1,14 @@
 ---
 nummer: 001
 titel: Telefonnummer und E-Mail-Adresse für Trainer
-status: geplant
+status: erledigt
 bereich: fussball
 prio: mittel
 angelegt: 2026-09-02
-gestartet:
-erledigt:
-branch:
-commit:
+gestartet: 2026-09-02
+erledigt: 2026-09-02
+branch: spec/001-trainer-kontaktdaten
+commit: cdbc30b
 verantwortlich:
 ---
 
@@ -38,16 +38,16 @@ Betroffene Dateien:
 
 ## Anforderungen
 
-- [ ] Im Admin-Studio können je Trainer **Telefonnummer** und **E-Mail-Adresse**
+- [x] Im Admin-Studio können je Trainer **Telefonnummer** und **E-Mail-Adresse**
       erfasst werden. Beide Felder sind optional.
-- [ ] Eine Mannschaft kann **mehrere Trainer** haben (Cheftrainer, Co-Trainer,
+- [x] Eine Mannschaft kann **mehrere Trainer** haben (Cheftrainer, Co-Trainer,
       Betreuer), jeder mit eigener Rolle und eigenen Kontaktdaten.
-- [ ] Auf der Mannschaftsseite werden Telefon als `tel:`-Link und E-Mail als
+- [x] Auf der Mannschaftsseite werden Telefon als `tel:`-Link und E-Mail als
       `mailto:`-Link ausgegeben. Fehlt ein Wert, wird die Zeile weggelassen.
-- [ ] Bestehende Einträge im alten Textfeld `trainer` funktionieren weiter,
+- [x] Bestehende Einträge im alten Textfeld `trainer` funktionieren weiter,
       bis sie im Studio umgezogen sind (Fallback wie bei `trainingszeiten`).
-- [ ] Mobil sind Telefon- und Mail-Links mindestens 44 px hoch antippbar.
-- [ ] Ausgabe der Kontaktdaten nur, wenn im Studio ein Haken
+- [x] Mobil sind Telefon- und Mail-Links mindestens 44 px hoch antippbar.
+- [x] Ausgabe der Kontaktdaten nur, wenn im Studio ein Haken
       „Kontaktdaten veröffentlichen“ gesetzt ist (Einwilligung des Trainers).
 
 ## Nicht Teil dieser Spec
@@ -88,3 +88,16 @@ Betroffene Dateien:
 - Einwilligung der Trainer zur Veröffentlichung schriftlich einholen, bevor
   Daten live gehen.
 - Offen: Soll auch WhatsApp verlinkt werden? Vorerst nein, nur `tel:`.
+
+## Umsetzungsnotizen (2026-09-02)
+
+- Umgesetzt wie geplant, zusätzlich Komponente `src/components/TrainerListe.astro`
+  für die drei Kartenvarianten.
+- Fallback-Daten der D-Jugend enthalten bewusst **keine** Kontaktdaten; echte
+  Telefon/E-Mail werden im Admin-Studio gepflegt, nicht im Code.
+- Datenschutzerklärung um Abschnitt 6 „Veröffentlichte Kontaktdaten von
+  Trainern und Ansprechpartnern“ ergänzt, Folgeabschnitte neu nummeriert.
+- Geprüft per `npm run build` und Rendertest der Komponente mit Beispieldaten
+  (Links `tel:`/`mailto:` korrekt, ohne Haken nur Name). Mobil-Test auf echtem
+  Gerät steht noch aus.
+- Vor Livegang: Einwilligung der Trainer einholen, dann im Studio Haken setzen.

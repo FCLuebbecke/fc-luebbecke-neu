@@ -4,7 +4,7 @@ import { defineArrayMember, defineField, defineType } from 'sanity';
  * Fußball-Mannschaft (Herren & Senioren ODER Jugend / Nachwuchs).
  * Bildet die zwei Karten-Typen der Seite /fussball/mannschaften ab:
  *  - Herren:  Liga + Beschreibungstext
- *  - Jugend:  Jahrgang + Trainer
+ *  - Jugend:  Jahrgang + Trainerteam
  * Über `kategorie` werden die jeweils passenden Felder ein-/ausgeblendet.
  */
 export const mannschaft = defineType({
@@ -78,10 +78,73 @@ export const mannschaft = defineType({
 
     // ── Gemeinsam (alle Mannschaften) ──
     defineField({
+      name: 'trainerteam',
+      title: 'Trainerteam',
+      description:
+        'Ein Eintrag pro Person (Cheftrainer, Co-Trainer, Betreuer …). Telefon und E-Mail sind optional und erscheinen nur, wenn „Kontaktdaten veröffentlichen“ gesetzt ist.',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'trainerperson',
+          title: 'Trainer',
+          fields: [
+            defineField({
+              name: 'name',
+              title: 'Name',
+              type: 'string',
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: 'rolle',
+              title: 'Rolle',
+              type: 'string',
+              description: 'z. B. „Cheftrainer“, „Co-Trainer“, „Betreuerin“',
+            }),
+            defineField({
+              name: 'telefon',
+              title: 'Telefonnummer',
+              type: 'string',
+              description: 'z. B. „0171 1234567“ – wird als anklickbarer Anruf-Link ausgegeben.',
+            }),
+            defineField({
+              name: 'email',
+              title: 'E-Mail-Adresse',
+              type: 'string',
+              validation: (rule) => rule.email(),
+            }),
+            defineField({
+              name: 'veroeffentlichen',
+              title: 'Kontaktdaten veröffentlichen',
+              type: 'boolean',
+              description:
+                'Nur setzen, wenn die Person der Veröffentlichung von Telefon/E-Mail auf der Webseite zugestimmt hat. Ohne Haken erscheint nur der Name.',
+              initialValue: false,
+            }),
+          ],
+          preview: {
+            select: { name: 'name', rolle: 'rolle', veroeffentlichen: 'veroeffentlichen' },
+            prepare({ name, rolle, veroeffentlichen }) {
+              return {
+                title: name,
+                subtitle: [rolle, veroeffentlichen ? 'Kontakt sichtbar' : null]
+                  .filter(Boolean)
+                  .join(' · '),
+              };
+            },
+          },
+        }),
+      ],
+    }),
+    defineField({
       name: 'trainer',
-      title: 'Trainer',
+      title: 'Trainer (alt, eine Zeile)',
       type: 'string',
-      initialValue: 'N. N.',
+      description: 'Veraltet – bitte oben das neue Feld „Trainerteam“ verwenden.',
+      deprecated: {
+        reason: 'Durch die Liste „Trainerteam“ (mit Rolle und Kontaktdaten) ersetzt.',
+      },
+      hidden: ({ parent }) => !parent?.trainer,
     }),
     defineField({
       name: 'training',
