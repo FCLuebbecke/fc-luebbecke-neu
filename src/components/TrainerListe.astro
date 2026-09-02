@@ -50,7 +50,7 @@ const telHref = (t: string) => `tel:${t.replace(/[^+\d]/g, "")}`;
     gap: 0.35rem;
   }
   .trainer__eintrag { display: block; }
-  .trainer__rolle { color: var(--color-muted); }
+  .trainer__rolle { color: var(--trainer-muted-color, var(--color-muted)); }
   .trainer__kontakt {
     display: flex;
     flex-wrap: wrap;
@@ -62,7 +62,8 @@ const telHref = (t: string) => `tel:${t.replace(/[^+\d]/g, "")}`;
     align-items: center;
     gap: 0.35rem;
     min-height: 2.75rem;
-    color: var(--color-green-700);
+    /* Farbe von außen überschreibbar, z. B. weiß auf dunklen Karten */
+    color: var(--trainer-link-color, var(--color-green-700));
     text-decoration: none;
     word-break: break-all;
   }

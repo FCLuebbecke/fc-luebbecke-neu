@@ -1,14 +1,14 @@
 ---
 nummer: 003
 titel: Herren-Karten als grüne Kacheln mit Foto im Hintergrund (Hover/Overlay)
-status: geplant
+status: erledigt
 bereich: fussball
 prio: mittel
 angelegt: 2026-09-02
-gestartet:
-erledigt:
-branch:
-commit:
+gestartet: 2026-09-02
+erledigt: 2026-09-02
+branch: spec/003-herren-karten-fotokacheln
+commit: 3b1d33d
 verantwortlich:
 ---
 
@@ -44,35 +44,35 @@ Design-Tokens in `src/styles/global.css`: `--color-green-900` (Tiefgrün),
 
 ## Anforderungen
 
-- [ ] Alle Karten der Reihe haben **dieselbe Höhe und denselben Aufbau**,
+- [x] Alle Karten der Reihe haben **dieselbe Höhe und denselben Aufbau**,
       unabhängig davon, ob ein Foto vorhanden ist. Reihenfolge bleibt die
       aus Sanity (`reihenfolge`).
-- [ ] Grundfläche aller Karten: Tiefgrün, Schrift weiß. Karte ohne Foto ist
+- [x] Grundfläche aller Karten: Tiefgrün, Schrift weiß. Karte ohne Foto ist
       schlicht grün.
-- [ ] Karte mit Foto: Foto als Hintergrund (`object-fit: cover`), darüber ein
+- [x] Karte mit Foto: Foto als Hintergrund (`object-fit: cover`), darüber ein
       grüner Schleier, sodass das Foto nur schemenhaft durchscheint und der
       Text sicher lesbar bleibt (Kontrast weiß auf Schleier ≥ 4,5:1).
-- [ ] **Hover / Fokus (Desktop):** Schleier wird deutlich heller, das Foto
+- [x] **Hover / Fokus (Desktop):** Schleier wird deutlich heller, das Foto
       tritt hervor. Der untere Bereich mit dem Text behält einen dunklen
       Verlauf, sodass die Schrift auch im Hover lesbar bleibt.
-- [ ] **Tipp / Klick:** Ein kleines Kamera-Symbol (nur bei Karten mit Foto)
+- [x] **Tipp / Klick:** Ein kleines Kamera-Symbol (nur bei Karten mit Foto)
       öffnet das Foto in voller Größe in einem Overlay. Schließen per
       Schaltfläche, Klick auf den Hintergrund oder Escape. Umsetzung mit dem
       nativen `<dialog>`-Element und wenigen Zeilen Inline-Script, keine
       externe Bibliothek.
-- [ ] Karte ohne Foto: kein Kamera-Symbol, kein Hover-Effekt (nichts
+- [x] Karte ohne Foto: kein Kamera-Symbol, kein Hover-Effekt (nichts
       versprechen, was es nicht gibt); ggf. dezente Textur oder Verlauf,
       damit die Fläche nicht tot wirkt.
-- [ ] Tags (Liga) und Trainer-Kontaktlinks werden auf dunklem Grund weiß
+- [x] Tags (Liga) und Trainer-Kontaktlinks werden auf dunklem Grund weiß
       dargestellt (Links unterstrichen), Icons in Weiß.
-- [ ] Mobil: Karten stapeln, Kamera-Symbol mind. 44 px Tippfläche, Overlay
+- [x] Mobil: Karten stapeln, Kamera-Symbol mind. 44 px Tippfläche, Overlay
       füllt den Bildschirm, Bild bleibt im Seitenverhältnis.
-- [ ] Alt-Text aus Sanity für Hintergrund- und Overlay-Bild; Hintergrundbild
+- [x] Alt-Text aus Sanity für Hintergrund- und Overlay-Bild; Hintergrundbild
       als `<img>` (nicht CSS-`background`), damit lazy loading, `srcset`
       und Alt-Text funktionieren.
-- [ ] Ohne JavaScript: Kamera-Symbol ist ein Link direkt auf die Bilddatei
+- [x] Ohne JavaScript: Kamera-Symbol ist ein Link direkt auf die Bilddatei
       (öffnet in neuem Tab), der Hover funktioniert rein per CSS.
-- [ ] `prefers-reduced-motion`: Übergänge des Schleiers entfallen.
+- [x] `prefers-reduced-motion`: Übergänge des Schleiers entfallen.
 
 ## Nicht Teil dieser Spec
 
@@ -134,3 +134,17 @@ Design-Tokens in `src/styles/global.css`: `--color-green-900` (Tiefgrün),
   schwerer. Falls es zu viel Grün wird: Alternative ist Hellgrün
   `--color-green-050` als Grundfläche mit dunkler Schrift, Foto dann nur
   im Hover. Bei der Umsetzung anhand Screenshots entscheiden.
+
+## Umsetzungsnotizen (2026-09-02)
+
+- Umgesetzt wie geplant. Tiefgrün als Grundfläche beibehalten (nicht die
+  Hellgrün-Alternative): Auf den Screenshots wirkt die Reihe ruhig und klar
+  unter der hellen Bühne der Ersten.
+- Mindesthöhe der Kacheln 11 rem mobil, 15 rem ab 760 px, damit über dem
+  Text etwas Foto sichtbar bleibt und leere Kacheln mobil nicht zu hoch sind.
+- Text sitzt in allen Kacheln unten (`margin-top: auto`), bei viel Text
+  füllt er die Kachel – das Foto scheint dann vor allem im Hover durch.
+- Geprüft per Build und DevTools-Protokoll (Headless Chrome): Ruhe, Hover,
+  Overlay auf/zu per Escape, mobil 390 px ohne horizontales Scrollen.
+  Kontrast: weiße Schrift auf Schleier ≥ 0,80 Alpha Tiefgrün, im Hover
+  unten ≥ 0,70. Test auf echtem Gerät steht noch aus.
