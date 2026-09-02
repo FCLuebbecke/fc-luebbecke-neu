@@ -110,3 +110,7 @@ Betroffene Dateien:
 - Geprüft per `npm run build` und Screenshots (Headless Chrome, 1280 px) mit
   echten Sanity-Daten: 1. Mannschaft groß, 3. Mannschaft mit Kartenbild,
   2. und 4. ohne Foto daneben. Mobil-Test auf echtem Gerät steht noch aus.
+
+> **Ersetzt durch Spec 003** (2026-09-02): Das Kartenbild oben in der Karte
+> führte mit nur einem Foto in der Reihe zu ungleich hohen Karten. Spec 003
+> legt das Foto stattdessen als Hintergrund in gleich große grüne Kacheln.

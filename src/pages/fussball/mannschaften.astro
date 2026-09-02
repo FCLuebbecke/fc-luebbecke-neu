@@ -136,18 +136,24 @@ function trainerListe(m: MitTrainer): TrainerEintrag[] {
 
       {weitereHerren.length > 0 && (
         <div class="teams-mini">
-          {weitereHerren.map((t) => (
-            <article class="mcard">
-              {t.foto?.asset && (
+          {weitereHerren.map((t, i) => {
+            const hatFoto = !!t.foto?.asset;
+            const alt = hatFoto ? t.foto!.alt || `Mannschaftsfoto ${t.name}` : "";
+            const fotoGross = hatFoto ? urlFor(t.foto!).width(1600).fit("max").auto("format").url() : "";
+            const dialogId = `foto-dialog-${i}`;
+            return (
+            <article class:list={["mcard", { "mcard--foto": hatFoto }]}>
+              {hatFoto && (
                 <img
-                  class="mcard__foto"
-                  src={urlFor(t.foto).width(800).height(450).fit("crop").auto("format").url()}
-                  alt={t.foto.alt || `Mannschaftsfoto ${t.name}`}
+                  class="mcard__bg"
+                  src={urlFor(t.foto!).width(800).height(600).fit("crop").auto("format").url()}
+                  alt={alt}
                   loading="lazy"
                   width="800"
-                  height="450"
+                  height="600"
                 />
               )}
+              <div class="mcard__schleier" aria-hidden="true"></div>
               <div class="mcard__body">
               <div class="team__head">
                 <h3 class="mcard__name">{t.name}</h3>
@@ -173,8 +179,28 @@ function trainerListe(m: MitTrainer): TrainerEintrag[] {
               </dl>
               {t.platzhalter && <p class="platzhalter">Daten folgen</p>}
               </div>
+              {hatFoto && (
+                <>
+                  {/* Ohne JS: Link auf die Bilddatei. Mit JS: öffnet den Dialog unten. */}
+                  <a
+                    class="mcard__foto-btn"
+                    href={fotoGross}
+                    target="_blank"
+                    rel="noopener"
+                    data-foto-dialog={dialogId}
+                    aria-label={`Mannschaftsfoto ${t.name} groß ansehen`}
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                  </a>
+                  <dialog class="foto-dialog" id={dialogId} aria-label={`Mannschaftsfoto ${t.name}`}>
+                    <img class="foto-dialog__img" src={fotoGross} alt={alt} loading="lazy" />
+                    <button class="foto-dialog__close" type="button" aria-label="Schließen">×</button>
+                  </dialog>
+                </>
+              )}
             </article>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -213,6 +239,24 @@ function trainerListe(m: MitTrainer): TrainerEintrag[] {
   <Footer />
 </Layout>
 
+<script>
+  // Mannschaftsfoto im Overlay öffnen (progressive enhancement: ohne JS ist der
+  // Kamera-Knopf ein Link auf die Bilddatei).
+  document.querySelectorAll<HTMLAnchorElement>("[data-foto-dialog]").forEach((btn) => {
+    const dialog = document.getElementById(btn.dataset.fotoDialog ?? "") as HTMLDialogElement | null;
+    if (!dialog || typeof dialog.showModal !== "function") return;
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      dialog.showModal();
+    });
+    // Klick auf den abgedunkelten Hintergrund (= das Dialog-Element selbst) schließt
+    dialog.addEventListener("click", (e) => {
+      if (e.target === dialog) dialog.close();
+    });
+    dialog.querySelector(".foto-dialog__close")?.addEventListener("click", () => dialog.close());
+  });
+</script>
+
 <style>
   .section { padding-block: var(--space-6); }
 
@@ -247,51 +291,153 @@ function trainerListe(m: MitTrainer): TrainerEintrag[] {
     padding: var(--space-4);
   }
 
-  /* ---- Weitere Herren-Teams: kompakte Daten-Karten ---- */
+  /* ---- Weitere Herren-Teams: grüne Kacheln, Foto ggf. im Hintergrund ---- */
   .teams-mini {
     margin-top: var(--space-3);
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--space-3);
-    /* Karten ohne Foto nicht auf Fotokarten-Höhe strecken (sonst große Leerflächen) */
-    align-items: start;
   }
   .mcard {
     position: relative;
     display: flex;
     flex-direction: column;
-    background: #fff;
-    border: 1px solid rgba(10, 80, 18, 0.10);
+    min-height: 11rem;
+    color: #fff;
+    background: linear-gradient(160deg, var(--color-green-900) 0%, #0c5c15 100%);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-soft);
     overflow: hidden;
     transition: transform 0.18s ease, box-shadow 0.18s ease;
+    /* Trainer-Kontaktlinks (TrainerListe) auf dunklem Grund weiß */
+    --trainer-link-color: #fff;
+    --trainer-muted-color: rgba(255, 255, 255, 0.75);
   }
-  /* grüner Akzent oben (wie bei der Ersten), läuft so nicht am Foto vorbei */
+  .mcard:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-card);
+  }
+  /* grüner Akzent oben wie bei der Ersten */
   .mcard::before {
     content: "";
     position: absolute;
     inset: 0 0 auto 0;
     height: 4px;
     background: var(--color-green-500);
-    z-index: 1;
+    z-index: 3;
   }
-  /* Kartenbild: Kartenbreite, 16:9 – deutlich kleiner als die Bühne der Ersten */
-  .mcard__foto {
-    display: block;
+  /* Foto als Hintergrund (echtes <img> für Alt-Text & Lazy-Loading) */
+  .mcard__bg {
+    position: absolute;
+    inset: 0;
     width: 100%;
-    aspect-ratio: 16 / 9;
+    height: 100%;
     object-fit: cover;
   }
+  /* Grün-Schleier: unten dicht (Text), oben etwas offener */
+  .mcard__schleier {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(10, 80, 18, 0.94) 0%,
+      rgba(10, 80, 18, 0.80) 55%,
+      rgba(10, 80, 18, 0.62) 100%
+    );
+    transition: background 0.25s ease;
+  }
+  /* Hover / Fokus: Foto tritt hervor, Textbereich unten bleibt dunkel */
+  .mcard--foto:hover .mcard__schleier,
+  .mcard--foto:focus-within .mcard__schleier {
+    background: linear-gradient(
+      to top,
+      rgba(10, 80, 18, 0.90) 0%,
+      rgba(10, 80, 18, 0.70) 40%,
+      rgba(10, 80, 18, 0.12) 100%
+    );
+  }
   .mcard__body {
+    position: relative;
+    z-index: 1;
     padding: var(--space-3);
-    flex: 1;
+    /* Text am unteren Rand sammeln, damit oben Platz fürs Foto bleibt */
+    margin-top: auto;
   }
-  .mcard:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-card);
+  .mcard__name { color: #fff; }
+  .mcard .tag {
+    display: inline-block;
+    padding: 0.1rem 0.55rem;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 999px;
+    font-size: var(--fs-small);
+    color: #fff;
   }
-  .mcard__name { color: var(--color-green-900); }
+  .mcard .team__meta-row dt { color: rgba(255, 255, 255, 0.75); }
+  .mcard .team__meta-row dd { color: #fff; }
+  .mcard .platzhalter { color: rgba(255, 255, 255, 0.7); }
+
+  /* Kamera-Knopf: Tippfläche 44 px, nur bei Karten mit Foto */
+  .mcard__foto-btn {
+    position: absolute;
+    right: 0.6rem;
+    top: 0.9rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    transition: background 0.18s ease;
+  }
+  .mcard__foto-btn:hover,
+  .mcard__foto-btn:focus-visible {
+    background: rgba(255, 255, 255, 0.32);
+    outline-offset: 2px;
+  }
+  .mcard__foto-btn svg { width: 1.35rem; height: 1.35rem; }
+
+  /* Overlay: natives <dialog>, Bild bleibt im Seitenverhältnis */
+  .foto-dialog {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    max-width: 95vw;
+    max-height: 95vh;
+  }
+  .foto-dialog::backdrop { background: rgba(0, 0, 0, 0.82); }
+  .foto-dialog__img {
+    display: block;
+    max-width: 95vw;
+    max-height: 90vh;
+    width: auto;
+    height: auto;
+    border-radius: var(--radius-sm);
+  }
+  .foto-dialog__close {
+    position: absolute;
+    top: 0.4rem;
+    right: 0.4rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    border: 0;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .foto-dialog__close:hover,
+  .foto-dialog__close:focus-visible { background: rgba(0, 0, 0, 0.8); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mcard, .mcard__schleier, .mcard__foto-btn { transition: none; }
+  }
+
   .mcard__meta {
     margin-top: 0.6rem;
     display: grid;
@@ -377,6 +523,7 @@ function trainerListe(m: MitTrainer): TrainerEintrag[] {
 
   @media (min-width: 760px) {
     .teams-mini { grid-template-columns: repeat(3, 1fr); }
+    .mcard { min-height: 15rem; }
     .jugend { grid-template-columns: repeat(3, 1fr); }
   }
 </style>

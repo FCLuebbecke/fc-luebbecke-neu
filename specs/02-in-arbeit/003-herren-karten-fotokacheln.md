@@ -1,13 +1,13 @@
 ---
 nummer: 003
 titel: Herren-Karten als grüne Kacheln mit Foto im Hintergrund (Hover/Overlay)
-status: geplant
+status: in-arbeit
 bereich: fussball
 prio: mittel
 angelegt: 2026-09-02
-gestartet:
+gestartet: 2026-09-02
 erledigt:
-branch:
+branch: spec/003-herren-karten-fotokacheln
 commit:
 verantwortlich:
 ---
