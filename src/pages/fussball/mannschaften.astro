@@ -138,6 +138,17 @@ function trainerListe(m: MitTrainer): TrainerEintrag[] {
         <div class="teams-mini">
           {weitereHerren.map((t) => (
             <article class="mcard">
+              {t.foto?.asset && (
+                <img
+                  class="mcard__foto"
+                  src={urlFor(t.foto).width(800).height(450).fit("crop").auto("format").url()}
+                  alt={t.foto.alt || `Mannschaftsfoto ${t.name}`}
+                  loading="lazy"
+                  width="800"
+                  height="450"
+                />
+              )}
+              <div class="mcard__body">
               <div class="team__head">
                 <h3 class="mcard__name">{t.name}</h3>
                 {t.liga && <span class="tag">{t.liga}</span>}
@@ -161,6 +172,7 @@ function trainerListe(m: MitTrainer): TrainerEintrag[] {
                 )}
               </dl>
               {t.platzhalter && <p class="platzhalter">Daten folgen</p>}
+              </div>
             </article>
           ))}
         </div>
@@ -241,15 +253,39 @@ function trainerListe(m: MitTrainer): TrainerEintrag[] {
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--space-3);
+    /* Karten ohne Foto nicht auf Fotokarten-Höhe strecken (sonst große Leerflächen) */
+    align-items: start;
   }
   .mcard {
+    position: relative;
+    display: flex;
+    flex-direction: column;
     background: #fff;
     border: 1px solid rgba(10, 80, 18, 0.10);
-    border-left: 4px solid var(--color-green-500);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-soft);
-    padding: var(--space-3);
+    overflow: hidden;
     transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  /* grüner Akzent oben (wie bei der Ersten), läuft so nicht am Foto vorbei */
+  .mcard::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 4px;
+    background: var(--color-green-500);
+    z-index: 1;
+  }
+  /* Kartenbild: Kartenbreite, 16:9 – deutlich kleiner als die Bühne der Ersten */
+  .mcard__foto {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+  .mcard__body {
+    padding: var(--space-3);
+    flex: 1;
   }
   .mcard:hover {
     transform: translateY(-3px);
