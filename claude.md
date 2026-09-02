@@ -188,4 +188,21 @@ Impressum + Datenschutz dauerhaft in den Footer. Im Zweifel rechtlichen Rat einh
 
 ---
 
+## 12. Arbeitsweise: Specs & Branches
+
+Änderungen werden über Specs in `specs/` geplant und nachgehalten
+(Details in `specs/README.md`). Verbindlich bei der Umsetzung einer Spec:
+
+1. **Immer zuerst einen Feature-Branch anlegen:** `spec/NNN-kurzer-titel`,
+   abgezweigt von `main`. Keine Spec-Umsetzung direkt auf `main`.
+2. Spec nach `specs/02-in-arbeit/` verschieben, Status und Branch im
+   Frontmatter eintragen.
+3. Alle Commits auf dem Feature-Branch.
+4. Nach Abschluss Spec nach `specs/03-erledigt/` verschieben und
+   Frontmatter vervollständigen.
+5. **Am Ende fragen, ob nach `main` gemergt werden darf.** Nie ohne
+   ausdrückliche Freigabe mergen. Nach dem Merge den Branch löschen.
+
+---
+
 *FC Lübbecke – ein Verein, vier Sparten, ein gemeinsamer Auftritt.*
