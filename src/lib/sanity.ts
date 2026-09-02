@@ -24,12 +24,24 @@ export function urlFor(source: SanityImage) {
   return imageBuilder.image(source as Parameters<typeof imageBuilder.image>[0]);
 }
 
+/** Eine Person im Trainerteam. Telefon/E-Mail nur mit `veroeffentlichen` anzeigen. */
+export interface TrainerEintrag {
+  name: string;
+  rolle?: string;
+  telefon?: string;
+  email?: string;
+  veroeffentlichen?: boolean;
+}
+
 export interface MannschaftDoc {
   name: string;
   kategorie: 'herren' | 'jugend';
   liga?: string;
   text?: string;
   jahrgang?: string;
+  /** Neue Struktur: mehrere Personen mit Rolle und optionalen Kontaktdaten. */
+  trainerteam?: TrainerEintrag[];
+  /** Alt (eine Zeile) – Fallback, solange Dokumente noch nicht umgezogen sind. */
   trainer?: string;
   /** Neue Struktur: mehrere Einheiten, je mit Ort. */
   training?: { zeit: string; ort?: string }[];
@@ -41,6 +53,7 @@ export interface MannschaftDoc {
 
 const MANNSCHAFTEN_QUERY = `*[_type == "mannschaft"] | order(reihenfolge asc, name asc){
   name, kategorie, liga, text, jahrgang, trainer, trainingszeiten, platzhalter,
+  trainerteam[]{ name, rolle, telefon, email, veroeffentlichen },
   training[]{ zeit, ort },
   foto
 }`;

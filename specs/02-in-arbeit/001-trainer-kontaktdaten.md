@@ -1,13 +1,13 @@
 ---
 nummer: 001
 titel: Telefonnummer und E-Mail-Adresse für Trainer
-status: geplant
+status: in-arbeit
 bereich: fussball
 prio: mittel
 angelegt: 2026-09-02
-gestartet:
+gestartet: 2026-09-02
 erledigt:
-branch:
+branch: spec/001-trainer-kontaktdaten
 commit:
 verantwortlich:
 ---

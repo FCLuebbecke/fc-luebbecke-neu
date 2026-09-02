@@ -1,0 +1,86 @@
+---
+/**
+ * Trainerteam einer Mannschaft: Name + Rolle, optional Telefon und E-Mail als
+ * anklickbare Links. Kontaktdaten erscheinen nur, wenn im Studio der Haken
+ * „Kontaktdaten veröffentlichen“ gesetzt ist (Einwilligung der Person).
+ */
+import type { TrainerEintrag } from "../lib/sanity";
+interface Props { trainer: TrainerEintrag[] }
+const { trainer } = Astro.props as Props;
+
+const telHref = (t: string) => `tel:${t.replace(/[^+\d]/g, "")}`;
+---
+
+<ul class="trainer">
+  {trainer.map((t) => {
+    const zeigeKontakt = !!t.veroeffentlichen && (!!t.telefon || !!t.email);
+    return (
+      <li class="trainer__eintrag">
+        <span class="trainer__name">
+          {t.name}
+          {t.rolle && <span class="trainer__rolle"> ({t.rolle})</span>}
+        </span>
+        {zeigeKontakt && (
+          <span class="trainer__kontakt">
+            {t.telefon && (
+              <a class="trainer__link" href={telHref(t.telefon)}>
+                <svg class="trainer__ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h4l2 5-3 2a12 12 0 0 0 5 5l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                <span class="sr-only">Telefon: </span>{t.telefon}
+              </a>
+            )}
+            {t.email && (
+              <a class="trainer__link" href={`mailto:${t.email}`}>
+                <svg class="trainer__ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 7l9 6 9-6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                <span class="sr-only">E-Mail: </span>{t.email}
+              </a>
+            )}
+          </span>
+        )}
+      </li>
+    );
+  })}
+</ul>
+
+<style>
+  .trainer {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.35rem;
+  }
+  .trainer__eintrag { display: block; }
+  .trainer__rolle { color: var(--color-muted); }
+  .trainer__kontakt {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1rem;
+  }
+  /* Tippfläche ≥ 44 px (Mobil-Regel), ohne die Zeile optisch aufzublähen */
+  .trainer__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: 2.75rem;
+    color: var(--color-green-700);
+    text-decoration: none;
+    word-break: break-all;
+  }
+  .trainer__link:hover,
+  .trainer__link:focus-visible {
+    text-decoration: underline;
+  }
+  .trainer__ico {
+    width: 1em;
+    height: 1em;
+    flex: none;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+</style>
