@@ -1,14 +1,14 @@
 ---
 nummer: 002
 titel: Mannschaftsfotos für 2. Mannschaft und Alte Herren
-status: in-arbeit
+status: erledigt
 bereich: fussball
 prio: mittel
 angelegt: 2026-09-02
 gestartet: 2026-09-02
-erledigt:
+erledigt: 2026-09-02
 branch: spec/002-fotos-weitere-herren
-commit:
+commit: ed3cfb6
 verantwortlich:
 ---
 
@@ -39,20 +39,20 @@ Betroffene Dateien:
 
 ## Anforderungen
 
-- [ ] Jede weitere Herren-Mannschaft zeigt ihr Foto, sofern in Sanity eines
+- [x] Jede weitere Herren-Mannschaft zeigt ihr Foto, sofern in Sanity eines
       gepflegt ist. Ohne Foto sieht die Karte aus wie heute.
-- [ ] Das Foto ist **deutlich kleiner** als das der Ersten, aber groß genug,
+- [x] Das Foto ist **deutlich kleiner** als das der Ersten, aber groß genug,
       um Gesichter zu erkennen: Fotobreite entspricht der Kartenbreite,
       Seitenverhältnis 16:9 oder 3:2, Ecken gerundet wie die Karte.
-- [ ] Die Hierarchie bleibt lesbar: Erste Mannschaft = breite Bühne über die
+- [x] Die Hierarchie bleibt lesbar: Erste Mannschaft = breite Bühne über die
       volle Breite, weitere Teams = Kartenreihe mit Foto oben. Kein Foto der
       weiteren Teams darf höher sein als etwa die halbe Höhe der Ersten.
-- [ ] Alle Fotos einer Reihe haben dieselbe Höhe, unabhängig vom Original
+- [x] Alle Fotos einer Reihe haben dieselbe Höhe, unabhängig vom Original
       (Zuschnitt über Sanity-Hotspot, `fit("crop")`).
-- [ ] Alt-Text aus Sanity, sonst Fallback „Mannschaftsfoto <Name>“.
-- [ ] Mobil (eine Spalte) stapeln sich die Karten wie bisher, das Foto sitzt
+- [x] Alt-Text aus Sanity, sonst Fallback „Mannschaftsfoto <Name>“.
+- [x] Mobil (eine Spalte) stapeln sich die Karten wie bisher, das Foto sitzt
       oben in der Karte.
-- [ ] Bilder werden lazy geladen und in passender Breite angefordert
+- [x] Bilder werden lazy geladen und in passender Breite angefordert
       (ca. 800 px, nicht 1600 wie bei der Ersten).
 
 ## Nicht Teil dieser Spec
@@ -98,3 +98,15 @@ Betroffene Dateien:
 - Offen: 16:9 (wie Erste) oder 3:2 (zeigt bei Gruppenfotos mehr Höhe)?
   Vorschlag: 16:9 für einheitliche Optik, Entscheidung bei der Umsetzung
   anhand echter Fotos.
+
+## Umsetzungsnotizen (2026-09-02)
+
+- Umgesetzt wie geplant, Seitenverhältnis **16:9** gewählt (einheitlich mit
+  der Ersten; die echten Fotos sind Querformat-Gruppenbilder, Köpfe bleiben
+  mit Hotspot im Bild).
+- Abweichung: Das Grid streckt Karten **nicht** mehr auf gleiche Höhe
+  (`align-items: start`). Mit Streckung wirkten Karten ohne Foto neben einer
+  Fotokarte wie große Leerflächen. Karten ohne Foto sehen exakt aus wie vorher.
+- Geprüft per `npm run build` und Screenshots (Headless Chrome, 1280 px) mit
+  echten Sanity-Daten: 1. Mannschaft groß, 3. Mannschaft mit Kartenbild,
+  2. und 4. ohne Foto daneben. Mobil-Test auf echtem Gerät steht noch aus.
