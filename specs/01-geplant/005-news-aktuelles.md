@@ -153,8 +153,8 @@ macht sie live (mit Spec 004 automatisch).
       bereitstellst.
 - [ ] Freigabe im Studio: Foto prüfen/ergänzen, Text ggf. anpassen,
       **Publish**. Mit Spec 004 ist der Beitrag nach 1–2 Minuten live.
-- [ ] Für den Fall ohne Token: Claude liefert den Beitrag als fertigen Text
-      im Chat, du kopierst ihn ins Studio.
+- [ ] Rückfallweg ohne Token: Claude liefert den Beitrag als fertigen Text
+      im Chat, du kopierst ihn ins Studio. (Token ist vorhanden, siehe M2.)
 
 ## Nicht Teil dieser Spec
 
@@ -175,31 +175,16 @@ In `src/components/InstagramFeed.astro` stehen Handle `@fcluebbecke` und
 Profil-URL mit TODO. Bitte bestätigen oder korrigieren (Antwort im Chat
 reicht: „Handle stimmt“ oder der richtige Handle).
 
-### M2 · Sanity-Schreibtoken für Claude (nur für „Claude legt Entwürfe an“)
+### M2 · Sanity-Schreibtoken für Claude — ✅ erledigt (2026-09-03)
 
-1. https://www.sanity.io/manage → Projekt `u7v527gk` → **API → Tokens →
-   Add API token**.
-2. Name `claude-redaktion`, Berechtigung **Editor** (kann Entwürfe anlegen,
-   aber nichts löschen, was es nicht selbst angelegt hat). Token kopieren.
-3. Lokal in `.env` eintragen (Datei ist per `.gitignore` ausgeschlossen):
+`SANITY_WRITE_TOKEN` ist lokal in `.env` gesetzt und funktioniert (Lese-Test
+gegen die Sanity-API erfolgreich). Claude kann damit Entwürfe anlegen.
+Kein weiterer Schritt nötig.
 
-   ```
-   SANITY_WRITE_TOKEN=<token>
-   ```
+### M3 · Reihenfolge: Spec 004 zuerst? — ✅ erledigt
 
-   ⚠️ Hinweis: Der Schlüsselname wird bereits von FCL LIVE genutzt. Ist dort
-   schon ein echter Token eingetragen, kann er mitbenutzt werden; steht dort
-   noch der Platzhalter, diesen ersetzen. Token nie in den Chat kopieren.
-
-**Rückmeldung an Claude:** „M2 erledigt“ oder „M2 übersprungen“ (dann gilt
-der Ablauf „Text im Chat, du kopierst ins Studio“).
-
-### M3 · Reihenfolge festlegen: Spec 004 zuerst?
-
-Ohne Spec 004 (Auto-Rebuild) erscheinen neue Beiträge live erst am nächsten
-Morgen (täglicher Rebuild) oder nach einem manuellen Deploy. Empfehlung:
-**Spec 004 vor oder parallel zu dieser Spec umsetzen.** Kurze Rückmeldung:
-„004 zuerst“ oder „005 zuerst“.
+Spec 004 (Auto-Rebuild) ist eingerichtet. Neue Beiträge sind nach Publish
+in 1–2 Minuten live.
 
 ### M4 · Abnahme (nach Umsetzung, 10 Minuten)
 
