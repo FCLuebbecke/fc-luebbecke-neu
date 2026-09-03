@@ -19,8 +19,8 @@ const sparten = [
 ];
 
 const verein = [
-  // Temporär ausgeblendet – wieder einkommentieren, sobald FCL LIVE startet:
-  // { label: "FCL LIVE – Livestream & Videos", href: "/live" },
+  // FCL LIVE läuft extern unter fcl-live.de (siehe Spec 006)
+  { label: "FCL LIVE – Livestream & Videos", href: "https://fcl-live.de/", external: true },
   { label: "Mitglied werden", href: "/mitglied-werden" },
 ];
 
@@ -68,7 +68,17 @@ const social = [
           </li>
         ))}
         {verein.map((v) => (
-          <li><a href={v.href}>{v.label}</a></li>
+          <li>
+            <a
+              href={v.href}
+              target={v.external ? "_blank" : undefined}
+              rel={v.external ? "noopener noreferrer" : undefined}
+            >
+              {v.label}
+              {v.external && <span aria-hidden="true"> ↗</span>}
+              {v.external && <span class="sr-only"> (öffnet in neuem Fenster)</span>}
+            </a>
+          </li>
         ))}
       </ul>
     </nav>

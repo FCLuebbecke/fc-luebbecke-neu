@@ -21,8 +21,8 @@ const nav = [
     sub: [
       { label: "Mannschaften", href: "/fussball/mannschaften" },
       { label: "Spielplan", href: "/fussball/spielplan" },
-      // Temporär ausgeblendet – wieder einkommentieren, sobald FCL LIVE startet:
-      // { label: "FCL LIVE – Livestream & Videos", href: "/live" },
+      // FCL LIVE läuft extern unter fcl-live.de (siehe Spec 006)
+      { label: "FCL LIVE – Livestream & Videos", href: "https://fcl-live.de/", external: true },
       { label: "Jugendförderverein", href: "/fussball/foerderverein" },
       { label: "Kontakt", href: "/fussball/kontakt" },
     ],
@@ -108,7 +108,20 @@ const nav = [
               <ul class="nav__sub">
                 {item.sub.map((s) => (
                   <li>
-                    <a class="nav__sublink" href={s.href}>{s.label}</a>
+                    <a
+                      class="nav__sublink"
+                      href={s.href}
+                      target={s.external ? "_blank" : undefined}
+                      rel={s.external ? "noopener noreferrer" : undefined}
+                    >
+                      {s.label}
+                      {s.external && (
+                        <svg class="nav__ext" viewBox="0 0 10 10" width="9" height="9" aria-hidden="true">
+                          <path d="M2 8 8 2M3.5 2H8v4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                      )}
+                      {s.external && <span class="sr-only"> (öffnet in neuem Fenster)</span>}
+                    </a>
                   </li>
                 ))}
               </ul>

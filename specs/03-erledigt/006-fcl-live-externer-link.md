@@ -1,14 +1,14 @@
 ---
 nummer: 006
 titel: FCL LIVE als externer Link (fcl-live.de) statt eigener Unterseite
-status: geplant
+status: erledigt
 bereich: fcl-live
 prio: mittel
 angelegt: 2026-09-03
-gestartet:
-erledigt:
-branch:
-commit:
+gestartet: 2026-09-03
+erledigt: 2026-09-03
+branch: spec/006-fcl-live-externer-link
+commit: eb72da8
 verantwortlich:
 ---
 
@@ -103,3 +103,22 @@ gebraucht.
   fcl-live.de dieselben Quellen nutzt.
 - Ersetzt die temporäre Ausblendung vom 2026-09-03 (Header/Footer
   auskommentiert, `_live.astro`, Redirect auf `/`).
+
+## Umsetzungsnotizen (2026-09-03)
+
+- Umgesetzt wie geplant. Das Untermenü im Header konnte externe Links
+  vorher nicht darstellen – Rendering in `Header.astro` um `target`/`rel`,
+  ↗-Icon und Screenreader-Hinweis ergänzt (Muster vom Hauptmenü).
+  Gleiches für die „Verein“-Liste im Footer.
+- `src/pages/_live.astro` und `api/live/` gelöscht (Ordner `api/` damit
+  komplett weg; wiederherstellbar über Git-Historie, Stand vor diesem Commit).
+- Datenschutzerklärung geprüft: enthielt **keine** Abschnitte zu
+  FCL LIVE/PayPal/Cloudflare – nichts anzupassen.
+- Sanity-Schemas (`src/sanity/schemaTypes/live.ts`) bewusst behalten,
+  bis geklärt ist, ob fcl-live.de dasselbe Dataset nutzt. Env-Vars
+  (PayPal, CF_*, `LIVE_ACCESS_SECRET`) ebenfalls noch nicht entfernt.
+- `https://fcl-live.de/` vorab geprüft: erreichbar (WordPress, Titel
+  „FCL-Live“).
+- Verifiziert per `npm run build` (15 Seiten, kein `/live` im Output,
+  Links mit `target="_blank" rel="noopener noreferrer"` im HTML).
+  Redirect-Test per `curl` steht nach dem Deploy aus.
