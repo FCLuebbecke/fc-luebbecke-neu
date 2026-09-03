@@ -4,7 +4,7 @@
     { "source": "/admin/:path*", "destination": "/admin/index.html" }
   ],
   "redirects": [
-    { "source": "/live", "destination": "/", "permanent": false }
+    { "source": "/live", "destination": "https://fcl-live.de/", "permanent": true }
   ],
   "headers": [
     {
