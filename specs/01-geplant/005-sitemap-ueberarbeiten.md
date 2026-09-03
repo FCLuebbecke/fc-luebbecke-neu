@@ -1,9 +1,9 @@
 ---
 nummer: 005
-titel: Sitemap überarbeiten und Domain-Duplikat auflösen
+titel: Sitemap & kanonische Domain korrigieren (www.fcluebbecke.de)
 status: geplant
 bereich: infra
-prio: mittel
+prio: hoch
 angelegt: 2026-09-03
 gestartet:
 erledigt:
@@ -12,105 +12,108 @@ commit:
 verantwortlich:
 ---
 
-# Sitemap überarbeiten und Domain-Duplikat auflösen
+# Sitemap & kanonische Domain korrigieren (www.fcluebbecke.de)
 
 ## Ziel
 
-Suchmaschinen bekommen eine saubere, vollständige Sitemap mit Änderungsdaten
-– und es gibt nur **eine** kanonische Domain (`fc-luebbecke.de`), auf die
-alle anderen Varianten weiterleiten. Kein Duplicate Content mehr durch die
-alte Domain `fcluebbecke.de`.
+Der gesamte Auftritt verwendet durchgängig die richtige kanonische Domain
+**https://www.fcluebbecke.de** – in Canonical-Tags, Sitemap, robots.txt und
+Social-Media-Vorschau. Die Sitemap bekommt zusätzlich `lastmod`-Angaben,
+und die Seite wird in der Google Search Console angemeldet.
 
 ## Ausgangslage
 
-Die Sitemap wird beim Build von `@astrojs/sitemap` erzeugt
-(`sitemap-index.xml` → `sitemap-0.xml`, aktuell 14 URLs) und ist in
-`robots.txt` sowie im `<head>` (`Layout.astro`) verlinkt. `/admin` ist
-gefiltert, die ausgeblendete `/live`-Seite taucht nicht auf. Grundsätzlich
-funktioniert das – aber es gibt drei Schwächen:
+**Wichtigster Befund (2026-09-03):** Im Code steht die falsche Domain.
+`astro.config.mjs` setzt `site: 'https://fc-luebbecke.de'` – aber
+`fc-luebbecke.de` (mit Bindestrich) gehört **nicht** zum Projekt: Sie zeigt
+auf einen Strato-Apache-Server mit der **alten Badminton-Seite**
+(„FC Lübbecke Badminton“). Die echte Webseite läuft unter
+**www.fcluebbecke.de** (ohne Bindestrich, Vercel-Projekt `fc-luebbecke-neu`).
 
-1. **Keine `lastmod`-Angaben:** Die Sitemap enthält nur nackte URLs.
-   Suchmaschinen können nicht erkennen, was sich geändert hat – bei
-   täglichem Rebuild (Spielplan!) verschenktes Signal.
-2. **Domain-Duplikat:** Die alte Domain liefert die Seite parallel aus,
-   statt umzuleiten (Stand 2026-09-03):
+Folgen der falschen `site`-Angabe (alles live nachgeprüft):
 
-   | Domain                 | Verhalten                                |
-   |------------------------|------------------------------------------|
-   | `fc-luebbecke.de`      | 200 – Hauptdomain ✓                      |
-   | `www.fc-luebbecke.de`  | 301 → `fc-luebbecke.de` ✓                |
-   | `fcluebbecke.de`       | 308 → `www.fcluebbecke.de` ⚠️            |
-   | `www.fcluebbecke.de`   | **200 – liefert Seite direkt aus** ⚠️    |
+- Alle **Canonical-Tags** zeigen auf die fremde Domain → Google wird
+  angewiesen, die alte Badminton-Domain als Original zu werten.
+- Alle **Sitemap-URLs** und die **Sitemap-Zeile in `robots.txt`** zeigen
+  auf die fremde Domain.
+- Die **OG-URLs** (Social-Vorschau) zeigen auf die fremde Domain.
 
-   Google sieht damit zwei identische Seiten. Die Canonical-Tags zeigen
-   zwar auf `fc-luebbecke.de`, sauber ist es trotzdem nicht.
-3. **Nicht bei Google angemeldet:** Es gibt (Stand heute) keine Google
-   Search Console fürs Projekt – Indexierung und Sitemap-Status sind
-   nicht überprüfbar.
+Die Vercel-Domain-Konfiguration selbst ist bereits richtig:
+
+| Domain                  | Verhalten                                        |
+|-------------------------|--------------------------------------------------|
+| `www.fcluebbecke.de`    | 200 – Hauptdomain (Production) ✓                 |
+| `fcluebbecke.de`        | 308 → `www.fcluebbecke.de` ✓                     |
+| `fclübbecke.de` (xn--)  | Redirect → `www.fcluebbecke.de` ✓                |
+| `fc-luebbecke.de`       | fremd: Strato/Apache, alte Badminton-Seite       |
+| `www.fc-luebbecke.de`   | fremd: 301 → `fc-luebbecke.de`                   |
+
+Außerdem: Die Sitemap-Einträge haben kein `lastmod` (bei täglichem
+Spielplan-Rebuild ein verschenktes Signal), und es gibt keine Google
+Search Console fürs Projekt.
 
 Betroffene Stellen:
 
-- `astro.config.mjs` – Sitemap-Integration (Filter, Optionen)
-- Vercel-Dashboard – Domain-Einstellungen (Projekt `fc-luebbecke-neu`, Team `fcl3`)
+- `astro.config.mjs` – `site` und Sitemap-Integration (`serialize`)
+- `public/robots.txt` – Sitemap-URL
 - Google Search Console – extern, einmalig einrichten
 
 ## Anforderungen
 
+- [ ] `site` in `astro.config.mjs` steht auf `https://www.fcluebbecke.de` –
+      damit stimmen Canonicals, Sitemap-URLs und OG-URLs automatisch.
+- [ ] `robots.txt` verweist auf `https://www.fcluebbecke.de/sitemap-index.xml`.
 - [ ] Sitemap-Einträge enthalten ein sinnvolles `lastmod`
-      (z. B. Build-Datum über die `serialize`-Option der Integration).
-- [ ] `www.fcluebbecke.de` und `fcluebbecke.de` leiten per 301/308 auf
-      `https://fc-luebbecke.de` weiter – kein 200 mehr auf der alten Domain.
-- [ ] `www.fc-luebbecke.de` leitet weiterhin korrekt um (nicht verschlechtern).
-- [ ] Die Sitemap enthält alle öffentlichen Seiten und **keine**
-      ausgeblendeten (`/admin`, `/live`) – nach jedem Strukturwechsel prüfen.
+      (Build-Zeitpunkt über die `serialize`-Option der Integration).
+- [ ] Kein Verweis auf `fc-luebbecke.de` (Bindestrich) mehr im Repo
+      (Quellcode, robots, Doku-Hinweis in CLAUDE.md prüfen).
 - [ ] Property in der Google Search Console angelegt (Domain-Property
-      `fc-luebbecke.de`), Sitemap eingereicht, keine Indexierungsfehler.
-- [ ] `robots.txt` und `<link rel="sitemap">` zeigen weiterhin auf die
-      richtige URL (Kontrolle, keine Änderung erwartet).
+      `fcluebbecke.de`), Sitemap eingereicht, keine Indexierungsfehler.
+- [ ] Nach Deploy live geprüft: Canonical, Sitemap und robots.txt zeigen
+      auf `www.fcluebbecke.de`, `lastmod` vorhanden.
 
 ## Nicht Teil dieser Spec
 
-- Sichtbare HTML-Sitemap-Seite für Besucher (bei 14 Seiten unnötig,
-  Footer deckt das ab).
-- Strukturierte Daten / JSON-LD (eigene Spec, siehe SEO-Analyse).
-- `llms.txt` für KI-Suchmaschinen (eigene Spec, falls gewünscht).
-- Bing Webmaster Tools (kann später mit wenigen Klicks aus der
-  Search Console importiert werden).
+- Änderungen an der fremden Domain `fc-luebbecke.de` (liegt nicht in
+  unserer Hand; ggf. separat klären, wem sie gehört und ob sie auf die
+  neue Seite umgeleitet werden kann).
+- Sichtbare HTML-Sitemap-Seite für Besucher.
+- Strukturierte Daten / JSON-LD und `llms.txt` (eigene Specs).
+- Bing Webmaster Tools (später aus der Search Console importierbar).
 
 ## Umsetzung
 
-1. **`lastmod`:** In `astro.config.mjs` der Sitemap-Integration eine
-   `serialize`-Funktion geben, die jedem Eintrag `lastmod` (Build-Zeitpunkt)
-   mitgibt. Alternativ `changefreq`/`priority` bewusst weglassen –
-   Google ignoriert beide, `lastmod` zählt.
-2. **Domains:** Im Vercel-Dashboard unter *Project → Settings → Domains*
-   bei `www.fcluebbecke.de` und `fcluebbecke.de` „Redirect to
-   `fc-luebbecke.de`“ (Status 308) einstellen statt „Serve“.
-   Danach alle vier Varianten mit `curl -sI` gegenprüfen.
-3. **Search Console:** Domain-Property `fc-luebbecke.de` anlegen
+1. **Domain im Code:** `site` in `astro.config.mjs` auf
+   `https://www.fcluebbecke.de` ändern; Sitemap-URL in `public/robots.txt`
+   anpassen. Repo nach weiteren `fc-luebbecke.de`-Vorkommen durchsuchen.
+2. **`lastmod`:** Der Sitemap-Integration eine `serialize`-Funktion geben,
+   die jedem Eintrag den Build-Zeitpunkt als `lastmod` mitgibt.
+   `changefreq`/`priority` bewusst weglassen (ignoriert Google).
+3. **Search Console:** Domain-Property `fcluebbecke.de` anlegen
    (DNS-TXT-Verifizierung beim Domain-Anbieter), Sitemap
-   `https://fc-luebbecke.de/sitemap-index.xml` einreichen.
-   Zugang für den Verein dokumentieren (welches Google-Konto).
-4. **Kontrolle:** Nach dem nächsten Build `sitemap-0.xml` live prüfen:
-   14 URLs, `lastmod` vorhanden, keine `/live`- oder `/admin`-Einträge.
+   `https://www.fcluebbecke.de/sitemap-index.xml` einreichen.
+   Zugang dokumentieren (welches Google-Konto).
+4. **Kontrolle:** Nach Deploy `curl` auf Canonical (Startseite),
+   `robots.txt` und `sitemap-0.xml` – alles `www.fcluebbecke.de`,
+   `lastmod` vorhanden, keine `/live`-/`/admin`-Einträge.
 
 ## Abnahme
 
-- `curl -sI https://www.fcluebbecke.de/` liefert 301/308 mit
-  `location: https://fc-luebbecke.de/` (ebenso `fcluebbecke.de`).
-- `https://fc-luebbecke.de/sitemap-0.xml` zeigt alle öffentlichen Seiten
-  mit `lastmod`-Datum des letzten Builds.
-- Search Console meldet die Sitemap als „Erfolgreich“ und beginnt zu
-  indexieren (kann einige Tage dauern – Abnahme = eingereicht ohne Fehler).
+- `curl -s https://www.fcluebbecke.de/ | grep canonical` zeigt
+  `https://www.fcluebbecke.de/`.
+- `https://www.fcluebbecke.de/sitemap-0.xml` listet alle öffentlichen
+  Seiten unter `www.fcluebbecke.de` mit `lastmod` des letzten Builds.
+- `robots.txt` verweist auf die richtige Sitemap-URL.
+- Search Console: Sitemap „Erfolgreich“ eingereicht (Indexierung selbst
+  dauert Tage – Abnahme = eingereicht ohne Fehler).
 
 ## Notizen
 
-- Die Weiterleitung der alten Domain ist auch für Besucher wichtig:
-  Alte Links (Vereinsflyer, Google-Einträge, Verlinkungen anderer Vereine)
-  landen dann sauber auf der Hauptdomain statt auf einem Duplikat.
-- Nach der Umstellung prüfen, ob irgendwo noch Links auf
-  `fcluebbecke.de` im eigenen Bestand existieren (Instagram-Bio,
-  FUSSBALL.DE-Vereinsprofil, Google Business Profile) und dort die
-  neue Domain eintragen.
-- `/live` ist nur temporär aus der Sitemap (Spec-übergreifend beachten,
-  wenn FCL LIVE wieder aktiviert wird).
+- Hintergrund: Die falsche Domain stammt aus der Anfangsphase des Projekts
+  (Annahme, `fc-luebbecke.de` sei die Hauptdomain). Nutzer-Korrektur vom
+  2026-09-03: Der Link der Webseite ist `https://www.fcluebbecke.de`.
+- Solange die fremde `fc-luebbecke.de` online ist, konkurriert die alte
+  Badminton-Seite in der Suche mit unserer – prüfen, wer die Domain
+  betreibt (vermutlich der Verein selbst bei Strato?) und ob eine
+  Weiterleitung auf www.fcluebbecke.de machbar ist.
+- Google-Konto für die Search Console mit dem Vorstand abstimmen.
