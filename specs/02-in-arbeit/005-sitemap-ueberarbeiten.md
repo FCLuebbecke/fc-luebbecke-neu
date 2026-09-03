@@ -1,13 +1,13 @@
 ---
 nummer: 005
 titel: Sitemap & kanonische Domain korrigieren (www.fcluebbecke.de)
-status: geplant
+status: in-arbeit
 bereich: infra
 prio: hoch
 angelegt: 2026-09-03
-gestartet:
+gestartet: 2026-09-03
 erledigt:
-branch:
+branch: spec/005-sitemap-ueberarbeiten
 commit:
 verantwortlich:
 ---
@@ -60,12 +60,12 @@ Betroffene Stellen:
 
 ## Anforderungen
 
-- [ ] `site` in `astro.config.mjs` steht auf `https://www.fcluebbecke.de` –
+- [x] `site` in `astro.config.mjs` steht auf `https://www.fcluebbecke.de` –
       damit stimmen Canonicals, Sitemap-URLs und OG-URLs automatisch.
-- [ ] `robots.txt` verweist auf `https://www.fcluebbecke.de/sitemap-index.xml`.
-- [ ] Sitemap-Einträge enthalten ein sinnvolles `lastmod`
+- [x] `robots.txt` verweist auf `https://www.fcluebbecke.de/sitemap-index.xml`.
+- [x] Sitemap-Einträge enthalten ein sinnvolles `lastmod`
       (Build-Zeitpunkt über die `serialize`-Option der Integration).
-- [ ] Kein Verweis auf `fc-luebbecke.de` (Bindestrich) mehr im Repo
+- [x] Kein Verweis auf `fc-luebbecke.de` (Bindestrich) mehr im Repo
       (Quellcode, robots, Doku-Hinweis in CLAUDE.md prüfen).
 - [ ] Property in der Google Search Console angelegt (Domain-Property
       `fcluebbecke.de`), Sitemap eingereicht, keine Indexierungsfehler.
@@ -117,3 +117,14 @@ Betroffene Stellen:
   betreibt (vermutlich der Verein selbst bei Strato?) und ob eine
   Weiterleitung auf www.fcluebbecke.de machbar ist.
 - Google-Konto für die Search Console mit dem Vorstand abstimmen.
+
+## Umsetzungsnotizen (2026-09-03)
+
+- `site` auf `https://www.fcluebbecke.de` umgestellt, `robots.txt` angepasst,
+  `lastmod` per `serialize` ergänzt. Weitere `fc-luebbecke.de`-Vorkommen im
+  Repo geprüft: nur fussball.de-Vereins-Slugs (unkritisch, andere Bedeutung).
+- Lokal verifiziert (`npm run build`): Canonical `www.fcluebbecke.de`,
+  Sitemap 14 URLs alle auf richtiger Domain, alle mit `lastmod`.
+- **Offen:** Google Search Console (Domain-Property `fcluebbecke.de`,
+  DNS-TXT-Verifizierung) – braucht ein Google-Konto des Vereins.
+  Live-Check von Canonical/robots/Sitemap nach dem Deploy.

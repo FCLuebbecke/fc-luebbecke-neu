@@ -14,7 +14,9 @@ const { PUBLIC_SANITY_PROJECT_ID, PUBLIC_SANITY_DATASET } = loadEnv(
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://fc-luebbecke.de',
+  // Kanonische Domain (ohne Bindestrich!). fc-luebbecke.de ist fremd –
+  // dort liegt die alte Badminton-Seite auf Strato (siehe Spec 005).
+  site: 'https://www.fcluebbecke.de',
   image: {
     // Instagram-Bilder werden beim Build heruntergeladen und selbst gehostet:
     // Die signierten Meta-CDN-URLs laufen nach kurzer Zeit ab (403 auf Vercel),
@@ -37,6 +39,9 @@ export default defineConfig({
     sitemap({
       // Sanity Studio (/admin) ist passwortgeschützt und gehört nicht in die Sitemap.
       filter: (page) => !page.includes('/admin'),
+      // Build-Zeitpunkt als lastmod: Inhalte werden zur Build-Zeit geladen,
+      // jeder Build (täglicher Rebuild, Sanity-Publish) ist ein neuer Stand.
+      serialize: (item) => ({ ...item, lastmod: new Date().toISOString() }),
     }),
   ],
 });
