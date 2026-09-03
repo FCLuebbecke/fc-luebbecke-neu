@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin
 
-Sitemap: https://fc-luebbecke.de/sitemap-index.xml
+Sitemap: https://www.fcluebbecke.de/sitemap-index.xml
