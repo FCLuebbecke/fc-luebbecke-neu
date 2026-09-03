@@ -1,5 +1,5 @@
 ---
-nummer: 005
+nummer: 007
 titel: News-Bereich „Aktuelles“ (redaktionelle Beiträge + Instagram)
 status: geplant
 bereich: startseite
