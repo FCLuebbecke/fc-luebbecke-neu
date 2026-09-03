@@ -8,7 +8,7 @@ angelegt: 2026-09-03
 gestartet: 2026-09-03
 erledigt: 2026-09-03
 branch: spec/006-fcl-live-externer-link
-commit: eb72da8
+commit: 1e6d319
 verantwortlich:
 ---
 
