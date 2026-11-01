@@ -113,7 +113,11 @@ Nicht im Umfang:
   1200 px gescrollt, dann `commit` in `build.json` geändert → Seite lud nach
   3,3 s neu, Scroll-Position 1200 px wiederhergestellt, Band zeigt
   „· aktualisiert“.
-- Offen: Messung auf Vercel (braucht den gepushten Branch `preview` mit diesem
+- Auf Vercel getestet (2026-11-01, Peter): `preview` auf Stand `dev` gesetzt,
+  zwei markierte Test-Commits gepusht (Badminton, Darts). Die offene Vorschau
+  lud nach dem Vercel-Build selbst neu und zeigte die Änderung. Danach
+  `preview` wieder auf `dev` zurückgesetzt.
+- Offen: genaue Zeit Commit → Anzeige stoppen; Messung auf Vercel (braucht den gepushten Branch `preview` mit diesem
   Code in `main`).
 
 ## Review

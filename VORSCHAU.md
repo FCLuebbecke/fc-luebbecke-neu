@@ -69,7 +69,7 @@ Dev-Server, der bei jeder Dateiänderung sofort neu lädt.
 
 | Datum | Commit → Vorschau zeigt Änderung | Bemerkung |
 |---|---|---|
-| – | – | steht aus (nach Einrichtung) |
+| 2026-11-01 | funktioniert, Zeit nicht gestoppt | Test-Commits auf `preview` (Badminton, Darts); Seite lud nach dem Vercel-Build selbst neu |
 
 Lokal geprüft (2026-11-01): Nach einem neuen Stand in `/build.json` lädt die
 Seite nach 3,3 s neu und kehrt an die vorherige Scroll-Position zurück.
