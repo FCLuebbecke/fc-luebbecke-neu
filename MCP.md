@@ -62,7 +62,7 @@ Vercel → Projekt → Settings → Environment Variables, **nur Production**
 | Variable | Wert |
 |---|---|
 | `MCP_SCHLUESSEL` | zufälliger Schlüssel, z. B. `openssl rand -hex 32` |
-| `MCP_PERSONEN` | Freigabeliste: `peter@…=Peter Dahm` (mehrere mit `;`) oder JSON `[{"email":"…","name":"…"}]` |
+| `MCP_PERSON` | feste Person für alle Commits (Spec 011, Option B): `email=Name`, z. B. `private-ai@fcluebbecke.de=Private AI`. Ohne Angabe: „Private AI". |
 | `GITHUB_TOKEN` | Token aus Schritt 1 |
 | `GITHUB_REPO` | `FCLuebbecke/fc-luebbecke-neu` (Standard) |
 | `VORSCHAU_URL` | feste Adresse der Vorschau des Branches `preview` (VORSCHAU.md) |
@@ -76,13 +76,14 @@ Vercel-Vorschau-Adresse dieses Branches erreichbar.
 
 MCP-Server hinzufügen:
 - URL: `https://www.fcluebbecke.de/api/mcp`
-- Kopfzeilen bei jedem Aufruf:
+- Kopfzeile bei jedem Aufruf:
   - `Authorization: Bearer <MCP_SCHLUESSEL>`
-  - `X-FC-Person-Email: <E-Mail der angemeldeten Person>`
-  - `X-FC-Person-Name: <Name der angemeldeten Person>` (optional)
 
-Private AI muss Name und E-Mail der angemeldeten Person eintragen (Decision 6
-in Spec 010). Der Server lässt nur E-Mails aus `MCP_PERSONEN` zu.
+Ein Personen-Header ist nicht nötig (Spec 011, Option B): Der Server schreibt
+alle Änderungen der festen Person aus `MCP_PERSON` zu (Default „Private AI").
+Das vereinfacht die Einrichtung; dafür steht im Log nicht mehr, welche Person
+eine Änderung ausgelöst hat. Wer das braucht, nutzt wieder den personen-
+bezogenen Modus (Spec 010, Decision 6).
 
 ### 4. Branch `preview`
 
@@ -92,8 +93,10 @@ in Spec 010). Der Server lässt nur E-Mails aus `MCP_PERSONEN` zu.
 ## Protokoll
 
 - Jede Schreibaktion erscheint im Vercel-Log (Projekt → Logs, Suche
-  `fc-webseite`) mit Person, Zeit, Werkzeug, Dateien und Commit.
-- Dauerhaft nachvollziehbar ist alles in der Git-Historie (Autor = Person).
+  `fc-webseite`) mit Zeit, Werkzeug, Dateien und Commit.
+- Dauerhaft nachvollziehbar ist alles in der Git-Historie. In Option B ist der
+  Autor immer die feste Person (`MCP_PERSON`, Default „Private AI") – welcher
+  Mensch eine Änderung ausgelöst hat, steht nicht im Log.
 
 ## Entwickeln & testen
 

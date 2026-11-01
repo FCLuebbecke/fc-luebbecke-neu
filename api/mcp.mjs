@@ -2,10 +2,11 @@
  * Vercel-Function: MCP-Endpunkt „FC-Webseite“ für Private AI (Spec 010).
  * Adresse: https://www.fcluebbecke.de/api/mcp (Streamable HTTP, zustandslos)
  *
- * Anmeldung (Spec 010, Decision 6):
+ * Anmeldung (Spec 010 Decision 6, geändert in Spec 011 – Option B):
  *   Authorization: Bearer <MCP_SCHLUESSEL>      – ein Schlüssel für Private AI
- *   X-FC-Person-Email / X-FC-Person-Name        – angemeldete Person
- * Nur E-Mails aus MCP_PERSONEN sind freigeschaltet.
+ * Kein Personen-Header mehr: alle Änderungen laufen unter einer festen Person
+ * (MCP_PERSON, Default „Private AI"). Dafür steht im Log nicht mehr, wer was
+ * geändert hat.
  *
  * Umgebungsvariablen (Vercel, nicht im Repo): siehe MCP.md
  */
@@ -29,7 +30,7 @@ function gleich(a, b) {
 }
 
 /**
- * Freigabeliste aus MCP_PERSONEN lesen:
+ * Personen aus einer Variable lesen:
  * JSON [{"email":"…","name":"…"}] oder "email=Name; email2=Name2".
  */
 export function freigegebenePersonen(wert) {
@@ -46,19 +47,19 @@ export function freigegebenePersonen(wert) {
     });
 }
 
-/** Prüft Schlüssel und Person. Liefert die Person oder eine Fehler-Antwort. */
+/** Feste Person (Option B): alle Änderungen laufen unter dieser Person. */
+export function festePerson(env) {
+  return freigegebenePersonen(env.MCP_PERSON)[0] ?? { email: 'private-ai@fcluebbecke.de', name: 'Private AI' };
+}
+
+/** Prüft den Schlüssel. Liefert die feste Person oder eine Fehler-Antwort. */
 export function anmelden(request, env) {
   if (!env.MCP_SCHLUESSEL) return { antwort: fehler(503, 'MCP-Server ist nicht eingerichtet (MCP_SCHLUESSEL fehlt).') };
   const auth = request.headers.get('authorization') ?? '';
   if (!auth.startsWith('Bearer ') || !gleich(auth.slice(7), env.MCP_SCHLUESSEL)) {
     return { antwort: fehler(401, 'Nicht angemeldet.') };
   }
-  const email = request.headers.get('x-fc-person-email')?.trim().toLowerCase();
-  if (!email) return { antwort: fehler(403, 'Angemeldete Person fehlt (X-FC-Person-Email).') };
-  const person = freigegebenePersonen(env.MCP_PERSONEN).find((p) => p.email === email);
-  if (!person) return { antwort: fehler(403, `${email} ist für die Inhaltspflege nicht freigeschaltet.`) };
-  const name = request.headers.get('x-fc-person-name')?.trim() || person.name;
-  return { person: { email, name } };
+  return { person: festePerson(env) };
 }
 
 export async function bearbeite(request, env = process.env, repoFabrik = githubRepo) {

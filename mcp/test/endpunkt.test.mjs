@@ -17,7 +17,7 @@ const repo = speicherRepo({
 });
 const ENV = {
   MCP_SCHLUESSEL: 'geheim-123',
-  MCP_PERSONEN: 'peter@example.org=Peter Test',
+  MCP_PERSON: 'private-ai@fcluebbecke.de=Private AI',
   GITHUB_TOKEN: 'x',
   VORSCHAU_URL: 'https://vorschau.example.org',
 };
@@ -30,7 +30,6 @@ function anfrage(body, kopf = {}) {
       Accept: 'application/json, text/event-stream',
       'MCP-Protocol-Version': '2025-06-18',
       Authorization: 'Bearer geheim-123',
-      'X-FC-Person-Email': 'peter@example.org',
       ...kopf,
     },
     body: JSON.stringify(body),
@@ -43,9 +42,9 @@ test('ohne oder mit falschem Schlüssel: 401', async () => {
   assert.equal((await rufe({ jsonrpc: '2.0', id: 1, method: 'tools/list' }, { Authorization: '' })).status, 401);
 });
 
-test('nicht freigeschaltete Person: 403', async () => {
-  const res = await rufe({ jsonrpc: '2.0', id: 1, method: 'tools/list' }, { 'X-FC-Person-Email': 'fremd@example.org' });
-  assert.equal(res.status, 403);
+test('kein Personen-Header nötig (Option B); fremder Header wird ignoriert', async () => {
+  assert.equal((await rufe({ jsonrpc: '2.0', id: 1, method: 'tools/list' })).status, 200);
+  assert.equal((await rufe({ jsonrpc: '2.0', id: 1, method: 'tools/list' }, { 'X-FC-Person-Email': 'fremd@example.org' })).status, 200);
 });
 
 test('initialize, tools/list, tools/call über HTTP', async () => {
@@ -86,7 +85,7 @@ test('initialize, tools/list, tools/call über HTTP', async () => {
     })
   ).json();
   assert.ok(!aendern.result.isError, aendern.result.content[0].text);
-  assert.equal(repo._commit(await repo.kopf('preview')).autor.name, 'Peter Test');
+  assert.equal(repo._commit(await repo.kopf('preview')).autor.name, 'Private AI');
 
   const verboten = await (
     await rufe({ jsonrpc: '2.0', id: 5, method: 'tools/call', params: { name: 'inhalt_lesen', arguments: { sammlung: 'pages', id: 'index' } } })
