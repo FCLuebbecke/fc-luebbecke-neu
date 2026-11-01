@@ -1,14 +1,14 @@
 ---
 modules: infra, seiten
-station: Doing
+station: Done
 nummer: 005
 titel: Sitemap & kanonische Domain korrigieren (www.fcluebbecke.de)
-status: in-arbeit
+status: erledigt
 bereich: infra
 prio: hoch
 angelegt: 2026-09-03
 gestartet: 2026-09-03
-erledigt:
+erledigt: 2026-11-01
 branch: spec/005-sitemap-ueberarbeiten
 commit:
 verantwortlich:
@@ -69,8 +69,10 @@ Betroffene Stellen:
       (Build-Zeitpunkt über die `serialize`-Option der Integration).
 - [x] Kein Verweis auf `fc-luebbecke.de` (Bindestrich) mehr im Repo
       (Quellcode, robots, Doku-Hinweis in CLAUDE.md prüfen).
-- [ ] Property in der Google Search Console angelegt (Domain-Property
-      `fcluebbecke.de`), Sitemap eingereicht, keine Indexierungsfehler.
+- ⚠️ **Manuell, offen (Peter):** Property in der Google Search Console
+  anlegen (Domain-Property `fcluebbecke.de`), Sitemap einreichen, auf
+  Indexierungsfehler prüfen. Kein Code nötig; Spec am 2026-11-01 auf
+  Wunsch auf Done gesetzt, dieser Schritt bleibt als Erinnerung stehen.
 - [x] Nach Deploy live geprüft: Canonical, Sitemap und robots.txt zeigen
       auf `www.fcluebbecke.de`, `lastmod` vorhanden.
       2026-11-01 per curl: Startseite 200, `<link rel="canonical"
