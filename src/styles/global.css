@@ -99,6 +99,7 @@ a {
 
 img {
   max-width: 100%;
+  height: auto; /* width/height-Attribute von astro:assets nicht als feste Höhe werten */
   display: block;
 }
 
