@@ -125,6 +125,10 @@ Nicht im Umfang:
 - [ ] Anmeldung und Freischaltung (Q1)
 - [ ] Protokoll
 - [ ] Tests: Pfad-Sperre, Validierung, Revision, Konflikt beim Veröffentlichen
+- [ ] (added) Vor Inbetriebnahme sicherstellen, dass `preview` = `main` ist.
+      Am 2026-11-01 wurde `preview` zum Testen der Vorschau auf den Stand von
+      `dev` gesetzt; sonst ginge beim ersten „veröffentlichen“ Code aus `dev`
+      mit live.
 - [ ] Einbindung in Private AI und Durchlauf der UC-001-Akzeptanzkriterien
 - [ ] `MCP.md` schreiben
 - [ ] (added) Nach `veroeffentlichen` `main` in `dev` mergen (fast-forward oder
