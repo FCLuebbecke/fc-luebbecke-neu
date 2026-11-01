@@ -209,3 +209,33 @@ img {
     scroll-behavior: auto !important;
   }
 }
+
+/* Nur für Screenreader sichtbar (global, Spec 007) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Sparten-Etiketten in abgestuften Grüntönen (claude.md Abschnitt 8, Spec 007).
+   Kontrast ≥ 4,5:1: helle Flächen mit dunkler Schrift. */
+.etikett {
+  display: inline-block;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  line-height: 1.2;
+  padding: 0.2em 0.6em;
+  border-radius: 999px;
+  letter-spacing: 0.01em;
+}
+.etikett--fussball { background: var(--color-green-700); color: #fff; }
+.etikett--badminton { background: var(--color-green-500); color: var(--color-ink); }
+.etikett--darts { background: var(--color-green-900); color: #fff; }
+.etikett--verein { background: var(--color-green-050); color: var(--color-green-900); border: 1px solid #c5e1c8; }
+.etikett--instagram { background: #fff; color: var(--color-ink); border: 1px solid #ddd; }

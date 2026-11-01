@@ -14,8 +14,11 @@ import { getInstagramPosts } from "../lib/instagram";
 interface Props {
   handle?: string;
   profileUrl?: string;
+  /** Überschrift; im Block „Aktuelles“ (Spec 007) „Frisch von Instagram“. */
+  titel?: string;
 }
 const {
+  titel = "Aktuelles auf Instagram",
   handle = "@fcluebbecke", // TODO: echten Fußball-Handle bestätigen
   profileUrl = "https://www.instagram.com/fcluebbecke/", // TODO: echte Profil-URL bestätigen
 } = Astro.props;
@@ -33,7 +36,7 @@ function bildUrl(p: (typeof posts)[number]): string {
 <section class="ig" aria-labelledby="ig-title">
   <div class="container">
     <header class="ig__head">
-      <h2 id="ig-title" class="section-title">Aktuelles auf Instagram</h2>
+      <h2 id="ig-title" class="section-title">{titel}</h2>
       <p class="ig__intro">
         Die neuesten Eindrücke aus unserer Fußball-Abteilung – Spiele, Tore,
         Vereinsleben. Folge uns für alles, was rund um den Platz passiert.

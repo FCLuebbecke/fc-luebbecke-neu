@@ -220,3 +220,69 @@ test('Entwurf zieht main nach, wenn main weiter ist (behind)', async () => {
   const vgl = await repo.vergleiche('main', 'preview');
   assert.equal(vgl.status, 'ahead');
 });
+
+test('Beiträge: anlegen, ohne Titelbild nicht veröffentlichen, Galerie anhängen und entfernen', async () => {
+  const { repo, w } = aufbau();
+  const jpg = (farbe) => sharp({ create: { width: 320, height: 200, channels: 3, background: farbe } }).jpeg().toBuffer();
+  const neu = await w.entwurf_anlegen({
+    sammlung: 'beitraege',
+    id: 'saisonstart-2026',
+    felder: {
+      titel: 'Saisonstart 2026',
+      datum: '2026-11-01',
+      sparte: 'fussball',
+      teaser: 'Unsere Erste startet in die neue Saison.',
+      inhalt: 'Am Sonntag geht es los.\n\n## Kader\n\n- neu dabei: drei Spieler',
+    },
+  });
+  assert.match(neu.vorschau, /\/aktuelles\/saisonstart-2026\/$/);
+  let st = await w.entwurf_status();
+  repo._setzeStatus(st.erwarteter_stand, 'erfolgreich');
+  assert.match(await fehlerText(w.veroeffentlichen({ bestaetigung: true, erwarteter_stand: st.erwarteter_stand })), /Titelbild/);
+
+  const t = await w.bild_hochladen({
+    sammlung: 'beitraege', id: 'saisonstart-2026', feld: 'titelbild',
+    datei_base64: (await jpg('#0a5012')).toString('base64'), alt: 'Mannschaft vor dem Anpfiff', erwartete_revision: neu.revision,
+  });
+  const g1 = await w.bild_hochladen({
+    sammlung: 'beitraege', id: 'saisonstart-2026', feld: 'galerie',
+    datei_base64: (await jpg('#16a626')).toString('base64'), alt: 'Jubel', erwartete_revision: t.revision,
+  });
+  const g2 = await w.bild_hochladen({
+    sammlung: 'beitraege', id: 'saisonstart-2026', feld: 'galerie',
+    datei_base64: (await jpg('#e7f3e8')).toString('base64'), alt: 'Fans', erwartete_revision: g1.revision,
+  });
+  assert.deepEqual(g2.daten.galerie.map((b) => b.src), [
+    '../../assets/content/beitraege/saisonstart-2026-galerie-1.jpg',
+    '../../assets/content/beitraege/saisonstart-2026-galerie-2.jpg',
+  ]);
+  // Fremdes Bild in die Galerie schmuggeln: abgelehnt
+  assert.match(
+    await fehlerText(w.entwurf_aendern({
+      sammlung: 'beitraege', id: 'saisonstart-2026',
+      felder: { galerie: [...g2.daten.galerie, { src: '../../assets/content/sponsoren/homedeluxe.png', alt: 'x' }] },
+      erwartete_revision: g2.revision,
+    })),
+    /bild_hochladen/,
+  );
+  // Erstes Galeriebild entfernen: Datei wird mit gelöscht
+  await w.entwurf_aendern({
+    sammlung: 'beitraege', id: 'saisonstart-2026', felder: { galerie: [g2.daten.galerie[1]] }, erwartete_revision: g2.revision,
+  });
+  assert.equal(await repo.leseDatei('preview', 'src/assets/content/beitraege/saisonstart-2026-galerie-1.jpg'), null);
+  assert.ok(await repo.leseDatei('preview', 'src/assets/content/beitraege/saisonstart-2026-galerie-2.jpg'));
+
+  st = await w.entwurf_status();
+  repo._setzeStatus(st.erwarteter_stand, 'erfolgreich');
+  const erg = await w.veroeffentlichen({ bestaetigung: true, erwarteter_stand: st.erwarteter_stand });
+  assert.equal(erg.veroeffentlicht, true);
+  assert.ok(await repo.leseDatei('main', 'src/content/beitraege/saisonstart-2026.json'));
+});
+
+test('Beiträge: Regeln (Datum, Sparte, Teaser-Länge)', async () => {
+  const { w } = aufbau();
+  const basis = { titel: 'T', datum: '2026-11-01', sparte: 'verein', teaser: 'kurz', inhalt: 'Text' };
+  assert.match(await fehlerText(w.entwurf_anlegen({ sammlung: 'beitraege', id: 'a', felder: { ...basis, datum: '1.11.2026' } })), /JJJJ-MM-TT/);
+  assert.match(await fehlerText(w.entwurf_anlegen({ sammlung: 'beitraege', id: 'b', felder: { ...basis, sparte: 'tennis' } })), /sparte/);
+  assert.match(await fehlerText(w.entwurf_anlegen({ sammlung: 'beitraege', id: 'c', felder: { ...basis, teaser: 'x'.repeat(300) } })), /teaser/);
+});

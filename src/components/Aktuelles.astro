@@ -1,0 +1,56 @@
+---
+/**
+ * Startseiten-Block „Aktuelles“ (Spec 007):
+ * Ebene 1 – bis zu drei neueste Beiträge; Ebene 2 – Instagram-Raster.
+ * Ohne Beiträge sieht der Bereich aus wie vorher (nur Instagram).
+ */
+import BeitragKarte from "./BeitragKarte.astro";
+import InstagramFeed from "./InstagramFeed.astro";
+import { getBeitraege } from "../lib/inhalte";
+
+const beitraege = await getBeitraege({ limit: 3 });
+---
+
+{beitraege.length > 0 ? (
+  <>
+    <section class="aktuelles" aria-labelledby="aktuelles-title">
+      <div class="container">
+        <h2 id="aktuelles-title" class="section-title">Aktuelles</h2>
+        <ul class="aktuelles__grid">
+          {beitraege.map((b) => (
+            <li><BeitragKarte beitrag={b} /></li>
+          ))}
+        </ul>
+        <p class="aktuelles__alle"><a href="/aktuelles/">Alle Beiträge →</a></p>
+      </div>
+    </section>
+    <InstagramFeed titel="Frisch von Instagram" />
+  </>
+) : (
+  <InstagramFeed />
+)}
+
+<style>
+  .aktuelles { padding-block: var(--space-6) var(--space-5); }
+  .aktuelles__grid {
+    list-style: none;
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+  .aktuelles__alle {
+    margin-top: var(--space-3);
+    text-align: right;
+  }
+  .aktuelles__alle a {
+    display: inline-block;
+    min-height: var(--tap);
+    line-height: var(--tap);
+    font-weight: 600;
+    color: var(--color-green-700);
+  }
+  @media (min-width: 720px) {
+    .aktuelles__grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>

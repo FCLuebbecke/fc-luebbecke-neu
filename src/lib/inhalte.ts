@@ -13,6 +13,12 @@ export type SponsorDoc = CollectionEntry<'sponsoren'>['data'];
 export type TrainerEintrag = NonNullable<MannschaftDoc['trainerteam']>[number];
 export type Bild = NonNullable<MannschaftDoc['foto']>;
 export type Sparte = SparteTeamDoc['sparte'];
+export type BeitragDoc = CollectionEntry<'beitraege'>['data'];
+export type BeitragSparte = BeitragDoc['sparte'];
+export interface Beitrag extends BeitragDoc {
+  /** Datei-Name = Adresse /aktuelles/<id>/ */
+  id: string;
+}
 
 const sortiert = <T extends { reihenfolge: number; name: string }>(liste: T[]) =>
   liste.sort((a, b) => a.reihenfolge - b.reihenfolge || a.name.localeCompare(b.name, 'de'));
@@ -38,4 +44,34 @@ export async function getSparteInfo(sparte: Sparte): Promise<SparteInfoDoc> {
 /** Alle Sponsoren. */
 export async function getSponsoren(): Promise<SponsorDoc[]> {
   return sortiert((await getCollection('sponsoren')).map((e) => e.data));
+}
+
+/**
+ * Beiträge „Aktuelles“, neueste zuerst (Spec 007).
+ * @param sparte nur Beiträge dieser Sparte
+ * @param limit höchstens so viele
+ */
+export async function getBeitraege({ sparte, limit }: { sparte?: BeitragSparte; limit?: number } = {}): Promise<Beitrag[]> {
+  const eintraege = await getCollection('beitraege', (e) => !sparte || e.data.sparte === sparte);
+  const liste = eintraege
+    .map((e) => ({ id: e.id, ...e.data }))
+    .sort((a, b) => b.datum.localeCompare(a.datum) || a.titel.localeCompare(b.titel, 'de'));
+  return limit ? liste.slice(0, limit) : liste;
+}
+
+/** Bezeichnung einer Sparte für Etiketten. */
+export const SPARTEN_NAMEN: Record<BeitragSparte, string> = {
+  fussball: 'Fußball',
+  badminton: 'Badminton',
+  darts: 'Darts',
+  verein: 'Verein',
+};
+
+/** Datum „2026-11-01“ → „1. November 2026“ bzw. kurz „01.11.2026“. */
+export function datumLang(iso: string): string {
+  return new Date(iso + 'T12:00:00Z').toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+export function datumKurz(iso: string): string {
+  const [j, m, t] = iso.split('-');
+  return `${t}.${m}.${j}`;
 }

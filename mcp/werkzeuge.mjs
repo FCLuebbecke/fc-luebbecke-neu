@@ -15,6 +15,8 @@
  */
 import {
   BILDFELDER,
+  BILDLISTEN,
+  bildPfadeVon,
   FESTE_IDS,
   InhaltsFehler,
   SAMMLUNGEN,
@@ -161,16 +163,23 @@ export function werkzeuge(ctx) {
         );
       }
       for (const f of BILDFELDER[sammlung]) {
-        if (felder && f in felder && felder[f] !== null && felder[f]?.src !== alt.daten[f]?.src) {
+        if (!felder || !(f in felder) || felder[f] === null) continue;
+        if (Array.isArray(alt.daten[f]) || BILDLISTEN[sammlung]?.includes(f)) {
+          const bekannt = new Set((alt.daten[f] ?? []).map((b) => b.src));
+          if (!Array.isArray(felder[f]) || felder[f].some((b) => !bekannt.has(b?.src))) {
+            throw new InhaltsFehler(`Neue Bilder in ${f} nur über bild_hochladen. Entfernen, umsortieren und alt ändern ist erlaubt.`);
+          }
+        } else if (felder[f]?.src !== alt.daten[f]?.src) {
           throw new InhaltsFehler(`Bilder nur über bild_hochladen setzen (Feld ${f}). alt und fokus dürfen geändert werden.`);
         }
       }
       const neu = pruefeDaten(sammlung, wendeAenderungAn(alt.daten, felder));
       if (JSON.stringify(neu) === JSON.stringify(alt.daten)) return { geaendert: false, hinweis: 'Keine Änderung.' };
       const aenderungen = [{ pfad: alt.pfad, inhalt: alsDatei(neu) }];
-      // Entferntes Bild: Datei mit löschen.
-      for (const f of BILDFELDER[sammlung]) {
-        if (alt.daten[f] && !neu[f]) aenderungen.push({ pfad: bildRepoPfad(alt.daten[f].src), inhalt: null });
+      // Entfernte Bilder: Dateien mit löschen.
+      const bleibt = new Set(bildPfadeVon(sammlung, neu));
+      for (const src of bildPfadeVon(sammlung, alt.daten)) {
+        if (!bleibt.has(src)) aenderungen.push({ pfad: bildRepoPfad(src), inhalt: null });
       }
       const geaenderteFelder = Object.keys(felder ?? {});
       const commit = await schreibe({
@@ -217,9 +226,7 @@ export function werkzeuge(ctx) {
       const alt = await lies(sammlung, id);
       if (alt.revision !== erwartete_revision) throw new InhaltsFehler('Der Eintrag wurde seit dem Lesen geändert. Bitte neu lesen.');
       const aenderungen = [{ pfad: alt.pfad, inhalt: null }];
-      for (const f of BILDFELDER[sammlung]) {
-        if (alt.daten[f]) aenderungen.push({ pfad: bildRepoPfad(alt.daten[f].src), inhalt: null });
-      }
+      for (const src of bildPfadeVon(sammlung, alt.daten)) aenderungen.push({ pfad: bildRepoPfad(src), inhalt: null });
       const commit = await schreibe({
         werkzeug: 'entwurf_loeschen',
         kopf,
@@ -240,17 +247,24 @@ export function werkzeuge(ctx) {
       const eintrag = await lies(sammlung, id);
       if (eintrag.revision !== erwartete_revision) throw new InhaltsFehler('Der Eintrag wurde seit dem Lesen geändert. Bitte neu lesen.');
       const bild = await bildDaten({ datei_base64, url });
-      const bildPfad = `src/assets/content/${sammlung}/${id}.${bild.ext}`;
-      const src = `../../assets/content/${sammlung}/${id}.${bild.ext}`;
+      const istListe = BILDLISTEN[sammlung]?.includes(feld);
+      let name = istListe ? `${id}-${feld}-1` : id;
+      if (istListe) {
+        const belegt = new Set((eintrag.daten[feld] ?? []).map((b) => b.src.replace(/\.[a-z]+$/, '')));
+        for (let n = 1; belegt.has(`../../assets/content/${sammlung}/${id}-${feld}-${n}`); n++) name = `${id}-${feld}-${n + 1}`;
+      }
+      const bildPfad = `src/assets/content/${sammlung}/${name}.${bild.ext}`;
+      const src = `../../assets/content/${sammlung}/${name}.${bild.ext}`;
+      const neuesBild = { src, alt: altText, ...(fokus ? { fokus } : {}) };
       const neu = pruefeDaten(sammlung, {
         ...eintrag.daten,
-        [feld]: { src, alt: altText, ...(fokus ? { fokus } : {}) },
+        [feld]: istListe ? [...(eintrag.daten[feld] ?? []), neuesBild] : neuesBild,
       });
       const aenderungen = [
         { pfad: bildPfad, inhalt: bild.inhalt },
         { pfad: eintrag.pfad, inhalt: alsDatei(neu) },
       ];
-      const altesBild = eintrag.daten[feld]?.src;
+      const altesBild = istListe ? undefined : eintrag.daten[feld]?.src;
       if (altesBild && bildRepoPfad(altesBild) !== bildPfad) aenderungen.push({ pfad: bildRepoPfad(altesBild), inhalt: null });
       const commit = await schreibe({
         werkzeug: 'bild_hochladen',
@@ -330,6 +344,15 @@ export function werkzeuge(ctx) {
         return { veroeffentlicht: false, hinweis: 'Nichts zu veröffentlichen – der Entwurf entspricht der Live-Seite.' };
       }
       for (const d of vgl.dateien) pruefeSchreibpfad(d.pfad); // Code darf so nie live gehen
+      // Beiträge nur mit Titelbild (Spec 007, Decision 2).
+      for (const d of vgl.dateien) {
+        const m = /^src\/content\/beitraege\/([a-z0-9-]+)\.json$/.exec(d.pfad);
+        if (!m || d.status === 'removed') continue;
+        const datei = await repo.leseDatei(ENTWURF, d.pfad);
+        if (datei && !json(datei.inhalt).titelbild) {
+          throw new InhaltsFehler(`Der Beitrag "${m[1]}" hat noch kein Titelbild. Bitte erst mit bild_hochladen ein Titelbild setzen.`);
+        }
+      }
       const build = await repo.buildStatus(stand);
       if (build !== 'erfolgreich') {
         throw new InhaltsFehler(

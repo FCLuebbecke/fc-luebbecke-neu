@@ -1,0 +1,118 @@
+---
+/**
+ * Karte eines Beitrags „Aktuelles“ (Spec 007): Bild 16:9, Datum,
+ * Sparten-Etikett, Titel, Teaser. Die ganze Karte ist über den Titel-Link
+ * klickbar. Ohne Titelbild: grüne Fläche mit Sparten-Symbol.
+ */
+import { Image } from "astro:assets";
+import SparteIcon from "./SparteIcon.astro";
+import { SPARTEN_NAMEN, datumKurz, type Beitrag } from "../lib/inhalte";
+
+interface Props {
+  beitrag: Beitrag;
+}
+const { beitrag: b } = Astro.props;
+const href = `/aktuelles/${b.id}/`;
+---
+
+<article class="bkarte" data-sparte={b.sparte}>
+  <div class="bkarte__bild">
+    {b.titelbild ? (
+      <Image
+        src={b.titelbild.src}
+        alt={b.titelbild.alt}
+        width={800}
+        loading="lazy"
+        style={b.titelbild.fokus ? `object-position: ${b.titelbild.fokus}` : undefined}
+      />
+    ) : (
+      <div class:list={["bkarte__platzhalter", { "bkarte__platzhalter--hell": b.sparte === "verein" }]} aria-hidden="true">
+        {b.sparte === "verein" ? <img class="bkarte__logo" src="/logo.png" alt="" /> : <SparteIcon name={b.sparte} />}
+      </div>
+    )}
+  </div>
+  <div class="bkarte__body">
+    <p class="bkarte__meta">
+      <time datetime={b.datum}>{datumKurz(b.datum)}</time>
+      <span class={`etikett etikett--${b.sparte}`}>{SPARTEN_NAMEN[b.sparte]}</span>
+    </p>
+    <h3 class="bkarte__titel"><a href={href}>{b.titel}</a></h3>
+    <p class="bkarte__teaser">{b.teaser}</p>
+    <span class="bkarte__mehr" aria-hidden="true">Weiterlesen →</span>
+  </div>
+</article>
+
+<style>
+  .bkarte {
+    position: relative;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-white);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    height: 100%;
+  }
+  .bkarte__bild > :global(img),
+  .bkarte__platzhalter {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+  .bkarte__platzhalter {
+    display: grid;
+    place-items: center;
+    background: var(--color-green-900);
+    color: var(--color-green-050);
+    font-size: 3rem;
+  }
+  .bkarte__platzhalter--hell { background: var(--color-green-050); }
+  .bkarte__logo { width: 55%; max-width: 240px; height: auto; }
+  .bkarte__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-3);
+    flex: 1;
+  }
+  .bkarte__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    color: var(--color-muted);
+    font-size: var(--fs-small);
+  }
+  .bkarte__titel {
+    font-size: 1.25rem;
+    line-height: 1.25;
+  }
+  .bkarte__titel a {
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+  /* ganze Karte klickbar, Fokus sichtbar */
+  .bkarte__titel a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-md);
+  }
+  .bkarte__titel a:focus-visible::after {
+    outline: 3px solid var(--color-green-500);
+    outline-offset: 2px;
+  }
+  .bkarte:hover .bkarte__titel a { color: var(--color-green-700); }
+  .bkarte__teaser {
+    color: var(--color-ink);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .bkarte__mehr {
+    margin-top: auto;
+    color: var(--color-green-700);
+    font-weight: 600;
+  }
+</style>

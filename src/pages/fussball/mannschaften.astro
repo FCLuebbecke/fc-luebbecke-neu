@@ -4,6 +4,7 @@ import Header from "../../components/Header.astro";
 import SparteHeader from "../../components/SparteHeader.astro";
 import Footer from "../../components/Footer.astro";
 import TrainerListe from "../../components/TrainerListe.astro";
+import SparteAktuelles from "../../components/SparteAktuelles.astro";
 import { Image, getImage } from "astro:assets";
 import { getMannschaften, type MannschaftDoc, type TrainerEintrag } from "../../lib/inhalte";
 
@@ -191,6 +192,7 @@ const fotosGross = await Promise.all(
         <a href="mailto:kontakt@fcluebbecke.de">kontakt@fcluebbecke.de</a>.
       </p>
     </section>
+    <SparteAktuelles sparte="fussball" />
   </main>
 
   <Footer />

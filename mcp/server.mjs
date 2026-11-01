@@ -11,7 +11,8 @@ import { RepoFehler } from './repo-github.mjs';
 
 const sammlung = z.enum(SAMMLUNGEN).describe(
   'mannschaften = Fußball-Mannschaften; sparten-mannschaften = Badminton/Darts-Mannschaften; ' +
-    'sparten-infos = Trainingszeiten & Ort Badminton/Darts (IDs badminton, darts); sponsoren = Sponsoren',
+    'sparten-infos = Trainingszeiten & Ort Badminton/Darts (IDs badminton, darts); sponsoren = Sponsoren; ' +
+    'beitraege = News-Beiträge „Aktuelles“ (Markdown-Text, Titelbild, Galerie)',
 );
 const id = z.string().describe('ID des Eintrags = Dateiname ohne .json, z. B. "2-mannschaft"');
 const revision = z.string().describe('Revision aus inhalt_lesen (Schutz vor gleichzeitigen Änderungen)');
@@ -25,6 +26,8 @@ Ablauf:
 3. Vor dem Veröffentlichen entwurf_status aufrufen und der Person alle offenen Änderungen zeigen – auch die anderer Personen.
 4. Nur nach ausdrücklicher Zustimmung ("veröffentlichen", "passt so") veroeffentlichen mit bestaetigung: true.
    Bei "verwerfen" entwurf_verwerfen. Löschen nur nach ausdrücklicher Bestätigung.
+Beiträge (Sammlung beitraege): Fakten im Chat erfragen (Anlass, Ergebnis, Datum, Namen nur mit Einverständnis),
+Titel, Teaser und Text (Markdown) vorschlagen, nach "ok" mit entwurf_anlegen anlegen, dann Titelbild mit bild_hochladen setzen.
 Regeln: Ton bodenständig und sachlich. Telefon/E-Mail von Trainern nur mit Zustimmung der Person (veroeffentlichen: true).
 Code, Layout, Impressum und Datenschutz kann dieser Server nicht ändern – dafür den Webmaster ansprechen.
 Fehlermeldungen ehrlich weitergeben; nichts gilt als veröffentlicht, bevor veroeffentlichen Erfolg meldet.`;
@@ -98,7 +101,7 @@ export function erstelleServer(ctx) {
     {
       sammlung,
       id,
-      feld: z.string().describe('foto (Mannschaften) oder logo (Sponsoren)'),
+      feld: z.string().describe('foto (Mannschaften), logo (Sponsoren), titelbild oder galerie (Beiträge; galerie hängt an)'),
       datei_base64: z.string().optional().describe('Bilddatei als Base64'),
       url: z.string().optional().describe('alternativ: https-URL des Bildes'),
       alt: z.string().describe('Bildbeschreibung, z. B. "Mannschaftsfoto D1-Jugend 2026"'),
