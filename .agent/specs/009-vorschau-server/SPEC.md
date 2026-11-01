@@ -1,6 +1,7 @@
 ---
 modules: vorschau, infra
 station: Doing
+ready: true
 branch: spec/009-vorschau-vercel
 owner: FC Luebbecke <Git@fcluebbecke.de>
 order: 2
@@ -63,8 +64,8 @@ Nicht im Umfang:
   das Neuladen-Skript noch das Hinweisband.
 - Wenn man die Entwurfs-Vorschau öffnet, dann steht oben „Vorschau – nicht
   veröffentlicht“.
-- Wenn man die Vorschau in einem iframe einer erlaubten Seite öffnet, dann wird
-  sie angezeigt (sobald Q2 die Adresse liefert).
+- ~~Wenn man die Vorschau in einem iframe einer erlaubten Seite öffnet, dann wird
+  sie angezeigt (sobald Q2 die Adresse liefert).~~ → Spec 012 (Decision 5)
 - Suchmaschinen indexieren die Vorschau nicht.
 
 ## Decisions
@@ -82,6 +83,12 @@ Nicht im Umfang:
    im Chat). Achtung, nicht verwechseln: Vercel nennt alle Nicht-Live-Builds
    ebenfalls „Preview“ (`VERCEL_ENV=preview`). Maßgeblich für Band und
    Neuladen ist allein der Branch-Name (`VERCEL_GIT_COMMIT_REF === "preview"`).
+5. 2026-11-01 · Einbetten der Vorschau in Private AI (Q2, `frame-ancestors`)
+   wird aus dieser Spec herausgelöst nach Spec 012. Grund: Die Vorschau-Adresse
+   ist durch Vercel Authentication geschützt (Weiterleitung zur
+   Vercel-Anmeldung, `X-Frame-Options: DENY`). Ob dieser Schutz für die
+   Vorschau gelockert wird, ist eine eigene Entscheidung. Für UC-001 genügt
+   bis dahin die Vorschau in einem zweiten Fenster (mit Vercel-Anmeldung).
 2. 2026-11-01 · Neuladen per Abfrage von `/build.json` statt WebSocket:
    funktioniert mit rein statischen Vercel-Builds ohne Server-Code.
 
@@ -92,12 +99,17 @@ Nicht im Umfang:
       `src/pages/build.json.ts`, `src/lib/vorschau.ts`; `Cache-Control: no-store` in `vercel.json`
 - [x] Neuladen-Skript und Hinweisband im Layout, nur für Branch `preview`
       `src/components/VorschauHinweis.astro`; zusätzlich `noindex`-Meta; lokal per `VORSCHAU=1`
-- [ ] Branch `preview` von `main` anlegen und pushen (manuell, Push hier nicht möglich; Befehl in VORSCHAU.md)
+- [x] Branch `preview` von `main` anlegen und pushen (manuell, Push hier nicht möglich; Befehl in VORSCHAU.md)
       Hinweis: `preview` zweigt von `main` ab; Neuladen-Skript und
       Hinweisband wirken dort erst, wenn dieser Code live (in `main`) ist.
-- [ ] Vorschau-Adresse festlegen (Vercel-Branch-Adresse oder eigene Domain)
-- [ ] Zeit Commit → sichtbare Änderung messen
-- [ ] `frame-ancestors` setzen (nach Q2)
+- [x] Vorschau-Adresse festlegen (Vercel-Branch-Adresse oder eigene Domain)
+      `https://fc-luebbecke-neu-git-preview-fcl3.vercel.app` (Vercel-Team `fcl3`)
+- [x] Zeit Commit → sichtbare Änderung messen
+      17 s bis Build fertig (zweimal gemessen), plus höchstens 5 s Abfrage → ca. 20 s
+- [x] `frame-ancestors` setzen (nach Q2)
+      Nicht umgesetzt, sondern ausgelagert nach Spec 012 (Decision 5): Die
+      Vorschau ist per Vercel Authentication geschützt und sendet
+      `X-Frame-Options: DENY`; Einbetten setzt erst eine Entscheidung zum Schutz voraus.
 - [x] `VORSCHAU.md` schreiben
 
 ## Verification
@@ -117,10 +129,30 @@ Nicht im Umfang:
   zwei markierte Test-Commits gepusht (Badminton, Darts). Die offene Vorschau
   lud nach dem Vercel-Build selbst neu und zeigte die Änderung. Danach
   `preview` wieder auf `dev` zurückgesetzt.
-- Offen: genaue Zeit Commit → Anzeige stoppen; Messung auf Vercel (braucht den gepushten Branch `preview` mit diesem
-  Code in `main`).
+- Messung über die GitHub-Commit-Status von Vercel (Änderungen aus Private AI):
+  `16528d7` Commit 15:45:10 → Vorschau-Build fertig 15:45:27 (17 s);
+  `201db4b` Commit 15:47:27 → fertig 15:47:44 (17 s). Mit der Abfrage alle
+  5 s erscheint eine Änderung also nach ca. 20 s – Ziel „unter 90 s“ erfüllt.
+- Vorschau-Adresse `https://fc-luebbecke-neu-git-preview-fcl3.vercel.app`:
+  `X-Robots-Tag: noindex` gesetzt; geschützt durch Vercel Authentication
+  (302 zur Vercel-Anmeldung), `X-Frame-Options: DENY`.
 
 ## Review
+
+Build: `main` (live) · Vorschau `https://fc-luebbecke-neu-git-preview-fcl3.vercel.app`
+Not part of this acceptance: Einbettung in Private AI (Spec 012)
+
+### R1 · Hinweisband nur in der Vorschau
+- Given: du bist bei Vercel angemeldet
+- When: du die Vorschau-Adresse und danach www.fcluebbecke.de öffnest
+- Then: nur die Vorschau zeigt oben „Vorschau – nicht veröffentlicht“
+- [ ] ok
+
+### R2 · Vorschau lädt selbst neu
+- Given: die Vorschau ist offen
+- When: über Private AI eine Änderung im Entwurf gespeichert wird
+- Then: nach etwa 20 Sekunden zeigt die Vorschau die Änderung, ohne dass du neu lädst
+- [ ] ok
 
 ## Questions
 
