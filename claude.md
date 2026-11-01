@@ -209,16 +209,27 @@ Ablauf steht in `.agent/agent.md` und ist verbindlich:
 
 Zusätzlich gilt in diesem Projekt verbindlich:
 
+**Branches:** `main` wird bei jedem Push sofort live deployt (Vercel).
+Deshalb läuft alle Arbeit über den Branch **`dev`**:
+
+```
+main  ← nur nach ausdrücklicher Freigabe aus dev gemergt (= Livegang)
+ └─ dev  ← Sammelstand aller fertigen Specs
+     └─ spec/NNN-kurzer-titel  ← Arbeit an einer Spec
+```
+
 1. **Immer zuerst einen Feature-Branch anlegen:** `spec/NNN-kurzer-titel`,
-   abgezweigt von `main`. Keine Spec-Umsetzung direkt auf `main`.
+   abgezweigt von `dev`. Keine Spec-Umsetzung direkt auf `dev` oder `main`.
 2. Beim Start `station: Doing` setzen, den Branch im Frontmatter (`branch:`)
    eintragen, falls die App das nicht schon getan hat.
 3. Alle Commits auf dem Feature-Branch, Spec-ID im Commit-Text nennen.
 4. Nach Abschluss Tasks, `## Verification` und History-Eintrag vervollständigen;
    bei `needs_human: true` `ready: true` setzen und `## Review` schreiben,
    sonst `station: Done`.
-5. **Am Ende fragen, ob nach `main` gemergt werden darf.** Nie ohne
-   ausdrückliche Freigabe mergen. Nach dem Merge den Branch löschen.
+5. **Am Ende fragen, ob nach `dev` gemergt werden darf.** Nie ohne
+   ausdrückliche Freigabe mergen. Nach dem Merge den Spec-Branch löschen.
+6. **`dev` → `main` nur auf ausdrückliche Anweisung** („live stellen“).
+   Nie von selbst nach `main` mergen oder pushen.
 
 ---
 
