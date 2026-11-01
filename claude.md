@@ -90,6 +90,7 @@ Mobil: Burger-Menü. Header bleibt beim Scrollen oben (sticky).
 | Badminton     | Eine einzelne Seite                                     | nein      |
 | Darts         | Eine einzelne Seite                                     | nein      |
 | Laufsport ↗   | Externer Link, **neues Fenster**                        | extern    |
+| 100 Jahre     | Jubiläumsbuch (`/100-jahre`), gehört zum ganzen Verein  | nein      |
 | Verein        | Über uns, Vorstand, Geschichte, Beitritt                | optional  |
 | Kontakt       | Anschrift, Ansprechpartner, Karte                       | nein      |
 

@@ -1,8 +1,8 @@
 ---
 /**
  * Jubiläumsbuch „100 Jahre FC Lübbecke“ (Spec 014, UC-002).
- * Aufbau: Bühne mit Cover · Über das Buch + Kapitel · Leseprobe (Galerie mit
- * Großansicht) · Bestellen (Formular füllt eine E-Mail an kontakt@ vor) · Fragen.
+ * Aufbau: Bühne mit Cover · Über das Buch + Kapitel · Leseprobe (Blätterbuch,
+ * Spec 015, mit Großansicht) · Bestellen (Formular füllt eine E-Mail an kontakt@ vor) · Fragen.
  *
  * Build-Zeit-Vorgabe: keine PDFs, keine Bilder aus src/assets – nur vorab
  * optimierte WebP-Dateien aus public/jubilaeumsbuch/, kein Download beim Build.
@@ -11,7 +11,15 @@ import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { KONTAKT_MAIL, KONTAKT_MAILTO } from "../data/kontakt";
+import Blaetterbuch from "../components/Blaetterbuch.astro";
 import { BUCH, LESEPROBE, preisText, seitenBild } from "../data/jubilaeumsbuch";
+
+const buchSeiten = LESEPROBE.map((s) => ({
+  src: seitenBild(s.nr),
+  srcKlein: seitenBild(s.nr, true),
+  alt: s.alt,
+  titel: s.titel,
+}));
 
 const kapitel = [
   { titel: "Die Vorsitzenden", text: "Ernst Ober-Entgelmeier, Bernd Sasse-Westermann und Gerhard Blase im Gespräch." },
@@ -29,7 +37,7 @@ const mailtoEinfach = `${KONTAKT_MAILTO}?subject=${encodeURIComponent(BUCH.beste
   description={`Das Jubiläumsbuch zum 100-jährigen Bestehen des FC Lübbecke von 1925: ${BUCH.seiten} Seiten Vereinsgeschichte, Jugendarbeit und Heimat. Leseprobe ansehen und für ${preisText} bestellen.`}
   ogImage={seitenBild("001")}
 >
-  <Header active="fussball" />
+  <Header active="100-jahre" />
 
   <!-- Bühne -->
   <section class="jb-hero" aria-labelledby="jb-title">
@@ -90,24 +98,24 @@ const mailtoEinfach = `${KONTAKT_MAILTO}?subject=${encodeURIComponent(BUCH.beste
     <section class="jb-leseprobe-wrap" id="leseprobe">
       <div class="container section">
         <h2 class="section-title">Leseprobe</h2>
-        <p class="jb-intro">Blättere in {LESEPROBE.length} ausgewählten Seiten. Tippe auf eine Seite für die Großansicht.</p>
-        <ul class="jb-galerie">
-          {LESEPROBE.map((s, i) => (
-            <li>
-              <a class="jb-seite" href={seitenBild(s.nr)} data-index={i} data-alt={s.alt}>
-                <img
-                  src={seitenBild(s.nr, true)}
-                  width="480"
-                  height="480"
-                  alt={s.alt}
-                  loading="lazy"
-                  decoding="async"
-                />
-                <span class="jb-seite__titel">{s.titel}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
+        <p class="jb-intro">
+          Blättere in {LESEPROBE.length} ausgewählten Seiten – tippe auf die
+          rechte Seite, wische oder nutze die Pfeiltasten.
+        </p>
+        <Blaetterbuch seiten={buchSeiten}>
+          <div slot="ende" class="jb-ende">
+            <p class="jb-ende__kicker">Ende der Leseprobe</p>
+            <p class="jb-ende__titel">Das ganze Buch:<br />{BUCH.seiten} Seiten</p>
+            <p class="jb-ende__preis">{preisText}</p>
+            {BUCH.lieferbar
+              ? <a class="btn btn--primary" href="#bestellen">Jetzt bestellen</a>
+              : <p class="jb-ende__kicker">Leider vergriffen</p>}
+          </div>
+          <div slot="rueckseite" class="jb-rueck">
+            <p class="jb-rueck__jahr">1925 – 2025</p>
+            <p class="jb-rueck__name">FC Lübbecke e.V.</p>
+          </div>
+        </Blaetterbuch>
       </div>
     </section>
 
@@ -236,6 +244,11 @@ const mailtoEinfach = `${KONTAKT_MAILTO}?subject=${encodeURIComponent(BUCH.beste
     zaehler.textContent = `Seite ${aktuell + 1} von ${seiten.length}`;
   };
   if (dialog && typeof dialog.showModal === "function") {
+    // „Seite vergrößern“ im Blätterbuch
+    document.addEventListener("jb:grossansicht", (e) => {
+      zeige(e.detail);
+      dialog.showModal();
+    });
     seiten.forEach((a, i) =>
       a.addEventListener("click", (e) => {
         e.preventDefault();
@@ -358,35 +371,35 @@ const mailtoEinfach = `${KONTAKT_MAILTO}?subject=${encodeURIComponent(BUCH.beste
 
   /* ── Leseprobe ── */
   .jb-leseprobe-wrap { background: var(--color-green-050); }
-  .jb-galerie {
-    list-style: none;
-    margin: var(--space-4) 0 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-3);
-  }
-  .jb-seite {
-    display: block;
-    text-decoration: none;
-    background: #fff;
-    border-radius: var(--radius-sm);
-    box-shadow: var(--shadow-soft);
-    overflow: hidden;
-    transition: transform 0.18s ease, box-shadow 0.18s ease;
-  }
-  .jb-seite:hover, .jb-seite:focus-visible {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-card);
-  }
-  .jb-seite img { display: block; width: 100%; height: auto; aspect-ratio: 1; }
-  .jb-seite__titel {
-    display: block;
-    padding: 0.6rem 0.8rem;
+  /* Sonderseiten im Blätterbuch (werden per JS eingesetzt → :global) */
+  :global(.jb-ende) { display: grid; gap: 0.6rem; justify-items: center; }
+  :global(.jb-ende__kicker) {
     font-family: var(--font-head);
-    font-size: 1rem;
-    color: var(--color-green-700);
+    font-size: var(--fs-small);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-muted);
   }
+  :global(.jb-ende__titel) {
+    font-family: var(--font-head);
+    font-size: clamp(1.1rem, 0.8rem + 1.2vw, 1.6rem);
+    line-height: 1.2;
+    color: var(--color-green-900);
+  }
+  :global(.jb-ende__preis) {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: clamp(1.4rem, 1rem + 1.6vw, 2.2rem);
+    color: var(--color-green-700);
+    border-bottom: 4px solid var(--color-green-500);
+  }
+  :global(.jb-rueck) { display: grid; gap: 0.4rem; }
+  :global(.jb-rueck__jahr) {
+    font-family: var(--font-head);
+    font-size: clamp(1.4rem, 1rem + 2vw, 2.6rem);
+    letter-spacing: 0.06em;
+  }
+  :global(.jb-rueck__name) { font-family: var(--font-head); opacity: 0.85; }
 
   /* ── Großansicht ── */
   .jb-lightbox {
@@ -501,11 +514,9 @@ const mailtoEinfach = `${KONTAKT_MAILTO}?subject=${encodeURIComponent(BUCH.beste
   }
   @media (min-width: 640px) {
     .jb-kapitel { grid-template-columns: repeat(2, 1fr); }
-    .jb-galerie { grid-template-columns: repeat(3, 1fr); }
   }
   @media (min-width: 960px) {
     .jb-hero__inner { grid-template-columns: 1.2fr 0.8fr; }
-    .jb-galerie { grid-template-columns: repeat(5, 1fr); }
     .jb-bestellen { grid-template-columns: 1fr 1fr; gap: var(--space-6); }
   }
 </style>

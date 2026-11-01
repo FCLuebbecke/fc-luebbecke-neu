@@ -1,0 +1,415 @@
+---
+/**
+ * Blätterbuch für die Leseprobe (Spec 015) – ohne externe Bibliothek.
+ *
+ * - Desktop (≥ 700 px): aufgeschlagenes Buch mit Doppelseite, Seiten drehen
+ *   sich in 3D um den Buchrücken (CSS transform + backface-visibility).
+ * - Mobil: eine Seite, die beim Umblättern nach links wegklappt.
+ * - Bedienung: Knöpfe, Tippen auf rechte/linke Hälfte, Wischen, Pfeiltasten.
+ * - „Vergrößern“ löst das Ereignis `jb:grossansicht` (detail = Bildindex) aus.
+ * - Ohne JavaScript bleibt die Bilder-Galerie (Fallback) sichtbar.
+ * - prefers-reduced-motion: Blättern ohne Animation.
+ *
+ * Slots: `ende` (Seite „Ende der Leseprobe“), `rueckseite` (Buchrückseite).
+ */
+export interface BuchSeite {
+  src: string;
+  srcKlein: string;
+  alt: string;
+  titel: string;
+}
+interface Props {
+  seiten: BuchSeite[];
+}
+const { seiten } = Astro.props;
+---
+
+<div class="bb" data-blaetterbuch>
+  <div class="bb__buehne">
+    <div
+      class="bb__buch"
+      tabindex="0"
+      role="group"
+      aria-roledescription="Blätterbuch"
+      aria-label="Leseprobe – mit Pfeiltasten, Wischen oder den Knöpfen blättern"
+    ></div>
+  </div>
+
+  <div class="bb__steuerung">
+    <button class="bb__btn" type="button" data-bb="zurueck" aria-label="Zurückblättern">
+      <span aria-hidden="true">‹</span><span class="bb__btn-text"> Zurück</span>
+    </button>
+    <p class="bb__zaehler" aria-live="polite"></p>
+    <button class="bb__btn" type="button" data-bb="weiter" aria-label="Weiterblättern">
+      <span class="bb__btn-text">Weiter </span><span aria-hidden="true">›</span>
+    </button>
+  </div>
+  <p class="bb__zoom-zeile">
+    <button class="bb__zoom" type="button" data-bb="zoom">Seite vergrößern</button>
+  </p>
+
+  <!-- Fallback ohne JavaScript + Quelle für die Großansicht -->
+  <ul class="bb__fallback">
+    {seiten.map((s, i) => (
+      <li>
+        <a class="jb-seite" href={s.src} data-index={i} data-alt={s.alt} data-titel={s.titel} data-klein={s.srcKlein}>
+          <img src={s.srcKlein} width="480" height="480" alt={s.alt} loading="lazy" decoding="async" />
+          <span class="jb-seite__titel">{s.titel}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  <template data-bb-ende><slot name="ende" /></template>
+  <template data-bb-rueckseite><slot name="rueckseite" /></template>
+</div>
+
+<script>
+  type Seite =
+    | { art: "bild"; index: number; src: string; klein: string; alt: string; titel: string }
+    | { art: "html"; html: string; titel: string; klasse: string };
+
+  const DOPPEL = window.matchMedia("(min-width: 700px)");
+  const RUHIG = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  document.querySelectorAll<HTMLElement>("[data-blaetterbuch]").forEach((root) => {
+    const buch = root.querySelector<HTMLElement>(".bb__buch")!;
+    const zaehler = root.querySelector<HTMLElement>(".bb__zaehler")!;
+    const btnZurueck = root.querySelector<HTMLButtonElement>('[data-bb="zurueck"]')!;
+    const btnWeiter = root.querySelector<HTMLButtonElement>('[data-bb="weiter"]')!;
+    const btnZoom = root.querySelector<HTMLButtonElement>('[data-bb="zoom"]')!;
+
+    const bilder: Seite[] = [...root.querySelectorAll<HTMLAnchorElement>(".bb__fallback a")].map((a) => ({
+      art: "bild",
+      index: Number(a.dataset.index),
+      src: a.getAttribute("href")!,
+      klein: a.dataset.klein!,
+      alt: a.dataset.alt!,
+      titel: a.dataset.titel!,
+    }));
+    const vorlage = (sel: string) => root.querySelector<HTMLTemplateElement>(sel)?.innerHTML.trim() ?? "";
+    const ende: Seite = { art: "html", html: vorlage("[data-bb-ende]"), titel: "Ende der Leseprobe", klasse: "bb__seite--ende" };
+    const rueckseite: Seite = { art: "html", html: vorlage("[data-bb-rueckseite]"), titel: "Rückseite", klasse: "bb__seite--rueck" };
+
+    let blaetter: HTMLElement[] = [];
+    let umgeblaettert = 0; // Anzahl gedrehter Blätter
+    let drehMarke = 0;
+    let doppel = DOPPEL.matches;
+    /** Folge der Seiten im aktuellen Modus (für Zähler und Großansicht) */
+    let folge: (Seite | null)[] = [];
+
+    const seiteHtml = (s: Seite | null, seitenKlasse: string, eager: boolean) => {
+      const div = document.createElement("div");
+      div.className = `bb__seite ${seitenKlasse}`;
+      if (!s) {
+        div.classList.add("bb__seite--leer");
+      } else if (s.art === "bild") {
+        const img = document.createElement("img");
+        img.src = s.klein;
+        img.srcset = `${s.klein} 480w, ${s.src} 1200w`;
+        img.sizes = "(min-width: 700px) 520px, 92vw";
+        img.width = 1200;
+        img.height = 1200;
+        img.alt = s.alt;
+        img.decoding = "async";
+        img.loading = eager ? "eager" : "lazy";
+        img.draggable = false;
+        div.append(img);
+      } else {
+        div.classList.add(s.klasse);
+        div.innerHTML = s.html;
+      }
+      return div;
+    };
+
+    const aufbauen = () => {
+      const merkSeite = doppel ? Math.max(0, umgeblaettert * 2 - 1) : umgeblaettert;
+      doppel = DOPPEL.matches;
+      root.classList.toggle("bb--doppel", doppel);
+      root.classList.toggle("bb--einzel", !doppel);
+      buch.innerHTML = "";
+      blaetter = [];
+
+      // Doppel: Blatt = Vorderseite + Rückseite. Einzel: Blatt = eine Seite, Rückseite Papier.
+      const liste: Seite[] = doppel ? [...bilder, ende, rueckseite] : [...bilder, ende];
+      const paare: [Seite | null, Seite | null][] = [];
+      if (doppel) for (let i = 0; i < liste.length; i += 2) paare.push([liste[i], liste[i + 1] ?? null]);
+      else liste.forEach((s) => paare.push([s, null]));
+      folge = liste;
+
+      paare.forEach(([vorne, hinten], i) => {
+        const blatt = document.createElement("div");
+        blatt.className = "bb__blatt";
+        blatt.append(seiteHtml(vorne, "bb__vorne", i < 2), seiteHtml(hinten, "bb__hinten", i < 2));
+        buch.append(blatt);
+        blaetter.push(blatt);
+      });
+
+      umgeblaettert = doppel ? Math.min(blaetter.length, Math.ceil(merkSeite / 2)) : Math.min(blaetter.length - 1, merkSeite);
+      darstellen(false);
+    };
+
+    const darstellen = (animiert: boolean, drehendes = -1) => {
+      const n = blaetter.length;
+      blaetter.forEach((b, i) => {
+        const gedreht = i < umgeblaettert;
+        b.classList.toggle("ist-gedreht", gedreht);
+        // Schatten nur für sichtbare/drehende Blätter – sonst addieren sich die Schatten des Stapels
+        // (mobil liegt das umgeblätterte Blatt außerhalb des Bildes → kein Schatten)
+        b.classList.toggle("ist-oben", i === umgeblaettert || (doppel && i === umgeblaettert - 1) || i === drehendes);
+        b.style.zIndex = String(i === drehendes ? n + 10 : gedreht ? i + 1 : n - i);
+        b.style.transition = animiert && !RUHIG.matches ? "" : "none";
+      });
+      if (drehendes >= 0) {
+        // Nach dem Umblättern Stapelreihenfolge aufräumen – nur, wenn seitdem
+        // nicht erneut geblättert wurde (sonst würde die neue Animation abgeschnitten).
+        const marke = ++drehMarke;
+        const fertig = () => { if (marke === drehMarke) darstellen(false); };
+        blaetter[drehendes].addEventListener("transitionend", fertig, { once: true });
+        window.setTimeout(fertig, 1000);
+      }
+      if (doppel) {
+        root.classList.toggle("ist-zu-vorne", umgeblaettert === 0);
+        root.classList.toggle("ist-zu-hinten", umgeblaettert === n);
+      }
+      const max = doppel ? n : n - 1;
+      btnZurueck.disabled = umgeblaettert === 0;
+      btnWeiter.disabled = umgeblaettert >= max;
+
+      // Zähler: sichtbare Seiten
+      const sichtbar = sichtbareSeiten();
+      zaehler.textContent = sichtbar.map((s) => s.titel).join(" · ");
+      btnZoom.disabled = !sichtbar.some((s) => s.art === "bild");
+    };
+
+    const sichtbareSeiten = (): Seite[] => {
+      if (!doppel) return folge[umgeblaettert] ? [folge[umgeblaettert]!] : [];
+      const links = folge[umgeblaettert * 2 - 1];
+      const rechts = folge[umgeblaettert * 2];
+      return [links, rechts].filter((s): s is Seite => !!s && s !== rueckseite);
+    };
+
+    const blaettern = (richtung: 1 | -1) => {
+      const max = doppel ? blaetter.length : blaetter.length - 1;
+      const neu = umgeblaettert + richtung;
+      if (neu < 0 || neu > max) return;
+      const drehendes = richtung === 1 ? umgeblaettert : neu;
+      umgeblaettert = neu;
+      darstellen(true, drehendes);
+    };
+
+    btnWeiter.addEventListener("click", () => blaettern(1));
+    btnZurueck.addEventListener("click", () => blaettern(-1));
+    btnZoom.addEventListener("click", () => {
+      const bild = sichtbareSeiten().reverse().find((s) => s.art === "bild");
+      if (bild && bild.art === "bild") {
+        document.dispatchEvent(new CustomEvent("jb:grossansicht", { detail: bild.index }));
+      }
+    });
+
+    buch.addEventListener("click", (e) => {
+      if ((e.target as HTMLElement).closest("a, button")) return;
+      const r = buch.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width;
+      blaettern(x < (doppel ? 0.5 : 0.35) ? -1 : 1);
+    });
+    buch.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") { e.preventDefault(); blaettern(1); }
+      if (e.key === "ArrowLeft") { e.preventDefault(); blaettern(-1); }
+    });
+    let startX: number | null = null;
+    buch.addEventListener("touchstart", (e) => (startX = e.touches[0].clientX), { passive: true });
+    buch.addEventListener("touchend", (e) => {
+      if (startX === null) return;
+      const dx = e.changedTouches[0].clientX - startX;
+      startX = null;
+      if (Math.abs(dx) > 40) blaettern(dx < 0 ? 1 : -1);
+    });
+
+    DOPPEL.addEventListener("change", aufbauen);
+    root.classList.add("bb--aktiv");
+    aufbauen();
+  });
+</script>
+
+<style>
+  .bb { --bb-papier: #fbfaf6; }
+
+  /* Ohne JS: nur Galerie */
+  .bb__buehne, .bb__steuerung, .bb__zoom-zeile { display: none; }
+  .bb--aktiv .bb__buehne { display: block; }
+  .bb--aktiv .bb__steuerung { display: flex; }
+  .bb--aktiv .bb__zoom-zeile { display: block; }
+  .bb--aktiv .bb__fallback { display: none; }
+
+  /* ── Bühne & Buch ── */
+  .bb__buehne {
+    margin-top: var(--space-4);
+    padding-block: var(--space-2);
+  }
+  /* mobil: umgeblätterte Seite verschwindet nach links – nur seitlich abschneiden,
+     damit der Schatten oben/unten weich bleibt */
+  .bb--einzel .bb__buehne { overflow-x: clip; }
+  .bb__buch {
+    position: relative;
+    margin-inline: auto;
+    cursor: pointer;
+    outline: none;
+    transition: transform 0.6s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .bb__buch:focus-visible { box-shadow: 0 0 0 4px var(--color-green-500); border-radius: 4px; }
+  .bb--doppel .bb__buch { width: min(100%, 1040px); aspect-ratio: 2 / 1; }
+  .bb--einzel .bb__buch { width: min(100%, 520px); aspect-ratio: 1 / 1; }
+  /* Geschlossenes Buch mittig */
+  .bb--doppel.ist-zu-vorne .bb__buch { transform: translateX(-25%); }
+  .bb--doppel.ist-zu-hinten .bb__buch { transform: translateX(25%); }
+
+  /* ── Blätter ── */
+  .bb__buch :global(.bb__blatt) {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    transform-origin: left center;
+    transform-style: preserve-3d;
+    transform: perspective(2400px) rotateY(0deg);
+    transition: transform 0.9s cubic-bezier(0.645, 0.045, 0.355, 1);
+  }
+  .bb--doppel .bb__buch :global(.bb__blatt) { left: 50%; width: 50%; }
+  .bb--einzel .bb__buch :global(.bb__blatt) { left: 0; width: 100%; }
+  .bb__buch :global(.bb__blatt.ist-gedreht) { transform: perspective(2400px) rotateY(-180deg); }
+
+  .bb__buch :global(.bb__seite) {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background: var(--bb-papier);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  .bb__buch :global(.bb__blatt.ist-oben .bb__seite) { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18); }
+  .bb__buch :global(.bb__hinten) { transform: rotateY(180deg); }
+  .bb__buch :global(.bb__seite img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    user-select: none;
+    pointer-events: none;
+  }
+  /* Schattierung zum Buchrücken hin */
+  .bb__buch :global(.bb__seite::after) {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .bb--doppel .bb__buch :global(.bb__vorne::after) {
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0) 8%);
+  }
+  .bb--doppel .bb__buch :global(.bb__hinten::after) {
+    background: linear-gradient(to left, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0) 8%);
+  }
+  .bb--doppel .bb__buch :global(.bb__vorne) { border-radius: 0 6px 6px 0; }
+  .bb--doppel .bb__buch :global(.bb__hinten) { border-radius: 6px 0 0 6px; }
+  .bb--einzel .bb__buch :global(.bb__seite) { border-radius: 6px; }
+  .bb--einzel .bb__buch :global(.bb__hinten) {
+    background: linear-gradient(to left, #ebe8df, var(--bb-papier));
+  }
+
+  /* Sonderseiten */
+  .bb__buch :global(.bb__seite--ende),
+  .bb__buch :global(.bb__seite--rueck) {
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: 8%;
+  }
+  .bb__buch :global(.bb__seite--rueck) {
+    background: linear-gradient(135deg, var(--color-green-700), var(--color-green-900));
+    color: #fff;
+  }
+
+  /* ── Steuerung ── */
+  .bb__steuerung {
+    margin-top: var(--space-3);
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+  }
+  .bb__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: var(--tap);
+    min-width: var(--tap);
+    padding: 0 var(--space-2);
+    border: 2px solid var(--color-green-700);
+    border-radius: var(--radius-sm);
+    background: #fff;
+    color: var(--color-green-700);
+    font-family: var(--font-head);
+    font-size: 1.05rem;
+    cursor: pointer;
+  }
+  .bb__btn span[aria-hidden] { font-size: 1.5rem; line-height: 1; }
+  .bb__btn:hover:not(:disabled) { background: var(--color-green-700); color: #fff; }
+  .bb__btn:disabled { opacity: 0.35; cursor: default; }
+  .bb__zaehler {
+    flex: 1 1 auto;
+    max-width: 26rem;
+    text-align: center;
+    font-family: var(--font-head);
+    color: var(--color-green-900);
+  }
+  .bb__zoom-zeile { margin-top: var(--space-2); text-align: center; }
+  .bb__zoom {
+    min-height: var(--tap);
+    border: 0;
+    background: none;
+    color: var(--color-green-700);
+    font: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  .bb__zoom:disabled { visibility: hidden; }
+
+  /* ── Fallback-Galerie ── */
+  .bb__fallback {
+    list-style: none;
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+  }
+  .bb__fallback :global(.jb-seite) {
+    display: block;
+    text-decoration: none;
+    background: #fff;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+  }
+  .bb__fallback img { display: block; width: 100%; height: auto; aspect-ratio: 1; }
+  .bb__fallback :global(.jb-seite__titel) {
+    display: block;
+    padding: 0.6rem 0.8rem;
+    font-family: var(--font-head);
+    color: var(--color-green-700);
+  }
+
+  @media (max-width: 420px) {
+    .bb__btn-text { display: none; }
+  }
+  @media (min-width: 640px) {
+    .bb__fallback { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (min-width: 960px) {
+    .bb__fallback { grid-template-columns: repeat(5, 1fr); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bb__buch, .bb__buch :global(.bb__blatt) { transition: none !important; }
+  }
+</style>
