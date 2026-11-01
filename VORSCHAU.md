@@ -1,11 +1,11 @@
 # Entwurfs-Vorschau
 
-Änderungen aus dem Chat (UC-001) landen zuerst auf dem Branch **`entwurf`**.
+Änderungen aus dem Chat (UC-001) landen zuerst auf dem Branch **`preview`**.
 Vercel baut daraus eine Vorschau unter einer festen Adresse. Erst
 „veröffentlichen“ übernimmt den Entwurf nach `main` (live). Spec 009.
 
 ```
-Chat → MCP-Server → Commit auf entwurf → Vercel baut Vorschau → Vorschau lädt neu
+Chat → MCP-Server → Commit auf preview → Vercel baut Vorschau → Vorschau lädt neu
                                        └─ „veröffentlichen“ → main → live
 ```
 
@@ -13,7 +13,7 @@ Chat → MCP-Server → Commit auf entwurf → Vercel baut Vorschau → Vorschau
 
 - Jeder Build schreibt **`/build.json`** mit Commit, Branch und Zeitpunkt
   (`src/pages/build.json.ts`, nie gecacht, siehe `vercel.json`).
-- Nur in Builds des Branches `entwurf` bindet das Layout
+- Nur in Builds des Branches `preview` bindet das Layout
   `src/components/VorschauHinweis.astro` ein:
   - **Hinweisband** oben: „Vorschau – nicht veröffentlicht“
   - **Automatisches Neuladen:** Die Seite fragt alle 5 Sekunden `/build.json`
@@ -23,7 +23,7 @@ Chat → MCP-Server → Commit auf entwurf → Vercel baut Vorschau → Vorschau
   - `<meta name="robots" content="noindex, nofollow">`; Vercel setzt für
     Vorschau-Adressen zusätzlich `X-Robots-Tag: noindex`.
 - Die Live-Seite und alle anderen Vorschauen enthalten davon nichts.
-- Gesteuert über `src/lib/vorschau.ts` (`VERCEL_GIT_COMMIT_REF === "entwurf"`).
+- Gesteuert über `src/lib/vorschau.ts` (`VERCEL_GIT_COMMIT_REF === "preview"`).
 
 ## Lokal testen
 
@@ -37,16 +37,16 @@ Dev-Server, der bei jeder Dateiänderung sofort neu lädt.
 
 ## Einrichtung (einmalig, manuell)
 
-1. **Branch `entwurf` anlegen und pushen** (Stand von `main`):
+1. **Branch `preview` anlegen und pushen** (Stand von `main`):
    ```
-   git push origin origin/main:refs/heads/entwurf
+   git push origin origin/main:refs/heads/preview
    ```
 2. **Vorschau-Adresse ermitteln:** Vercel → Projekt → Deployments → Branch
-   `entwurf` → die Adresse der Form
-   `<projekt>-git-entwurf-<team>.vercel.app` zeigt immer auf den neuesten
+   `preview` → die Adresse der Form
+   `<projekt>-git-preview-<team>.vercel.app` zeigt immer auf den neuesten
    Build des Branches.
 3. **Optional eigene Adresse:** Vercel → Projekt → Settings → Domains →
-   `vorschau.fcluebbecke.de` hinzufügen und unter „Git Branch“ `entwurf`
+   `vorschau.fcluebbecke.de` hinzufügen und unter „Git Branch“ `preview`
    wählen; beim Domain-Anbieter einen CNAME auf `cname.vercel-dns.com`.
 4. **Zugriffsschutz prüfen:** Ist bei Vercel „Deployment Protection“ (Vercel
    Authentication) für Vorschauen an, muss man bei Vercel angemeldet sein,
@@ -57,7 +57,7 @@ Dev-Server, der bei jeder Dateiänderung sofort neu lädt.
 ## Wichtig
 
 - Neuladen und Hinweisband wirken in der Entwurfs-Vorschau erst, wenn dieser
-  Code in `main` ist, denn `entwurf` startet jeweils als Kopie von `main`.
+  Code in `main` ist, denn `preview` startet jeweils als Kopie von `main`.
 - **Wartezeit:** Von einer Änderung bis zur Anzeige vergehen die Vercel-Buildzeit
   plus höchstens 5 Sekunden. Gemessen: siehe unten.
 - **Einbetten:** Vercel setzt standardmäßig kein `X-Frame-Options`; die

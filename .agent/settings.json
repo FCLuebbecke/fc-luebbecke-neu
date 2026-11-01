@@ -27,7 +27,7 @@
     },
     {
       "name": "vorschau",
-      "description": "Vorschau über Vercel-Previews des Branches entwurf: Stand-Kennung, automatisches Neuladen, Hinweisband.",
+      "description": "Vorschau über Vercel-Previews des Branches preview: Stand-Kennung, automatisches Neuladen, Hinweisband.",
       "paths": [
         "VORSCHAU.md",
         "src/components/VorschauHinweis.astro"
