@@ -60,16 +60,18 @@ Dev-Server, der bei jeder Dateiänderung sofort neu lädt.
   Code in `main` ist, denn `preview` startet jeweils als Kopie von `main`.
 - **Wartezeit:** Von einer Änderung bis zur Anzeige vergehen die Vercel-Buildzeit
   plus höchstens 5 Sekunden. Gemessen: siehe unten.
-- **Einbetten:** Vercel setzt standardmäßig kein `X-Frame-Options`; die
-  Vorschau lässt sich also in einem iframe anzeigen. Sobald feststeht, von
-  welcher Adresse Private AI einbettet (Spec 009, Q2), wird das per
-  `Content-Security-Policy: frame-ancestors` auf diese Adresse beschränkt.
+- **Adresse:** `https://fc-luebbecke-neu-git-preview-fcl3.vercel.app`
+- **Schutz:** Die Vorschau ist durch Vercel Authentication geschützt – sehen
+  kann sie nur, wer bei Vercel angemeldet ist und Zugriff auf das Projekt hat.
+- **Einbetten:** Wegen dieses Schutzes sendet Vercel `X-Frame-Options: DENY`;
+  in Private AI einbetten geht so nicht. Wie das gelöst wird, ist Spec 012.
 
 ## Messung
 
 | Datum | Commit → Vorschau zeigt Änderung | Bemerkung |
 |---|---|---|
 | 2026-11-01 | funktioniert, Zeit nicht gestoppt | Test-Commits auf `preview` (Badminton, Darts); Seite lud nach dem Vercel-Build selbst neu |
+| 2026-11-01 | **17 s** bis Build fertig, Anzeige nach ca. 20 s | zwei Änderungen aus Private AI (`16528d7`, `201db4b`), gemessen über die GitHub-Commit-Status von Vercel |
 
 Lokal geprüft (2026-11-01): Nach einem neuen Stand in `/build.json` lädt die
 Seite nach 3,3 s neu und kehrt an die vorherige Scroll-Position zurück.
