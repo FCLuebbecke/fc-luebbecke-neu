@@ -1,6 +1,6 @@
 ---
 modules: mcp, inhalte
-station: Doing
+station: Done
 ready: true
 branch: spec/010-mcp-server
 owner: FC Luebbecke <Git@fcluebbecke.de>
@@ -117,7 +117,9 @@ Nicht im Umfang:
    Spec-Branches gehen direkt nach `main`. Decision 3 (dev nach jeder
    Inhalts-Veröffentlichung nachziehen) ist damit hinfällig; Spec-Branches
    holen sich bei Bedarf `main`, bevor sie gemergt werden.
-6. 2026-11-01 · Aus A1: **Ein gemeinsamer Schlüssel für Private AI**
+6. 2026-11-01 · ⚠️ **Abgelöst durch Spec 011** (feste Person „Private AI“,
+   keine Personen-Kopfzeilen, keine Freigabeliste). Ursprünglich:
+   Aus A1: **Ein gemeinsamer Schlüssel für Private AI**
    (`Authorization: Bearer …`). Private AI reicht Name und E-Mail der
    angemeldeten Person in Kopfzeilen mit (`X-FC-Person-Email`,
    `X-FC-Person-Name`); der Server lässt nur E-Mails aus der Freigabeliste zu
@@ -204,25 +206,25 @@ mit der Vorschau-Adresse des Spec-Branches.
 - Given: Private AI ist mit dem MCP-Server verbunden, die Vorschau ist offen
 - When: du im Chat eine Trainingszeit änderst
 - Then: Private AI zeigt vorher → nachher, die Vorschau zeigt die neue Zeit nach dem Vercel-Build, die Live-Seite nicht
-- [ ] ok
+- [x] ok
 
 ### R2 · Veröffentlichen
 - Given: eine Änderung liegt im Entwurf, Vorschau-Build ist fertig
 - When: du „veröffentlichen“ sagst
 - Then: Private AI zeigt vorher die offenen Änderungen; nach 1–2 Minuten ist die Änderung live, auf GitHub steht ein Commit mit dir als Autor
-- [ ] ok
+- [x] ok
 
 ### R3 · Verwerfen
 - Given: eine Änderung liegt im Entwurf
 - When: du „verwerfen“ sagst
 - Then: die Vorschau zeigt wieder den Live-Stand
-- [ ] ok
+- [x] ok
 
 ### R4 · Grenzen
 - Given: Private AI ist verbunden
 - When: du bittest, das Impressum oder Layout zu ändern, oder ein Foto ohne Beschreibung zu setzen
 - Then: Private AI erklärt, dass das nicht geht bzw. fragt nach der Beschreibung
-- [ ] ok
+- [x] ok
 
 ## Questions
 

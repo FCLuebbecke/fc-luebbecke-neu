@@ -1,2 +1,8 @@
 {"timestamp":"2026-11-01T14:58:51Z","spec_id":"010-mcp-server-private-ai","event_type":"station_changed","actor":"project","summary":"Backlog → Doing, Branch spec/010-mcp-server von main; Q1 im Chat beantwortet"}
 {"timestamp":"2026-11-01T15:06:41Z","spec_id":"010-mcp-server-private-ai","event_type":"agent_run","actor":"project","summary":"MCP-Server: api/mcp.mjs, mcp/{server,werkzeuge,inhalte,repo-github,repo-speicher}.mjs, gemeinsame Regeln src/content/schemas.mjs, 19 Tests grün, MCP.md; offen: Einrichtung und Durchlauf mit Private AI (manuell)"}
+{"timestamp":"2026-11-01T17:07:18Z","spec_id":"010-mcp-server-private-ai","event_type":"spec_edited","actor":"user","summary":"Prüfpunkt R2 abgehakt"}
+{"timestamp":"2026-11-01T17:07:20Z","spec_id":"010-mcp-server-private-ai","event_type":"spec_edited","actor":"user","summary":"Prüfpunkt R1 abgehakt"}
+{"timestamp":"2026-11-01T17:07:23Z","spec_id":"010-mcp-server-private-ai","event_type":"spec_edited","actor":"user","summary":"Prüfpunkt R3 abgehakt"}
+{"timestamp":"2026-11-01T17:07:27Z","spec_id":"010-mcp-server-private-ai","event_type":"spec_edited","actor":"user","summary":"Prüfpunkt R4 abgehakt"}
+{"timestamp":"2026-11-01T17:07:30Z","spec_id":"010-mcp-server-private-ai","event_type":"station_changed","actor":"user","summary":"Doing -> Done"}
+{"timestamp":"2026-11-01T17:07:30Z","spec_id":"010-mcp-server-private-ai","event_type":"spec_edited","actor":"user","summary":"Abgenommen"}
