@@ -1,0 +1,10 @@
+{
+  "name": "FIT FINANCE",
+  "stufe": "premium",
+  "reihenfolge": 20,
+  "website": "https://www.fit-finance.de/",
+  "logo": {
+    "src": "../../assets/content/sponsoren/fit-finance.jpg",
+    "alt": "Logo FIT FINANCE"
+  }
+}

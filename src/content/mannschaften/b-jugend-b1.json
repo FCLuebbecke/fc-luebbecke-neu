@@ -1,0 +1,21 @@
+{
+  "name": "B - Jugend (B1)",
+  "kategorie": "jugend",
+  "reihenfolge": 60,
+  "jahrgang": "15-16 Jahre",
+  "trainerteam": [
+    {
+      "name": "Abdoulaye Barry, Roland Brandt, Samuel Löwen"
+    }
+  ],
+  "training": [
+    {
+      "ort": "Kunstrasen",
+      "zeit": "Montag 17.00 - 18.30"
+    },
+    {
+      "ort": "Kunstrasen",
+      "zeit": "Freitag 20:00 - 21:30"
+    }
+  ]
+}

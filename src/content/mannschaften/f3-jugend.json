@@ -1,0 +1,21 @@
+{
+  "name": "F3 Jugend",
+  "kategorie": "jugend",
+  "reihenfolge": 210,
+  "jahrgang": "8-9 Jahre",
+  "trainerteam": [
+    {
+      "name": "Jawid Shirzai - Telefon: 015731291447"
+    }
+  ],
+  "training": [
+    {
+      "ort": "Sportplatz Obernfelder Allee",
+      "zeit": "Mittwoch 17:00 - 18:30 Uhr"
+    },
+    {
+      "ort": "Sportplatz Obernfelder Allee",
+      "zeit": "Freitag 17:00 - 18:30 Uhr"
+    }
+  ]
+}

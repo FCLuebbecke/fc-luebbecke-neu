@@ -4,76 +4,31 @@ import Header from "../../components/Header.astro";
 import SparteHeader from "../../components/SparteHeader.astro";
 import Footer from "../../components/Footer.astro";
 import TrainerListe from "../../components/TrainerListe.astro";
-import { getMannschaften, urlFor, type TrainerEintrag } from "../../lib/sanity";
+import { Image, getImage } from "astro:assets";
+import { getMannschaften, type MannschaftDoc, type TrainerEintrag } from "../../lib/inhalte";
 
-// Gepflegte Fallback-Daten: greifen, solange in Sanity noch keine Mannschaften
-// angelegt sind (oder der Build offline läuft).
-// 1. Mannschaft (Landesliga) + D-Jugend (Trainer Peter Dahm) belegt; übrige = Platzhalter.
-const herrenFallback = [
-  {
-    name: "1. Mannschaft",
-    liga: "Landesliga",
-    text: "Unser Aushängeschild: Die Erste spielt in der Landesliga und kämpft Woche für Woche um Punkte.",
-    platzhalter: false,
-  },
-  {
-    name: "2. Mannschaft",
-    liga: "Kreisliga",
-    text: "Die Reserve – Sprungbrett für Talente und Heimat für erfahrene Spieler.",
-    platzhalter: true,
-  },
-  {
-    name: "Alte Herren",
-    liga: "Freizeit",
-    text: "Fußball mit Tradition und Geselligkeit – einmal Kicker, immer Kicker.",
-    platzhalter: true,
-  },
-];
-
-const jugendFallback = [
-  { name: "A-Jugend", jahrgang: "17–18 Jahre", trainer: "N. N.", platzhalter: true },
-  { name: "B-Jugend", jahrgang: "15–16 Jahre", trainer: "N. N.", platzhalter: true },
-  { name: "C-Jugend", jahrgang: "13–14 Jahre", trainer: "N. N.", platzhalter: true },
-  {
-    name: "D-Jugend (D1)",
-    jahrgang: "11–12 Jahre",
-    trainerteam: [{ name: "Peter Dahm", rolle: "Cheftrainer" }],
-    trainingszeiten: "Montag, 17:00–18:30 Uhr",
-    platzhalter: false,
-  },
-  { name: "E-Jugend", jahrgang: "9–10 Jahre", trainer: "N. N.", platzhalter: true },
-  { name: "F-Jugend", jahrgang: "7–8 Jahre", trainer: "N. N.", platzhalter: true },
-  { name: "Bambini / G-Jugend", jahrgang: "bis 6 Jahre", trainer: "N. N.", platzhalter: true },
-];
-
-// Aus Sanity laden und nach Kategorie aufteilen. Fehlt eine Kategorie komplett,
-// greift der jeweilige Fallback – so bleibt die Seite immer gefüllt.
+// Mannschaften aus src/content/mannschaften/, nach Kategorie aufgeteilt.
 const docs = await getMannschaften();
-const herrenCms = docs.filter((d) => d.kategorie === "herren");
-const jugendCms = docs.filter((d) => d.kategorie === "jugend");
-
-const herren = herrenCms.length > 0 ? herrenCms : herrenFallback;
-const jugend = jugendCms.length > 0 ? jugendCms : jugendFallback;
+const herren = docs.filter((d) => d.kategorie === "herren");
+const jugend = docs.filter((d) => d.kategorie === "jugend");
 
 // Die erste Mannschaft (per Reihenfolge sortiert) wird als breite Karte mit
 // Foto hervorgehoben; alle weiteren Herren-Teams kompakt nur mit Daten.
 const [ersteMannschaft, ...weitereHerren] = herren;
 
-// Trainingszeilen: neue Struktur (mehrere Einheiten mit Ort) bevorzugt,
-// sonst der alte Ein-Zeilen-Text – so bleibt Bestandspflege gültig.
-type MitTraining = { training?: { zeit: string; ort?: string }[]; trainingszeiten?: string };
-function trainingZeilen(m: MitTraining): string[] {
-  if (m.training?.length) return m.training.map((t) => (t.ort ? `${t.zeit} · ${t.ort}` : t.zeit));
-  return m.trainingszeiten ? [m.trainingszeiten] : [];
+// Trainingseinheiten als Textzeilen („Zeit · Ort“).
+function trainingZeilen(m: MannschaftDoc): string[] {
+  return (m.training ?? []).map((t) => (t.ort ? `${t.zeit} · ${t.ort}` : t.zeit));
 }
 
-// Trainerliste: neue Struktur (Personen mit Rolle & Kontakt) bevorzugt,
-// sonst der alte Ein-Zeilen-Name – Bestandsdokumente bleiben gültig.
-type MitTrainer = { trainerteam?: TrainerEintrag[]; trainer?: string };
-function trainerListe(m: MitTrainer): TrainerEintrag[] {
-  if (m.trainerteam?.length) return m.trainerteam;
-  return m.trainer ? [{ name: m.trainer }] : [];
+function trainerListe(m: MannschaftDoc): TrainerEintrag[] {
+  return m.trainerteam ?? [];
 }
+
+// Großansicht (Dialog) der Herren-Fotos: vorab in 1600 px erzeugen.
+const fotosGross = await Promise.all(
+  weitereHerren.map((t) => (t.foto ? getImage({ src: t.foto.src, width: 1600 }).then((b) => b.src) : "")),
+);
 ---
 
 <Layout title="Mannschaften – Fußball – FC Lübbecke" description="Die Fußball-Mannschaften des FC Lübbecke: Herren (1. Mannschaft Landesliga, 2. Mannschaft, Alte Herren) und Jugend von den Bambinis bis zur A-Jugend.">
@@ -95,11 +50,13 @@ function trainerListe(m: MitTrainer): TrainerEintrag[] {
 
       {ersteMannschaft && (
         <article class="team-star">
-          {ersteMannschaft.foto?.asset && (
-            <img
+          {ersteMannschaft.foto && (
+            <Image
               class="team-star__foto"
-              src={urlFor(ersteMannschaft.foto).width(1600).height(900).fit("crop").auto("format").url()}
-              alt={ersteMannschaft.foto.alt || `Mannschaftsfoto ${ersteMannschaft.name}`}
+              src={ersteMannschaft.foto.src}
+              alt={ersteMannschaft.foto.alt}
+              width={1600}
+              style={ersteMannschaft.foto.fokus ? `object-position: ${ersteMannschaft.foto.fokus}` : undefined}
               loading="lazy"
             />
           )}
@@ -137,20 +94,20 @@ function trainerListe(m: MitTrainer): TrainerEintrag[] {
       {weitereHerren.length > 0 && (
         <div class="teams-mini">
           {weitereHerren.map((t, i) => {
-            const hatFoto = !!t.foto?.asset;
-            const alt = hatFoto ? t.foto!.alt || `Mannschaftsfoto ${t.name}` : "";
-            const fotoGross = hatFoto ? urlFor(t.foto!).width(1600).fit("max").auto("format").url() : "";
+            const hatFoto = !!t.foto;
+            const alt = t.foto?.alt ?? "";
+            const fotoGross = fotosGross[i];
             const dialogId = `foto-dialog-${i}`;
             return (
             <article class:list={["mcard", { "mcard--foto": hatFoto }]}>
               {hatFoto && (
-                <img
+                <Image
                   class="mcard__bg"
-                  src={urlFor(t.foto!).width(800).height(600).fit("crop").auto("format").url()}
+                  src={t.foto!.src}
                   alt={alt}
+                  width={800}
+                  style={t.foto!.fokus ? `object-position: ${t.foto!.fokus}` : undefined}
                   loading="lazy"
-                  width="800"
-                  height="600"
                 />
               )}
               <div class="mcard__schleier" aria-hidden="true"></div>

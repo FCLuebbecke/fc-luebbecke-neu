@@ -1,0 +1,10 @@
+{
+  "name": "Homedeluxe",
+  "stufe": "premium",
+  "reihenfolge": 10,
+  "website": "https://www.homedeluxe.de/",
+  "logo": {
+    "src": "../../assets/content/sponsoren/homedeluxe.png",
+    "alt": "HOMEDELUXE"
+  }
+}

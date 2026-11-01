@@ -1,0 +1,35 @@
+{
+  "name": "3. Mannschaft",
+  "kategorie": "herren",
+  "reihenfolge": 50,
+  "liga": "Kreisliga B",
+  "foto": {
+    "src": "../../assets/content/mannschaften/3-mannschaft.jpg",
+    "alt": "Mannschaftsfoto 3. Mannschaft"
+  },
+  "trainerteam": [
+    {
+      "name": "Michael Reiswich",
+      "rolle": "Cheftrainer",
+      "telefon": "0176 84031826"
+    },
+    {
+      "name": "John Marsala",
+      "rolle": "Co-Trainer"
+    },
+    {
+      "name": "Jan Thiker",
+      "rolle": "Co-Trainer"
+    }
+  ],
+  "training": [
+    {
+      "ort": "Sportplatz Obernfelder Allee",
+      "zeit": "Dienstag 18:30 - 20:00 Uhr"
+    },
+    {
+      "ort": "Sportplatz Obernfelder Allee",
+      "zeit": "Donnerstag 18:30 - 20:00 Uhr"
+    }
+  ]
+}

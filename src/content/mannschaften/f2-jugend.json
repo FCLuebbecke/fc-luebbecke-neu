@@ -1,0 +1,21 @@
+{
+  "name": "F2 Jugend",
+  "kategorie": "jugend",
+  "reihenfolge": 200,
+  "jahrgang": "8-9 Jahre",
+  "trainerteam": [
+    {
+      "name": "Mario Schlehäuser Telefon: 0175 4066755"
+    }
+  ],
+  "training": [
+    {
+      "ort": "Sportplatz Obernfelder Allee",
+      "zeit": "Montag 16:30 - 18:00 Uhr"
+    },
+    {
+      "ort": "Sportplatz Obernfelder Allee",
+      "zeit": "Mittwoch 16:30 - 18:00 Uhr"
+    }
+  ]
+}

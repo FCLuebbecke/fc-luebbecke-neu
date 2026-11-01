@@ -1,0 +1,21 @@
+{
+  "name": "E2 Jugend",
+  "kategorie": "jugend",
+  "reihenfolge": 170,
+  "jahrgang": "9-10 Jahre",
+  "trainerteam": [
+    {
+      "name": "Erdal Gökcen - Telefon +49 176 23640280"
+    }
+  ],
+  "training": [
+    {
+      "ort": "Sportplatz Obernfelder Allee",
+      "zeit": "Dienstag 17:00 - 18:30 Uhr"
+    },
+    {
+      "ort": "Sportplatz Obernfelder Allee",
+      "zeit": "Donnerstag 17:00 - 18:30 Uhr"
+    }
+  ]
+}

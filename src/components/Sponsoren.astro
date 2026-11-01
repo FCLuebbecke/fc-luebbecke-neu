@@ -1,23 +1,13 @@
 ---
 /**
  * Sponsoren-/Partner-Sektion der Startseite (ersetzt "Nächste Termine").
- * Inhalte aus Sanity (Doc-Typ `sponsor`); Fallback = Platzhalter, damit nie leer.
+ * Inhalte aus src/content/sponsoren/ (eine JSON-Datei je Sponsor).
  * Zwei Stufen: Premium-Partner (groß) + normale Sponsoren (Raster).
  */
-import { getSponsoren, urlFor } from "../lib/sanity";
+import { Image } from "astro:assets";
+import { getSponsoren } from "../lib/inhalte";
 
-const fallback = [
-  { name: "Homedeluxe", stufe: "premium" as const },
-  { name: "Autohaus Lübbecke", stufe: "premium" as const },
-  { name: "Bäckerei Beispiel", stufe: "normal" as const },
-  { name: "Sparkasse", stufe: "normal" as const },
-  { name: "Getränke Müller", stufe: "normal" as const },
-  { name: "Bauunternehmen Schmidt", stufe: "normal" as const },
-  { name: "Musterfirma GmbH", stufe: "normal" as const },
-];
-
-const cms = await getSponsoren();
-const sponsoren = cms.length > 0 ? cms : fallback;
+const sponsoren = await getSponsoren();
 const premium = sponsoren.filter((s) => s.stufe === "premium");
 const normal = sponsoren.filter((s) => s.stufe !== "premium");
 ---
@@ -37,11 +27,8 @@ const normal = sponsoren.filter((s) => s.stufe !== "premium");
         <h3 class="sponsoren__label">Premium-Partner</h3>
         <ul class="sponsoren__grid sponsoren__grid--premium">
           {premium.map((s) => {
-            const logoUrl = s.logo?.asset
-              ? urlFor(s.logo).width(600).fit("max").auto("format").url()
-              : null;
-            const inner = logoUrl ? (
-              <img class="sponsor__logo" src={logoUrl} alt={s.logo?.alt || s.name} loading="lazy" />
+            const inner = s.logo ? (
+              <Image class="sponsor__logo" src={s.logo.src} alt={s.logo.alt} width={600} loading="lazy" />
             ) : (
               <span class="sponsor__name">{s.name}</span>
             );
@@ -64,11 +51,8 @@ const normal = sponsoren.filter((s) => s.stufe !== "premium");
         {premium.length > 0 && <h3 class="sponsoren__label">Weitere Sponsoren</h3>}
         <ul class="sponsoren__grid">
           {normal.map((s) => {
-            const logoUrl = s.logo?.asset
-              ? urlFor(s.logo).width(400).fit("max").auto("format").url()
-              : null;
-            const inner = logoUrl ? (
-              <img class="sponsor__logo" src={logoUrl} alt={s.logo?.alt || s.name} loading="lazy" />
+            const inner = s.logo ? (
+              <Image class="sponsor__logo" src={s.logo.src} alt={s.logo.alt} width={400} loading="lazy" />
             ) : (
               <span class="sponsor__name">{s.name}</span>
             );

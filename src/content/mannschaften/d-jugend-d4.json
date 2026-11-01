@@ -1,0 +1,21 @@
+{
+  "name": "D - Jugend(D4)",
+  "kategorie": "jugend",
+  "reihenfolge": 150,
+  "jahrgang": "11-12 Jahre",
+  "trainerteam": [
+    {
+      "name": "Gerd Pappenhagen, Sascha Brümmelhörster"
+    }
+  ],
+  "training": [
+    {
+      "ort": "Kunstrasen",
+      "zeit": "Mittwoch, 17:00 - 18:30"
+    },
+    {
+      "ort": "Blasheim",
+      "zeit": "Donnerstag, 17:30 - 19:00"
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+{"timestamp":"2026-11-01T14:06:08Z","spec_id":"008-inhalte-als-dateien","event_type":"station_changed","actor":"project","summary":"Backlog → Doing, Branch spec/008-inhalte-als-dateien von dev"}
+{"timestamp":"2026-11-01T14:06:37Z","spec_id":"008-inhalte-als-dateien","event_type":"spec_edited","actor":"user","summary":"Frage Q1 beantwortet"}
+{"timestamp":"2026-11-01T14:15:34Z","spec_id":"008-inhalte-als-dateien","event_type":"agent_run","actor":"project","summary":"Alle Tasks: Export Sanity → src/content (22+3+2+16 Einträge, 9 Bilder), Content Collections mit Zod, lib/inhalte.ts, Seiten umgestellt, Sanity/React/Middleware entfernt, Doku INHALTE.md/DEPLOY.md; ready für Review; skills: keine"}

@@ -2,23 +2,25 @@
 /**
  * Sparten-Unterseite "Mannschaften" (Landung): Kurzvorstellung + Teams + Fotos.
  */
-import type { SparteData } from "../data/sparten";
-import { urlFor } from "../lib/sanity";
-interface Props { data: SparteData; }
-const { data } = Astro.props as Props;
+import { Image } from "astro:assets";
+import type { SparteTeamDoc } from "../lib/inhalte";
+interface Props { teams: SparteTeamDoc[]; }
+const { teams } = Astro.props as Props;
 ---
 
 <main id="inhalt">
   <section class="container section">
     <h2 class="section-title">Mannschaften &amp; Gruppen</h2>
     <div class="teams">
-      {data.teams.map((t) => (
+      {teams.map((t) => (
         <article class="team">
-          {t.foto?.asset && (
-            <img
+          {t.foto && (
+            <Image
               class="team__foto"
-              src={urlFor(t.foto).width(1000).height(563).fit("crop").auto("format").url()}
-              alt={t.foto.alt || `Mannschaftsfoto ${t.name}`}
+              src={t.foto.src}
+              alt={t.foto.alt}
+              width={1000}
+              style={t.foto.fokus ? `object-position: ${t.foto.fokus}` : undefined}
               loading="lazy"
             />
           )}

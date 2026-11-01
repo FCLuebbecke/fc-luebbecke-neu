@@ -1,10 +1,10 @@
 ---
 /**
  * Trainerteam einer Mannschaft: Name + Rolle, optional Telefon und E-Mail als
- * anklickbare Links. Kontaktdaten erscheinen nur, wenn im Studio der Haken
- * „Kontaktdaten veröffentlichen“ gesetzt ist (Einwilligung der Person).
+ * anklickbare Links. Kontaktdaten erscheinen nur, wenn im Inhalt
+ * `veroeffentlichen: true` gesetzt ist (Einwilligung der Person).
  */
-import type { TrainerEintrag } from "../lib/sanity";
+import type { TrainerEintrag } from "../lib/inhalte";
 interface Props { trainer: TrainerEintrag[] }
 const { trainer } = Astro.props as Props;
 

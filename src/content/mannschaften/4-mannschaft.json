@@ -1,0 +1,22 @@
+{
+  "name": "4. Mannschaft",
+  "kategorie": "herren",
+  "reihenfolge": 70,
+  "liga": "Kreisliga D",
+  "trainerteam": [
+    {
+      "name": "Roland Brandt",
+      "rolle": "Trainer"
+    },
+    {
+      "name": "Daniel Griese",
+      "rolle": "Trainer"
+    }
+  ],
+  "training": [
+    {
+      "ort": "Sportplatz Obernfelder Allee",
+      "zeit": "Dienstag 19:00 - 20:30"
+    }
+  ]
+}

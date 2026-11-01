@@ -1,0 +1,10 @@
+{
+  "sparte": "badminton",
+  "name": "1. Mannschaft",
+  "reihenfolge": 10,
+  "liga": "Landesliga",
+  "foto": {
+    "src": "../../assets/content/sparten-mannschaften/badminton-1-mannschaft.jpg",
+    "alt": "Mannschaftsfoto 1. Mannschaft"
+  }
+}
