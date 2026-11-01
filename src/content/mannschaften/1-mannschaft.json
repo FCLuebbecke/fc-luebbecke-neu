@@ -1,0 +1,20 @@
+{
+  "name": "1. Mannschaft",
+  "kategorie": "herren",
+  "reihenfolge": 10,
+  "liga": "Bezirksliga",
+  "foto": {
+    "src": "../../assets/content/mannschaften/1-mannschaft.jpg",
+    "alt": "Mannschaftsfoto 1. Mannschaft"
+  },
+  "trainerteam": [
+    {
+      "name": "Nils Mühlenweg, Julian Mühlenweg"
+    }
+  ],
+  "training": [
+    {
+      "zeit": "Mittwoch 19:30 - 21:00, Freitag 19:30 - 21:00"
+    }
+  ]
+}

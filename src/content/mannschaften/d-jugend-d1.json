@@ -1,0 +1,21 @@
+{
+  "name": "D - Jugend(D1)",
+  "kategorie": "jugend",
+  "reihenfolge": 120,
+  "jahrgang": "11-12 Jahre",
+  "trainerteam": [
+    {
+      "name": "Daniel Griese"
+    }
+  ],
+  "training": [
+    {
+      "ort": "Obernfelder Allee",
+      "zeit": "Mittwoch 18:00 - 19:30"
+    },
+    {
+      "ort": "Blasheim",
+      "zeit": "Freitag 16:00 - 17:30"
+    }
+  ]
+}

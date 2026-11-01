@@ -1,11 +1,13 @@
 ---
 modules: inhalte, seiten, infra
-station: Backlog
+station: Doing
+ready: true
+branch: spec/008-inhalte-als-dateien
+owner: FC Luebbecke <Git@fcluebbecke.de>
 order: 1
 needs_human: true
 angelegt: 2026-11-01
 usecase: UC-001
-open_question: Q1
 ---
 
 # Inhalte von Sanity in Dateien umziehen (Astro Content Collections)
@@ -26,12 +28,12 @@ Im Umfang:
   heutigen Sanity-Schemas abbilden (Pflichtfelder, Formate, Alt-Text bei
   Bildern):
   - `mannschaften` (Fußball, Kategorie herren/jugend, Trainerteam, Foto, Liga …)
-  - `badminton-mannschaften`, `darts-mannschaften`
-  - `sparten` (Badminton/Darts-Info: Trainingszeiten, Ort, Adresse)
+  - `sparten-mannschaften` (Badminton/Darts, Feld `sparte`; siehe Decision 3)
+  - `sparten-infos` (Badminton/Darts-Info: Trainingszeiten, Ort, Adresse)
   - `sponsoren`
 - Eine Datei je Eintrag (JSON), Bilder unter `src/assets/content/<sammlung>/`
   und über `image()` im Schema eingebunden (Astro optimiert sie).
-- Einmaliges Export-Skript `scripts/sanity-export.ts`: liest alle Dokumente
+- Einmaliges Export-Skript `scripts/sanity-export.mjs`: liest alle Dokumente
   der genannten Typen aus dem Dataset `production`, lädt Bilder herunter und
   schreibt die Dateien. Wird nach erfolgreichem Umzug wieder entfernt.
 - `src/lib/sanity.ts` wird durch `src/lib/inhalte.ts` mit gleichen
@@ -51,7 +53,7 @@ Im Umfang:
 
 Nicht im Umfang:
 - Vorschau-Server (Spec 009), MCP-Server (Spec 010), News-Beiträge (Spec 007).
-- Löschen des Sanity-Projekts selbst (siehe Questions Q1).
+- Löschen des Sanity-Projekts selbst (manueller Schritt, siehe Decision 7).
 - Änderungen am Aussehen der Seiten.
 
 ## Acceptance
@@ -77,23 +79,108 @@ Nicht im Umfang:
    MCP-Server. Markdown nur für Fließtext-Inhalte (News, Spec 007).
 2. 2026-11-01 · Funktionsnamen der Datenschicht bleiben gleich, um den Umbau
    der Seiten klein zu halten.
+3. 2026-11-01 · Badminton- und Darts-Mannschaften in **einer** Sammlung
+   `sparten-mannschaften` mit Pflichtfeld `sparte` statt zwei Sammlungen:
+   gleiche Felder, ein Schema, einfacher für den MCP-Server.
+4. 2026-11-01 · `reihenfolge` ist Pflicht und wurde aus der bisherigen
+   Anzeige-Reihenfolge in Zehnerschritten vergeben (10, 20 …). So bleibt die
+   Sortierung exakt gleich, und man kann dazwischen einfügen.
+5. 2026-11-01 · Alt-Text ist Pflicht. In Sanity hatten 8 von 9 Bildern keinen;
+   übernommen wurde der bisherige Seiten-Fallback („Mannschaftsfoto <Name>“,
+   für Logos neu „Logo <Name>“ statt nur „<Name>“). Bessere Beschreibungen
+   kann der Verein später ergänzen.
+6. 2026-11-01 · Bildausschnitt: Sanity-`crop` wurde beim Export fest
+   angewendet; Sanity-`hotspot` wird zum Feld `fokus` („x% y%“) und per CSS
+   `object-position` umgesetzt (alle betroffenen Bilder nutzen schon
+   `object-fit: cover`). Astro/sharp akzeptiert beim Zuschneiden nur
+   Stichwörter, keine Prozentwerte. Ein als PNG hochgeladenes Foto (6 MB) wurde
+   als JPG gespeichert; alle Inhaltsbilder zusammen 2,5 MB.
+7. 2026-11-01 · Aus A1: fcl-live.de nutzt das Sanity-Projekt nicht. Das
+   Sanity-Projekt `u7v527gk` darf gelöscht werden. Das geschieht manuell in
+   sanity.io/manage (siehe Review); bis dahin schadet es nicht.
+8. 2026-11-01 · Alte Einzeilen-Felder (`trainer`, `trainingszeiten`) wurden
+   beim Export in `trainerteam`/`training` übernommen; das Schema kennt nur
+   noch die neue Struktur.
+9. 2026-11-01 · `FCL-LIVE.md` entfernt: beschrieb die eingebaute
+   Livestream-Seite, die seit Spec 006 durch einen externen Link ersetzt ist.
+   React (`@astrojs/react`) und `@vercel/edge` entfernt, da nur für Studio
+   bzw. `/admin`-Middleware genutzt.
 
 ## Tasks
 
-- [ ] Feature-Branch `spec/008-inhalte-als-dateien` von `main` anlegen
-- [ ] `src/content.config.ts` mit Collections und Zod-Schemas anlegen
-- [ ] Export-Skript schreiben und gegen `production` laufen lassen
-- [ ] Exportierte Dateien und Bilder prüfen und committen
-- [ ] `src/lib/inhalte.ts` anlegen, Nutzer von `src/lib/sanity.ts` umstellen
-- [ ] Fallback-Daten bereinigen
-- [ ] Sanity-Pakete, Studio, Konfiguration, Middleware entfernen
-- [ ] Vorher/Nachher-Vergleich der betroffenen Seiten (Screenshots)
-- [ ] Doku: `INHALTE.md` neu, `SANITY.md` entfernen, `DEPLOY.md`, `CLAUDE.md`
-- [ ] Export-Skript wieder entfernen
+- [x] Feature-Branch `spec/008-inhalte-als-dateien` von `dev` anlegen
+- [x] `src/content.config.ts` mit Collections und Zod-Schemas anlegen
+- [x] Export-Skript schreiben und gegen `production` laufen lassen
+      22 Fußball-Mannschaften, 3 Sparten-Mannschaften, 2 Sparten-Infos,
+      16 Sponsoren, 9 Bilder; öffentliche API, kein Token nötig
+- [x] Exportierte Dateien und Bilder prüfen und committen
+- [x] `src/lib/inhalte.ts` anlegen, Nutzer von `src/lib/sanity.ts` umstellen
+- [x] Fallback-Daten bereinigen
+      Fallbacks in `fussball/mannschaften.astro`, `Sponsoren.astro` und die
+      Felder `teams`/`training`/`ortName`/`ortAdresse` in `data/sparten.ts`
+      entfernt. `data/fussball-teams.ts` bleibt (Spielplan-Links, kein
+      Sanity-Ersatz).
+- [x] Sanity-Pakete, Studio, Konfiguration, Middleware entfernen
+- [x] Vorher/Nachher-Vergleich der betroffenen Seiten
+      Textvergleich der gebauten Seiten, siehe Verification. Screenshots im
+      Browser sind Teil des Reviews.
+- [x] Doku: `INHALTE.md` neu, `SANITY.md` entfernen, `DEPLOY.md`, `CLAUDE.md`
+      `CLAUDE.md` enthielt keine Sanity-Verweise. `.env.example` bereinigt.
+- [x] Export-Skript wieder entfernen
+      Im ersten Commit enthalten (nachvollziehbar), im zweiten entfernt.
+- [x] (added) Leerzeichen am Anfang/Ende aller übernommenen Textwerte entfernt
 
 ## Verification
 
+- `npm run build` (sauber, `.astro` gelöscht): 14 Seiten, keine Fehler oder
+  Warnungen, keine Sanity-Pakete mehr in `package.json`; im Build-Ergebnis
+  kein Treffer für „sanity“, kein `/admin`.
+- Vorher/Nachher: Stand vor dem Umbau gebaut, sichtbaren Text und Alt-Texte
+  der Seiten Start, Fußball/Mannschaften, Badminton/Darts Mannschaften und
+  Trainingszeiten verglichen. Badminton/Darts: identisch. Fußball: nur
+  doppelte Leerzeichen vor „· Ort“ entfallen (4 Zeilen). Start: Alt-Text
+  „FIT FINANCE“ → „Logo FIT FINANCE“, „Westermann und Partner“ → „Logo
+  Westermann und Partner“ (Decision 5). Reihenfolge überall gleich.
+- Bilder: kommen als WebP aus dem eigenen Build statt vom Sanity-CDN,
+  Komponenten-Styles greifen (`data-astro-cid` vorhanden), Fokus beim
+  Badminton-Foto 2 als `object-position: 50% 53%`.
+- Prüfregeln: `logo.alt` leer in `sponsoren/homedeluxe.json` → Build bricht
+  ab mit „logo.alt: Alt-Text (Bildbeschreibung) ist Pflicht“ und Dateipfad.
+  `ortName` gelöscht in `sparten-infos/darts.json` → Build bricht ab mit
+  „ortName: Required“. Beide Dateien danach wiederhergestellt.
+- Dev-Server: `ortName` in `darts.json` geändert, die Seite
+  `/darts/trainingszeiten/` lieferte den neuen Wert nach 1,1 s. Hinweis für
+  Spec 009: Bei zwei Änderungen innerhalb einer Sekunde meldet Astro einmal
+  `ENOENT … data-store.json.tmp`; die Seite lieferte danach trotzdem korrekt
+  aus (200). Das Neuladen im Browser (HMR) selbst ist Teil des Reviews.
+
 ## Review
+
+Build: Branch `spec/008-inhalte-als-dateien` · lokal mit `npm run dev`
+(Speccify-Aktion „Webseite starten“) oder Vercel-Vorschau des Branches
+Not part of this acceptance: Löschen des Sanity-Projekts, Vorschau-Server (009)
+
+### R1 · Seiten sehen aus wie vorher
+- Given: die Seite läuft lokal oder als Vercel-Vorschau des Branches
+- When: du Startseite (Sponsoren), Fußball → Mannschaften, Badminton und Darts (Mannschaften, Trainingszeiten) mit www.fcluebbecke.de vergleichst
+- Then: gleiche Mannschaften, Trainer, Zeiten, Sponsoren und Fotos in gleicher Reihenfolge; Fotos ohne abgeschnittene Köpfe
+- [ ] ok
+
+### R2 · Änderung erscheint sofort
+- Given: `npm run dev` läuft, `/badminton/trainingszeiten` ist im Browser offen
+- When: du in `src/content/sparten-infos/badminton.json` eine Zeit änderst und speicherst
+- Then: der Browser zeigt die neue Zeit nach 1–2 Sekunden, ohne dass du neu lädst
+- [ ] ok
+
+### R3 · Studio ist weg
+- Given: die Vercel-Vorschau des Branches
+- When: du `/admin` aufrufst
+- Then: es erscheint die 404-Seite
+- [ ] ok
+
+Nach der Abnahme, manuell: Sanity-Projekt `u7v527gk` in sanity.io/manage
+löschen (Decision 7) und in `.env` die nicht mehr genutzten Einträge
+`PUBLIC_SANITY_*` und `SANITY_WRITE_TOKEN` entfernen.
 
 ## Questions
 
@@ -101,3 +188,6 @@ Nicht im Umfang:
 Nutzt fcl-live.de das bisherige Sanity-Projekt noch (z. B. für Ticketkäufe
 `liveKauf`)? Davon hängt ab, ob das Sanity-Projekt nach dem Umzug gelöscht
 werden darf. Die Webseite selbst nutzt es danach nicht mehr.
+
+### A1 · bo · 2026-11-01T14:06:37Z
+Nein

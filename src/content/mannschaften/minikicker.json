@@ -1,0 +1,17 @@
+{
+  "name": "Minikicker",
+  "kategorie": "jugend",
+  "reihenfolge": 220,
+  "jahrgang": "unter 8 Jahren",
+  "trainerteam": [
+    {
+      "name": "Zenon Pasieka"
+    }
+  ],
+  "training": [
+    {
+      "ort": "Sportplatz Obernfelder Allee",
+      "zeit": "Mittwoch 16:30 - 17:45 Uhr"
+    }
+  ]
+}

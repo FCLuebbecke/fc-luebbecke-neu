@@ -1,8 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "rewrites": [
-    { "source": "/admin/:path*", "destination": "/admin/index.html" }
-  ],
   "redirects": [
     { "source": "/live", "destination": "https://fcl-live.de/", "permanent": true }
   ],

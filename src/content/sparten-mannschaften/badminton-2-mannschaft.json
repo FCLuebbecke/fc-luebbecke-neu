@@ -1,0 +1,11 @@
+{
+  "sparte": "badminton",
+  "name": "2. Mannschaft",
+  "reihenfolge": 20,
+  "liga": "Kreisliga",
+  "foto": {
+    "src": "../../assets/content/sparten-mannschaften/badminton-2-mannschaft.jpg",
+    "alt": "Mannschaftsfoto 2. Mannschaft",
+    "fokus": "50% 53%"
+  }
+}

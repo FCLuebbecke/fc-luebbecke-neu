@@ -2,9 +2,9 @@
 /**
  * Sparten-Unterseite "Trainingszeiten": Zeiten + Ort/Halle.
  */
-import type { SparteData } from "../data/sparten";
-interface Props { data: SparteData; }
-const { data } = Astro.props as Props;
+import type { SparteInfoDoc } from "../lib/inhalte";
+interface Props { info: SparteInfoDoc; }
+const { info: data } = Astro.props as Props;
 ---
 
 <main id="inhalt">

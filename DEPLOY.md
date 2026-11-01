@@ -1,64 +1,43 @@
-# Deployment auf Vercel + Auto-Rebuild bei Inhaltsänderungen
+# Deployment auf Vercel
 
-Die Seite wird **statisch** gebaut und holt die Sanity-Inhalte zur Build-Zeit.
-Damit eine Studio-Änderung automatisch live geht, löst ein **Sanity-Webhook**
-einen **Vercel Deploy Hook** aus → die Seite wird neu gebaut. Kein Code-Deploy nötig.
+Die Seite wird **statisch** gebaut. Alle Inhalte liegen als Dateien im Repo
+(`src/content/`, siehe [INHALTE.md](INHALTE.md)), es gibt kein externes CMS.
+Jede Änderung – Code oder Inhalt – ist ein Git-Commit.
 
 ```
-Pflege im Studio (/admin)  ──▶  Sanity Webhook  ──▶  Vercel Deploy Hook  ──▶  Rebuild ──▶ live
+Push auf main  ──▶  Vercel baut  ──▶  live (1–2 Minuten)
+Push auf dev / spec/*  ──▶  Vercel-Vorschau-URL (nicht live)
 ```
 
-## Schritt 1 – Projekt auf Vercel importieren
+## Branches
 
-1. https://vercel.com → **Add New… → Project**
-2. GitHub-Repo **`Felixdahm/Fc-Luebbecke-neu`** importieren.
-3. Framework wird als **Astro** erkannt (Build `astro build`, Output `dist`). So lassen.
-4. **Environment Variables** hinzufügen (für alle Environments):
-   - `PUBLIC_SANITY_PROJECT_ID` = `u7v527gk`
-   - `PUBLIC_SANITY_DATASET` = `production`
-   - `ADMIN_USER` = frei wählbarer Benutzername fürs Studio-Login
-   - `ADMIN_PASSWORD` = frei wählbares Passwort fürs Studio-Login
-5. **Deploy** klicken. Nach dem ersten Build gibt es eine `…vercel.app`-URL.
+- **`main`** wird bei jedem Push sofort live deployt.
+- Gearbeitet wird auf **`dev`** bzw. `spec/NNN-…`-Branches (CLAUDE.md
+  Abschnitt 12). Vercel baut dafür eigene Vorschau-URLs.
 
-> 🔒 **Studio-Schutz:** `/admin` ist über eine Vercel **Edge Middleware**
-> (`middleware.ts` im Projekt-Root) mit HTTP Basic Auth geschützt. Beim Aufruf
-> von `…/admin` fragt der Browser nach `ADMIN_USER` / `ADMIN_PASSWORD`. Sind die
-> beiden Variablen **nicht** gesetzt, bleibt `/admin` komplett gesperrt
-> (fail closed). Lokal (`npm run dev`) greift die Middleware nicht – dort ist das
-> Studio zum Entwickeln offen erreichbar.
+## Projekt auf Vercel
 
-## Schritt 2 – CORS in Sanity für die Live-Domain
+- GitHub-Repo: **`FCLuebbecke/fc-luebbecke-neu`**
+- Framework: **Astro** (Build `astro build`, Output `dist`) – Standard lassen.
+- **Environment Variables:** für die Seite selbst keine nötig.
+  Optional `BEHOLD_FEED_ID` für einen anderen Instagram-Feed.
 
-Damit das Studio auch online funktioniert:
-- https://www.sanity.io/manage → Projekt → **API → CORS origins → Add**
-- die Vercel-URL eintragen (z. B. `https://fc-luebbecke-neu.vercel.app`), **Allow credentials** an.
+## Täglicher Rebuild (Spielplan & Instagram)
 
-## Schritt 3 – Vercel Deploy Hook anlegen
+Spielplan (fußball.de) und Instagram-Feed werden zur Build-Zeit geholt. Damit
+sie aktuell bleiben, stößt der GitHub-Workflow `.github/workflows/daily-rebuild.yml`
+täglich um 04:00 UTC einen Vercel-Build an. Dafür braucht das Repo das Secret
+**`VERCEL_DEPLOY_HOOK_URL`**:
 
-1. Vercel → Projekt → **Settings → Git → Deploy Hooks**
-2. Name z. B. `sanity`, Branch **`main`** → **Create Hook**
-3. Die erzeugte **URL kopieren** (sieht aus wie
-   `https://api.vercel.com/v1/integrations/deploy/prj_…/…`).
+1. Vercel → Projekt → **Settings → Git → Deploy Hooks** → Name z. B. `daily`,
+   Branch **`main`** → **Create Hook**, URL kopieren.
+2. GitHub → Repo → **Settings → Secrets and variables → Actions** →
+   **New repository secret** `VERCEL_DEPLOY_HOOK_URL` = die URL.
 
-## Schritt 4 – Sanity-Webhook auf diese URL zeigen lassen
+## Früher: Sanity
 
-Variante A – Weboberfläche:
-- https://www.sanity.io/manage → Projekt → **API → Webhooks → Create webhook**
-- **Name:** `Vercel Rebuild`
-- **URL:** die Deploy-Hook-URL aus Schritt 3
-- **Dataset:** `production`
-- **Trigger on:** Create, Update, Delete
-- **HTTP method:** POST · **API version:** v2021-06-07 (Standard)
-- Speichern.
-
-Variante B – CLI (im Projektordner, du bist bei Sanity eingeloggt):
-```
-! npx sanity hook create
-```
-und die Deploy-Hook-URL eingeben.
-
-## Fertig
-
-Ab jetzt: im Studio etwas ändern + **Publish** → Vercel baut automatisch neu
-(~1–2 Min) → Änderung ist live. Bei Code-Änderungen genügt wie gewohnt `git push`
-auf `main`, dann deployt Vercel ebenfalls automatisch.
+Bis Spec 008 kamen Mannschaften, Sponsoren und Sparten-Infos aus Sanity, mit
+Studio unter `/admin`, Edge-Middleware und Webhook → Deploy Hook (Spec 004).
+Das ist alles entfallen. Den Sanity-Webhook in sanity.io/manage kann man
+löschen; einen Build löst er ohnehin nur noch aus, wenn dort jemand etwas
+ändert.

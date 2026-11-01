@@ -1,0 +1,21 @@
+{
+  "name": "C - Jugend (C3)",
+  "kategorie": "jugend",
+  "reihenfolge": 110,
+  "jahrgang": "13-14 Jahre",
+  "trainerteam": [
+    {
+      "name": "Barbara Föst"
+    }
+  ],
+  "training": [
+    {
+      "ort": "Kunstrasen",
+      "zeit": "Dienstag 17:00 - 18:30"
+    },
+    {
+      "ort": "Obernfelder Allee",
+      "zeit": "Donnerstag 18:00 - 19:30"
+    }
+  ]
+}

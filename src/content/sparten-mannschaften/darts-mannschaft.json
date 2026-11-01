@@ -1,0 +1,11 @@
+{
+  "sparte": "darts",
+  "name": "Mannschaft",
+  "reihenfolge": 10,
+  "liga": "Kreisliga D",
+  "href": "https://www.2k-dart-software.com/frontend/events/6/event/14952/table",
+  "foto": {
+    "src": "../../assets/content/sparten-mannschaften/darts-mannschaft.jpg",
+    "alt": "Mannschaftsfoto Mannschaft"
+  }
+}

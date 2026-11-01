@@ -1,0 +1,21 @@
+{
+  "name": "F1 Jugend",
+  "kategorie": "jugend",
+  "reihenfolge": 190,
+  "jahrgang": "8-9 Jahre",
+  "trainerteam": [
+    {
+      "name": "Alfredo Hernandez, Viktor Lorenz 01514 2891366"
+    }
+  ],
+  "training": [
+    {
+      "ort": "Sportplatz Obernfelder Allee",
+      "zeit": "Dienstag 16:15 - 17:45 Uhr"
+    },
+    {
+      "ort": "Sportplatz Obernfelder Allee",
+      "zeit": "Donnerstag 16:15 - 17:45 Uhr"
+    }
+  ]
+}

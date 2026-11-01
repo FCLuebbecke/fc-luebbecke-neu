@@ -1,0 +1,21 @@
+{
+  "name": "C - Jugend (C1)",
+  "kategorie": "jugend",
+  "reihenfolge": 90,
+  "jahrgang": "13-14",
+  "trainerteam": [
+    {
+      "name": "Eren Karayol, Eric Ehlert"
+    }
+  ],
+  "training": [
+    {
+      "ort": "Blasheim",
+      "zeit": "Montag 17.30 - 19.00"
+    },
+    {
+      "ort": "Kunstrasen",
+      "zeit": "Donnerstag 18.30 - 20.00"
+    }
+  ]
+}
