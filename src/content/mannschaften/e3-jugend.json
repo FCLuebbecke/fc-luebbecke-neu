@@ -1,0 +1,21 @@
+{
+  "name": "E3 Jugend",
+  "kategorie": "jugend",
+  "reihenfolge": 180,
+  "jahrgang": "9-10 Jahre",
+  "trainerteam": [
+    {
+      "name": "Marcel Holle - Telefon 015152471842, David Amini"
+    }
+  ],
+  "training": [
+    {
+      "ort": "Sportplatz Obernfelder Allee",
+      "zeit": "Dienstag 17:00 - 18:30 Uhr"
+    },
+    {
+      "ort": "Sportplatz Obernfelder Allee",
+      "zeit": "Donnerstag 17:00 - 18:30 Uhr"
+    }
+  ]
+}

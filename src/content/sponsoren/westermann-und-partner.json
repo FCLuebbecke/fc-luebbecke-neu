@@ -1,0 +1,10 @@
+{
+  "name": "Westermann und Partner",
+  "stufe": "normal",
+  "reihenfolge": 130,
+  "website": "https://www.wup-steuerberater.de/",
+  "logo": {
+    "src": "../../assets/content/sponsoren/westermann-und-partner.svg",
+    "alt": "Logo Westermann und Partner"
+  }
+}

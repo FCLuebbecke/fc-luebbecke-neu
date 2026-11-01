@@ -4,6 +4,10 @@ Arbeitsanweisung und Designsystem für den Bau der Webseite. Diese Datei ist die
 verbindliche Referenz für Aufbau, Farben, Schrift und Inhalte. Im Zweifel gilt:
 **bodenständig, klar, Fußball führt – aber alle Sparten gehören dazu.**
 
+> **Arbeitsablauf (Specs, Use Cases, Module):** Vor jeder Arbeit
+> `.agent/agent.md` lesen und befolgen. Projektspezifische Ergänzungen
+> dazu stehen in Abschnitt 12.
+
 ---
 
 ## 1. Projektüberblick
@@ -190,18 +194,42 @@ Impressum + Datenschutz dauerhaft in den Footer. Im Zweifel rechtlichen Rat einh
 
 ## 12. Arbeitsweise: Specs & Branches
 
-Änderungen werden über Specs in `specs/` geplant und nachgehalten
-(Details in `specs/README.md`). Verbindlich bei der Umsetzung einer Spec:
+Änderungen werden mit **Speccify** geplant und nachgehalten. Der allgemeine
+Ablauf steht in `.agent/agent.md` und ist verbindlich:
+
+- **Specs:** `.agent/specs/<NNN-slug>/SPEC.md`, Stationen `Backlog` → `Next`
+  → `Doing` → `Done` über das Feld `station:` im Frontmatter. Die Datei bleibt
+  an ihrem Platz, es wird nichts verschoben.
+- **Use Cases:** im Speccify-Katalog (`.agent/acceptance/`), nur über
+  Speccify bearbeiten, nicht von Hand.
+- **Module:** `.agent/settings.json` → `modules`. Jede Spec nennt ihre Module
+  (`modules:`); vor dem Start Überschneidungen mit Specs in `Doing` prüfen.
+- Der alte Ordner `specs/` (`01-geplant`/`02-in-arbeit`/`03-erledigt`) ist
+  abgelöst und wird nicht mehr gepflegt.
+
+Zusätzlich gilt in diesem Projekt verbindlich:
+
+**Branches:** `main` wird bei jedem Push sofort live deployt (Vercel).
+Deshalb läuft alle Arbeit über den Branch **`dev`**:
+
+```
+main  ← nur nach ausdrücklicher Freigabe aus dev gemergt (= Livegang)
+ └─ dev  ← Sammelstand aller fertigen Specs
+     └─ spec/NNN-kurzer-titel  ← Arbeit an einer Spec
+```
 
 1. **Immer zuerst einen Feature-Branch anlegen:** `spec/NNN-kurzer-titel`,
-   abgezweigt von `main`. Keine Spec-Umsetzung direkt auf `main`.
-2. Spec nach `specs/02-in-arbeit/` verschieben, Status und Branch im
-   Frontmatter eintragen.
-3. Alle Commits auf dem Feature-Branch.
-4. Nach Abschluss Spec nach `specs/03-erledigt/` verschieben und
-   Frontmatter vervollständigen.
-5. **Am Ende fragen, ob nach `main` gemergt werden darf.** Nie ohne
-   ausdrückliche Freigabe mergen. Nach dem Merge den Branch löschen.
+   abgezweigt von `dev`. Keine Spec-Umsetzung direkt auf `dev` oder `main`.
+2. Beim Start `station: Doing` setzen, den Branch im Frontmatter (`branch:`)
+   eintragen, falls die App das nicht schon getan hat.
+3. Alle Commits auf dem Feature-Branch, Spec-ID im Commit-Text nennen.
+4. Nach Abschluss Tasks, `## Verification` und History-Eintrag vervollständigen;
+   bei `needs_human: true` `ready: true` setzen und `## Review` schreiben,
+   sonst `station: Done`.
+5. **Am Ende fragen, ob nach `dev` gemergt werden darf.** Nie ohne
+   ausdrückliche Freigabe mergen. Nach dem Merge den Spec-Branch löschen.
+6. **`dev` → `main` nur auf ausdrückliche Anweisung** („live stellen“).
+   Nie von selbst nach `main` mergen oder pushen.
 
 ---
 

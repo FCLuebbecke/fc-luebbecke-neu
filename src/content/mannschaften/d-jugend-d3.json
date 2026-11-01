@@ -1,0 +1,21 @@
+{
+  "name": "D - Jugend(D3)",
+  "kategorie": "jugend",
+  "reihenfolge": 140,
+  "jahrgang": "11-12 Jahre",
+  "trainerteam": [
+    {
+      "name": "Danny Richter, Jens Sonnenberg"
+    }
+  ],
+  "training": [
+    {
+      "ort": "Gehlenbeck",
+      "zeit": "Montag, 17:45 - 19:15"
+    },
+    {
+      "ort": "Blasheim",
+      "zeit": "Donnerstag, 17:30 - 19:00"
+    }
+  ]
+}

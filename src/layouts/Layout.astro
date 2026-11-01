@@ -1,5 +1,7 @@
 ---
 import "../styles/global.css";
+import VorschauHinweis from "../components/VorschauHinweis.astro";
+import { istEntwurfsVorschau } from "../lib/vorschau";
 
 // Schriften selbst gehostet (@fontsource): keine Google-Server, kein
 // render-blockierendes externes CSS, DSGVO-sauber. Nur genutzte Gewichte.
@@ -38,6 +40,7 @@ const ogImageUrl = new URL("/og-image.jpg", Astro.site);
     <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="theme-color" content="#0A5012" />
+    {istEntwurfsVorschau && <meta name="robots" content="noindex, nofollow" />}
     <link rel="sitemap" href="/sitemap-index.xml" />
 
     <!-- Vorschau beim Teilen (WhatsApp, Facebook, X) -->
@@ -53,6 +56,7 @@ const ogImageUrl = new URL("/og-image.jpg", Astro.site);
     <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
+    {istEntwurfsVorschau && <VorschauHinweis />}
     <slot />
   </body>
 </html>

@@ -1,0 +1,25 @@
+{
+  "name": "2. Mannschaft",
+  "kategorie": "herren",
+  "reihenfolge": 30,
+  "liga": "Kreisliga A",
+  "foto": {
+    "src": "../../assets/content/mannschaften/2-mannschaft.jpg",
+    "alt": "Mannschaftsfoto 2. Mannschaft"
+  },
+  "trainerteam": [
+    {
+      "name": "Nils Dau, Daniel Hermann"
+    }
+  ],
+  "training": [
+    {
+      "ort": "Sportplatz Obernfelder Allee",
+      "zeit": "Dienstag 18:30 - 20:00 Uhr"
+    },
+    {
+      "ort": "Sportplatz Obernfelder Allee",
+      "zeit": "Donnerstag 18:30 - 20:00 Uhr"
+    }
+  ]
+}

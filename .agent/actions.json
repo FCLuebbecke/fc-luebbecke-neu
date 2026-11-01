@@ -1,0 +1,23 @@
+{
+  "actions": [
+    {
+      "argv": [
+        "npm",
+        "run",
+        "dev",
+        "--",
+        "--open"
+      ],
+      "command": "npm run dev -- --open",
+      "description": "Startet die Vereinswebseite lokal mit dem Astro-Dev-Server (http://localhost:4321, sonst der nächste freie Port) und öffnet sie im Standardbrowser. Änderungen werden live neu geladen. Setzt installierte Abhängigkeiten voraus (npm install). Beenden mit Stop bzw. Ctrl-C.",
+      "id": "action-fc-dev-start",
+      "inputs": [],
+      "kind": "command",
+      "name": "Webseite starten",
+      "source": "agent",
+      "target": "local",
+      "toolbar": true
+    }
+  ],
+  "version": 2
+}

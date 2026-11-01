@@ -1,0 +1,26 @@
+{
+  "training": [
+    {
+      "gruppe": "Jugendspieler",
+      "zeit": "Montag, 19:00 – 20:00"
+    },
+    {
+      "gruppe": "Mannschaftsspieler",
+      "zeit": "Montag, 19:30-22:00"
+    },
+    {
+      "gruppe": "Hobbyspieler",
+      "zeit": "Montag, 20:00-22:00"
+    },
+    {
+      "gruppe": "Jugend / Schüler",
+      "zeit": "Donnerstag, 18:30 – 20:00"
+    },
+    {
+      "gruppe": "Jeder",
+      "zeit": "Donnerstag, 20:00 – 22:00"
+    }
+  ],
+  "ortName": "Kreissporthalle",
+  "ortAdresse": "Rote Mühle 1, 32312 Lübbecke"
+}

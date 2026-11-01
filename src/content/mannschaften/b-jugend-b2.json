@@ -1,0 +1,21 @@
+{
+  "name": "B - Jugend (B2)",
+  "kategorie": "jugend",
+  "reihenfolge": 80,
+  "jahrgang": "15-16 Jahre",
+  "trainerteam": [
+    {
+      "name": "Dean Skibbe, Marek Sommer"
+    }
+  ],
+  "training": [
+    {
+      "ort": "Kunstrasen",
+      "zeit": "Montag 17:00 - 18:30"
+    },
+    {
+      "ort": "Gehlenbeck",
+      "zeit": "Mittwoch 17:30 - 19:00"
+    }
+  ]
+}

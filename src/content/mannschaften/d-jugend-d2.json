@@ -1,0 +1,21 @@
+{
+  "name": "D - Jugend(D2)",
+  "kategorie": "jugend",
+  "reihenfolge": 130,
+  "jahrgang": "11-12 Jahre",
+  "trainerteam": [
+    {
+      "name": "Thorsten Schulz, Aylin Schulz, Jamie Jones"
+    }
+  ],
+  "training": [
+    {
+      "ort": "Obernfelder Allee",
+      "zeit": "Mittwoch 18:00 - 19:30"
+    },
+    {
+      "ort": "Blasheim",
+      "zeit": "Freitag 16:00 - 17:30"
+    }
+  ]
+}

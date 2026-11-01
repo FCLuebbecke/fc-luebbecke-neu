@@ -1,0 +1,21 @@
+{
+  "name": "A-Jugend (A1)",
+  "kategorie": "jugend",
+  "reihenfolge": 20,
+  "jahrgang": "17-18 Jahre",
+  "trainerteam": [
+    {
+      "name": "Marek Sommer, Justus Römer, Tim Wagenfeld"
+    }
+  ],
+  "training": [
+    {
+      "ort": "Kunstrasen",
+      "zeit": "Montag 18:30 - 20:00"
+    },
+    {
+      "ort": "Kunstrasen",
+      "zeit": "Donnerstag 20:00 - 21:30"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "C - Jugend (C2)",
+  "kategorie": "jugend",
+  "reihenfolge": 100,
+  "jahrgang": "13-14 Jahre",
+  "trainerteam": [
+    {
+      "name": "Christian Müller"
+    }
+  ],
+  "training": [
+    {
+      "ort": "Kunstrasen",
+      "zeit": "Dienstag 17:00 - 18:00"
+    },
+    {
+      "ort": "Gehlenbeck",
+      "zeit": "Freitag 17:00 - 18:30"
+    }
+  ]
+}

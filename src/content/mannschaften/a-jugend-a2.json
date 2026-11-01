@@ -1,0 +1,21 @@
+{
+  "name": "A - Jugend (A2)",
+  "kategorie": "jugend",
+  "reihenfolge": 40,
+  "jahrgang": "17-18",
+  "trainerteam": [
+    {
+      "name": "Gabriel Nobile, Uwe König"
+    }
+  ],
+  "training": [
+    {
+      "ort": "Kunstrasen",
+      "zeit": "Montag 18:30 - 20:00"
+    },
+    {
+      "ort": "Kunstrasen",
+      "zeit": "Donnerstag 20.00 - 21.30"
+    }
+  ]
+}

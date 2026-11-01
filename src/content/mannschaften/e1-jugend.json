@@ -1,0 +1,21 @@
+{
+  "name": "E1 Jugend",
+  "kategorie": "jugend",
+  "reihenfolge": 160,
+  "jahrgang": "9-10 Jahre",
+  "trainerteam": [
+    {
+      "name": "Yehor Bauer - Telefon 01525 4177040"
+    }
+  ],
+  "training": [
+    {
+      "ort": "Sportplatz Obernfelder Allee",
+      "zeit": "Dienstag 17:00 - 18:30 Uhr"
+    },
+    {
+      "ort": "Sportplatz Obernfelder Allee",
+      "zeit": "Donnerstag 17:00 - 18:30 Uhr"
+    }
+  ]
+}
