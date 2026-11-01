@@ -27,17 +27,18 @@
     },
     {
       "name": "vorschau",
-      "description": "Vorschau-Server mit Entwurfs-Branch: Einrichtung, Proxy, Zugangsschutz, Betrieb.",
+      "description": "Vorschau über Vercel-Previews des Branches entwurf: Stand-Kennung, automatisches Neuladen, Hinweisband.",
       "paths": [
-        "vorschau/**",
-        "VORSCHAU.md"
+        "VORSCHAU.md",
+        "src/components/VorschauHinweis.astro"
       ]
     },
     {
       "name": "mcp",
-      "description": "MCP-Server „FC-Webseite“ für Private AI: Werkzeuge, Validierung, Veröffentlichen.",
+      "description": "MCP-Server „FC-Webseite“ für Private AI (Vercel-Function, GitHub-API): Werkzeuge, Validierung, Veröffentlichen.",
       "paths": [
         "mcp/**",
+        "api/**",
         "MCP.md"
       ]
     },

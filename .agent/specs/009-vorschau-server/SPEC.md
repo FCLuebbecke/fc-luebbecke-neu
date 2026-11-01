@@ -5,68 +5,91 @@ order: 2
 needs_human: true
 angelegt: 2026-11-01
 usecase: UC-001
-open_question: Q1
+open_question: Q2
 depends_on: 008-inhalte-als-dateien
 ---
 
-# Vorschau-Server mit Entwurfs-Branch
+# Vorschau über Vercel-Previews mit Entwurfs-Branch
 
 ## Why
 
-UC-001 verlangt, dass Änderungen aus dem Chat in unter zwei Sekunden neben dem
-Chat sichtbar sind, bevor sie veröffentlicht werden. Nach Spec 008 liegen die
-Inhalte als Dateien vor; ein dauerhaft laufender Astro-Dev-Server auf einem
-Entwurfs-Branch zeigt Dateiänderungen sofort an.
+UC-001: Pflegende sehen Änderungen aus dem Chat neben dem Chat, bevor sie
+veröffentlicht werden. Entschieden ist (Decision 1), dafür keinen eigenen
+Server zu betreiben, sondern Vercel-Previews zu nutzen: Jeder Commit auf den
+Branch `entwurf` erzeugt eine Vorschau, die unter einer festen Adresse
+erreichbar ist. Die geöffnete Vorschau lädt sich selbst neu, sobald ein neuer
+Stand fertig gebaut ist.
 
 ## What
 
 Im Umfang:
-- Ein kleiner Server (Anbieter siehe Q1) mit:
-  - Git-Arbeitskopie des Repos auf dem Branch `entwurf`
-  - dauerhaft laufendem `astro dev` (Dienst, startet nach Neustart wieder)
-  - Reverse-Proxy mit HTTPS unter z. B. `vorschau.fcluebbecke.de`
-  - Zugangsschutz (Anmeldung), `X-Robots-Tag: noindex`
-- Die Vorschau lädt bei Dateiänderung automatisch neu (Astro-HMR über den
-  Proxy, WebSocket durchreichen).
-- Die Vorschau lässt sich in einem iframe einbetten (für ein Panel in Private
-  AI oder eine Redaktionsseite): `Content-Security-Policy: frame-ancestors`
-  nur für die erlaubten Herkünfte.
-- Entwurfs-Branch-Regeln: `entwurf` startet als Kopie von `main`; nach jeder
-  Veröffentlichung wieder gleich `main`.
-- Betriebsdoku `VORSCHAU.md`: Einrichtung, Neustart, Logs, Kosten.
+- Branch **`entwurf`** im Repo, startet als Kopie von `main`. Nach jeder
+  Veröffentlichung bzw. jedem Verwerfen wieder gleich `main` (macht der
+  MCP-Server, Spec 010).
+- **Feste Vorschau-Adresse:** die Branch-Adresse von Vercel
+  (`…-git-entwurf-….vercel.app`), optional eine eigene Domain wie
+  `vorschau.fcluebbecke.de`, die in Vercel dem Branch `entwurf` zugeordnet ist.
+- **Stand-Kennung:** Jeder Build schreibt `/build.json` mit Commit-SHA und
+  Zeitpunkt (aus `VERCEL_GIT_COMMIT_SHA`).
+- **Automatisches Neuladen:** Nur in Builds des Branches `entwurf`
+  (`VERCEL_GIT_COMMIT_REF === "entwurf"`) bindet das Layout ein kleines Skript
+  ein, das alle 5 Sekunden `/build.json` abfragt und die Seite neu lädt, sobald
+  sich der Commit ändert. Die Scroll-Position bleibt erhalten. Live- und
+  andere Vorschau-Builds enthalten das Skript nicht.
+- **Hinweisband** oben auf jeder Seite der Entwurfs-Vorschau: „Vorschau –
+  nicht veröffentlicht“, damit sie nicht mit der Live-Seite verwechselt wird.
+- **Nicht indexieren:** Vercel setzt für Preview-Adressen bereits
+  `X-Robots-Tag: noindex`; für eine eigene Vorschau-Domain zusätzlich prüfen.
+- **Einbettbarkeit:** Die Vorschau lässt sich in einem iframe anzeigen (für
+  ein Panel in Private AI, Q2). Erlaubte Adressen über
+  `Content-Security-Policy: frame-ancestors`, sobald Q2 geklärt ist.
+- **Messung:** Zeit von Commit bis zur sichtbaren Änderung in der Vorschau,
+  dokumentiert in `VORSCHAU.md`.
 
 Nicht im Umfang:
-- Schreiben, Veröffentlichen, Verwerfen (macht der MCP-Server, Spec 010).
-- Eine eigene Redaktionsseite mit Chatfenster (nur falls Q2 das ergibt, dann
-  eigene Spec).
+- Schreiben, Veröffentlichen, Verwerfen (MCP-Server, Spec 010).
+- Ein eigener Server für Vorschau in unter 2 Sekunden. Kann später ergänzt
+  werden, ohne dass sich am MCP-Server viel ändert (Decision 1).
+- Eine eigene Redaktionsseite mit Chatfenster (nur falls Q2 das ergibt).
 
 ## Acceptance
 
-- Wenn man auf dem Server eine Inhaltsdatei im Branch `entwurf` ändert, dann
-  zeigt ein offenes Vorschau-Fenster die Änderung nach spätestens 2 Sekunden
-  ohne Klick.
-- Wenn man `vorschau.fcluebbecke.de` ohne Anmeldung aufruft, dann sieht man
-  nichts außer der Anmeldung.
-- Wenn man die Vorschau in einem iframe einer nicht erlaubten Seite einbettet,
-  dann blockiert der Browser sie; in einer erlaubten Seite wird sie angezeigt.
-- Wenn der Server neu startet, dann läuft die Vorschau danach ohne Eingriff
-  wieder.
-- Suchmaschinen indexieren die Vorschau nicht (`noindex`).
+- Wenn ein Commit auf `entwurf` gepusht wird, dann zeigt eine im Browser
+  geöffnete Vorschau den neuen Stand ohne Klick, sobald der Vercel-Build fertig
+  ist; gemessen und dokumentiert, Ziel unter 90 Sekunden.
+- Wenn man die Live-Seite oder eine andere Vorschau öffnet, dann gibt es weder
+  das Neuladen-Skript noch das Hinweisband.
+- Wenn man die Entwurfs-Vorschau öffnet, dann steht oben „Vorschau – nicht
+  veröffentlicht“.
+- Wenn man die Vorschau in einem iframe einer erlaubten Seite öffnet, dann wird
+  sie angezeigt (sobald Q2 die Adresse liefert).
+- Suchmaschinen indexieren die Vorschau nicht.
 
 ## Decisions
 
-1. 2026-11-01 · Vorschau über `astro dev` statt über Vercel-Preview-Builds:
-   Vercel braucht pro Änderung 1–2 Minuten, UC-001 verlangt unter 2 Sekunden.
+1. 2026-11-01 · Aus A1 („kann der nicht auch bei Vercel laufen?“) und
+   Freigabe im Chat („weiter“): Vorschau über Vercel-Previews statt eigenem
+   Server (Variante A). Vercel kann keinen dauerhaft laufenden Dev-Server
+   betreiben; die Vorschau braucht deshalb geschätzt 30–60 Sekunden statt
+   ~1 Sekunde, dafür kein zusätzlicher Server und keine Zusatzkosten. Ein
+   eigener Server (Variante B) bleibt als spätere Ergänzung möglich.
+3. 2026-11-01 · Geprüft und verworfen: Vorschau in der VM von Private AI.
+   Private AI kann eine kleine VM für Skills starten, aber `astro dev` läuft
+   dort nicht (Auskunft im Chat).
+2. 2026-11-01 · Neuladen per Abfrage von `/build.json` statt WebSocket:
+   funktioniert mit rein statischen Vercel-Builds ohne Server-Code.
 
 ## Tasks
 
-- [ ] Anbieter und Servergröße festlegen (Q1)
-- [ ] Server einrichten (Node, Git, Dienst für `astro dev`)
-- [ ] Repo-Zugang mit eigenem Deploy-Key (nur dieses Repo)
-- [ ] Reverse-Proxy mit HTTPS, WebSocket für HMR, Zugangsschutz, noindex
-- [ ] `frame-ancestors` für erlaubte Herkünfte (Q2)
-- [ ] DNS `vorschau.fcluebbecke.de`
-- [ ] Neustart-Test, Latenz-Test (Dateiänderung → Anzeige)
+- [ ] Feature-Branch `spec/009-vorschau-vercel` von `dev` anlegen
+- [ ] `/build.json` beim Build erzeugen (Commit-SHA, Zeitpunkt)
+- [ ] Neuladen-Skript und Hinweisband im Layout, nur für Branch `entwurf`
+- [ ] Branch `entwurf` von `main` anlegen und pushen
+      Hinweis: `entwurf` zweigt von `main` ab; Neuladen-Skript und
+      Hinweisband wirken dort erst, wenn dieser Code live (in `main`) ist.
+- [ ] Vorschau-Adresse festlegen (Vercel-Branch-Adresse oder eigene Domain)
+- [ ] Zeit Commit → sichtbare Änderung messen
+- [ ] `frame-ancestors` setzen (nach Q2)
 - [ ] `VORSCHAU.md` schreiben
 
 ## Verification
@@ -84,3 +107,9 @@ erreichbar sein (am einfachsten: beide auf demselben Server).
 Kann Private AI die Vorschau neben dem Chat einbetten (iframe oder MCP Apps)?
 Falls ja: von welcher Adresse aus (für `frame-ancestors`)? Falls nein, braucht
 es eine eigene Redaktionsseite (eigene Spec) oder zwei Fenster nebeneinander.
+
+### A1 · bo · 2026-11-01T14:22:23Z
+kann der nicht auch bei versel laufen ?
+
+### A2 · bo · 2026-11-01T14:23:18Z
+beides noch nicht, was sollten wir machen ?

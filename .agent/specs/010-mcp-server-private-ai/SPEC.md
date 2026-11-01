@@ -21,9 +21,12 @@ gegen das Schema geprüft ist und nichts ohne Bestätigung live geht.
 ## What
 
 Im Umfang:
-- MCP-Server (TypeScript, offizielles MCP-SDK, Transport Streamable HTTP),
-  läuft neben dem Vorschau-Server (Spec 009) und arbeitet in dessen
-  Arbeitskopie auf Branch `entwurf`.
+- MCP-Server (TypeScript, offizielles MCP-SDK, Transport Streamable HTTP,
+  zustandslos) als **Vercel-Function** im selben Projekt (`api/mcp.ts`).
+  Er hat keine Git-Arbeitskopie, sondern liest und schreibt über die
+  **GitHub-API** auf dem Branch `entwurf` (Decision 4). Zugang über ein
+  Fine-grained Token nur für dieses Repo (Contents: Read and write) als
+  Vercel-Umgebungsvariable.
 - Werkzeuge:
   - `inhalt_suchen(sammlung?, text)` – findet Einträge
   - `inhalt_lesen(sammlung, id)` – liefert Eintrag + Revision (Git-Blob-Hash)
@@ -34,16 +37,25 @@ Im Umfang:
     unter `src/assets/content/`
   - `entwurf_status()` – unveröffentlichte Änderungen gegenüber `main` (Diff,
     wer, wann)
-  - `vorschau_zeigen(sammlung?, id?)` – URL der betroffenen Vorschau-Seite
-  - `veroeffentlichen(bestaetigung)` – `astro check` + Build-Test, dann
-    rebase auf `main`, Commit(s) nach `main` pushen, `entwurf` = `main`
-  - `entwurf_verwerfen(bestaetigung)` – `entwurf` auf `main` zurücksetzen
+  - `vorschau_zeigen(sammlung?, id?)` – URL der betroffenen Seite in der
+    Vercel-Vorschau des Branches `entwurf` (Spec 009) und Build-Status
+    („wird gebaut“ / „fertig“)
+  - `veroeffentlichen(bestaetigung)` – nur wenn der Vercel-Build des
+    aktuellen `entwurf`-Commits erfolgreich war (Commit-Status auf GitHub);
+    dann `entwurf` nach `main` mergen (GitHub-Merge-API), danach `entwurf` =
+    `main`
+  - `entwurf_verwerfen(bestaetigung)` – `entwurf` auf den Stand von `main`
+    zurücksetzen
   - `rueckgaengig(commit)` – Gegen-Commit im Entwurf
 - Schutz:
   - Schreibzugriff nur auf `src/content/**` und `src/assets/content/**`;
     alle anderen Pfade werden abgelehnt.
-  - Validierung mit denselben Zod-Schemas wie Astro (aus Spec 008
-    importiert), vor jedem Schreiben.
+  - Validierung mit denselben Zod-Schemas wie Astro, vor jedem Schreiben.
+    Dafür werden die Schemas aus `src/content.config.ts` in eine Datei ohne
+    `astro:content`-Abhängigkeit ausgelagert (`src/content/schemas.ts`), die
+    Astro und der MCP-Server gemeinsam nutzen.
+  - Mehrere Dateien (z. B. Bild + JSON) werden als **ein** Commit geschrieben
+    (Git-Data-API), damit die Vorschau nie einen halben Stand baut.
   - Revisionsprüfung: Schreiben nur, wenn `erwartete_revision` passt.
   - `veroeffentlichen`/`entwurf_verwerfen`/`entwurf_loeschen` nur mit
     ausdrücklicher Bestätigung als Parameter; das Werkzeug beschreibt, dass
@@ -62,8 +74,8 @@ Nicht im Umfang:
 ## Acceptance
 
 - Wenn Private AI `entwurf_aendern` für eine Trainingszeit aufruft, dann ist
-  die Datei im Branch `entwurf` geändert und die Vorschau zeigt sie nach
-  spätestens 2 Sekunden.
+  die Datei im Branch `entwurf` geändert (ein Commit) und die Vorschau zeigt
+  sie, sobald der Vercel-Build fertig ist (Ziel unter 90 Sekunden).
 - Wenn ein Werkzeug einen Pfad außerhalb von `src/content/` bzw.
   `src/assets/content/` ändern soll, dann lehnt der Server ab und schreibt
   nichts.
@@ -73,8 +85,8 @@ Nicht im Umfang:
   `entwurf_aendern` ab und nennt die neue Revision.
 - Wenn `veroeffentlichen` aufgerufen wird, dann steht danach ein Commit mit
   der Person als Autor in `main`, Vercel baut, und `entwurf` ist gleich `main`.
-- Wenn der Build-Test vor dem Veröffentlichen fehlschlägt oder der Rebase
-  einen Konflikt hat, dann wird nichts nach `main` gepusht.
+- Wenn der Vercel-Build des Entwurfs fehlgeschlagen ist oder der Merge nach
+  `main` einen Konflikt hat, dann wird nichts nach `main` übernommen.
 - Wenn `entwurf_status` beim Start fremde Änderungen zeigt, dann sind Person
   und Diff erkennbar.
 - Wenn eine nicht freigeschaltete Person den Server nutzt, dann wird nichts
@@ -93,16 +105,23 @@ Nicht im Umfang:
    auseinanderlaufen, übernimmt `dev` nach jeder Inhalts-Veröffentlichung den
    Stand von `main`. Der MCP-Server ändert nur Inhaltsordner, daher sind
    Konflikte selten; bei einem Konflikt wird nicht automatisch aufgelöst.
+4. 2026-11-01 · Folge aus Spec 009 Decision 1 (alles auf Vercel): Der
+   MCP-Server läuft als Vercel-Function und arbeitet über die GitHub-API statt
+   in einer lokalen Arbeitskopie. Der Build-Test vor dem Veröffentlichen ist
+   der Vercel-Preview-Build des `entwurf`-Commits; schlägt er fehl, wird nicht
+   veröffentlicht. Die Vorschau erscheint 30–60 s nach einer Änderung.
 
 ## Tasks
 
 - [ ] Feature-Branch `spec/010-mcp-server-private-ai` anlegen
-- [ ] Projektstruktur `mcp/` (eigenes `package.json`), MCP-SDK, HTTP-Transport
+- [ ] Vercel-Function `api/mcp.ts` mit MCP-SDK (Streamable HTTP, zustandslos), Code unter `mcp/`
+- [ ] GitHub-Zugriff (Token als Vercel-Variable, nur dieses Repo): Lesen, Commit mehrerer Dateien, Ref-Update, Merge
+- [ ] Zod-Schemas nach `src/content/schemas.ts` auslagern, von Astro und MCP gemeinsam genutzt
 - [ ] Lese-Werkzeuge und `schema_lesen`
 - [ ] Schreib-Werkzeuge mit Pfad-Sperre, Zod-Validierung, Revisionsprüfung
 - [ ] `bild_hochladen` mit Verkleinerung (sharp)
 - [ ] `entwurf_status`, `vorschau_zeigen`
-- [ ] `veroeffentlichen` (check, Build-Test, rebase, push), `entwurf_verwerfen`, `rueckgaengig`
+- [ ] `veroeffentlichen` (Vercel-Build-Status prüfen, Merge nach `main`), `entwurf_verwerfen`, `rueckgaengig`
 - [ ] Anmeldung und Freischaltung (Q1)
 - [ ] Protokoll
 - [ ] Tests: Pfad-Sperre, Validierung, Revision, Konflikt beim Veröffentlichen
