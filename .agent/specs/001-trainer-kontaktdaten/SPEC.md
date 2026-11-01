@@ -1,4 +1,5 @@
 ---
+station: Done
 nummer: 001
 titel: Telefonnummer und E-Mail-Adresse für Trainer
 status: erledigt

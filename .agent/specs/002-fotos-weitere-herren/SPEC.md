@@ -1,4 +1,5 @@
 ---
+station: Done
 nummer: 002
 titel: Mannschaftsfotos für 2. Mannschaft und Alte Herren
 status: erledigt

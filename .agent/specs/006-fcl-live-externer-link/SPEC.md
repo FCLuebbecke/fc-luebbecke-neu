@@ -1,4 +1,5 @@
 ---
+station: Done
 nummer: 006
 titel: FCL LIVE als externer Link (fcl-live.de) statt eigener Unterseite
 status: erledigt

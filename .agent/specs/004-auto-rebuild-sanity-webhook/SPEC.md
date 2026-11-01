@@ -1,4 +1,5 @@
 ---
+station: Done
 nummer: 004
 titel: Sanity-Änderungen gehen automatisch live (Webhook → Vercel Rebuild)
 status: erledigt

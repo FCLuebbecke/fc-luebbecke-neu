@@ -1,4 +1,6 @@
 ---
+modules: inhalte, seiten
+station: Backlog
 nummer: 007
 titel: News-Bereich „Aktuelles“ (redaktionelle Beiträge + Instagram)
 status: geplant
@@ -21,7 +23,12 @@ Vereinsleben, Ehrungen), die auf der Startseite, auf einer eigenen Seite
 `/aktuelles` und auf den Sparten-Seiten erscheinen. Der bestehende
 Instagram-Bereich bleibt erhalten und wird mit den Beiträgen zu einem
 gemeinsamen „Aktuelles“ verbunden. Beiträge werden von Claude auf Zuruf
-geschrieben und im Studio nur noch freigegeben.
+geschrieben und im Chat freigegeben (UC-001, Spec 010).
+
+> **Änderung 2026-11-01:** Sanity entfällt (Spec 008). Beiträge sind
+> Markdown-Dateien in der Content Collection `beitraege`, angelegt über den
+> MCP-Server (Spec 010) mit Live-Vorschau (Spec 009). Abschnitte unten sind
+> entsprechend angepasst. Abhängigkeit: Spec 008 zuerst.
 
 ## Ausgangslage
 
@@ -32,8 +39,8 @@ geschrieben und im Studio nur noch freigegeben.
   `permalink`, `caption`, `sizes`, `mediaType`). Bilder werden selbst
   gehostet, kein Consent-Banner nötig. Handle und Profil-URL stehen noch mit
   TODO im Code.
-- Sanity-Schemas liegen in `src/sanity/schemaTypes/`, Abfragen in
-  `src/lib/sanity.ts`. Es gibt bisher keinen Slug- und keinen
+- Nach Spec 008 liegen Inhalte als Content Collections unter `src/content/`,
+  Zugriff über `src/lib/inhalte.ts`. Es gibt bisher keinen Slug- und keinen
   Rich-Text-Typ im Projekt.
 - `Layout.astro` setzt Open-Graph-Metadaten, aber mit festem `og-image.jpg`;
   ein Bild pro Seite ist nicht vorgesehen.
@@ -49,7 +56,7 @@ geschrieben und im Studio nur noch freigegeben.
 ```
 ┌─ Aktuelles ──────────────────────────────────────────┐
 │  ┌────────────┐ ┌────────────┐ ┌────────────┐         │  Ebene 1: bis zu 3 neueste
-│  │ Titelbild  │ │ Titelbild  │ │ Titelbild  │         │  Beiträge aus Sanity
+│  │ Titelbild  │ │ Titelbild  │ │ Titelbild  │         │  Beiträge (Dateien)  
 │  │ 12.09. Fußb│ │ 05.09. Vere│ │ 01.09. Dart│         │  (Bild, Datum, Sparten-Label,
 │  │ Titel      │ │ Titel      │ │ Titel      │         │   Titel, Teaser, „Weiterlesen“)
 │  └────────────┘ └────────────┘ └────────────┘         │
@@ -74,12 +81,12 @@ eigenem Vorschaubild für WhatsApp & Co.
 Beiträgen ihrer Sparte (nur redaktionell, kein Instagram).
 
 **Redaktion:** Claude schreibt die Beiträge auf Zuruf (Fakten im Chat),
-legt sie als **Entwurf** in Sanity an; Freigabe und Foto im Studio, Publish
-macht sie live (mit Spec 004 automatisch).
+legt sie über den MCP-Server im Entwurf an; die Vorschau neben dem Chat zeigt
+den Beitrag sofort, „veröffentlichen“ im Chat macht ihn live (UC-001).
 
 ## Anforderungen
 
-### Datenmodell (Sanity, Dokumenttyp `beitrag`)
+### Datenmodell (Content Collection `beitraege`, Markdown + Frontmatter)
 
 - [ ] Felder: `titel` (Pflicht), `slug` (aus Titel, Pflicht, eindeutig),
       `datum` (Pflicht, Standard heute), `sparte` (Auswahl: fussball ·
@@ -89,8 +96,9 @@ macht sie live (mit Spec 004 automatisch).
       fett/kursiv, Links, Aufzählung, Bild mit Bildunterschrift),
       `galerie` (Liste von Bildern mit Alt-Text, optional),
       `autor` (Text, optional, z. B. „Jugendabteilung“).
-- [ ] Studio-Vorschau: Titel + Datum + Sparte; Sortierung nach Datum
-      absteigend als Standard.
+- [ ] `inhalt` ist der Markdown-Text der Datei (statt Rich Text); Bilder im
+      Text als Markdown-Bild mit Alt-Text, Dateien unter
+      `src/assets/content/beitraege/`. `slug` = Dateiname.
 - [ ] Validierung: kein Publish ohne Titelbild und Alt-Text (Barrierefreiheit,
       Vorschaubild).
 
@@ -129,7 +137,7 @@ macht sie live (mit Spec 004 automatisch).
       nativen `<dialog>` wie in Spec 003), Zurück-Link, Teilen-Zeile
       (WhatsApp-Link `https://wa.me/?text=…`, Link kopieren).
 - [ ] `Layout.astro` bekommt optionale Props `ogImage` und `ogType`
-      („article“); Detailseite übergibt Titelbild 1200×630 aus Sanity.
+      („article“); Detailseite übergibt Titelbild 1200×630 (Astro-Bildoptimierung).
 - [ ] Zeilenlänge Fließtext max. ~70 Zeichen (CLAUDE.md 4), Bilder 16:9
       oder 4:3, leicht gerundet.
 
@@ -145,22 +153,19 @@ macht sie live (mit Spec 004 automatisch).
 - [ ] Du nennst im Chat die Fakten (Anlass, Ergebnis, Namen, Datum, ggf.
       Zitate). Claude formuliert Titel, Teaser und Text im Ton der Seite
       (bodenständig, klar, keine Superlative) und zeigt den Entwurf im Chat.
-- [ ] Nach deinem „ok“ legt Claude den Beitrag als **Sanity-Entwurf** an
-      (kein Publish). Werkzeug: kleines Skript `scripts/beitrag-anlegen.ts`,
-      das über `@sanity/client` mit `SANITY_WRITE_TOKEN` aus `.env` ein
-      `drafts.`-Dokument schreibt; Bilder aus einem lokalen Pfad werden mit
-      hochgeladen, wenn du sie im Chat oder im Ordner `assets-src/news/`
-      bereitstellst.
-- [ ] Freigabe im Studio: Foto prüfen/ergänzen, Text ggf. anpassen,
-      **Publish**. Mit Spec 004 ist der Beitrag nach 1–2 Minuten live.
-- [ ] Rückfallweg ohne Token: Claude liefert den Beitrag als fertigen Text
-      im Chat, du kopierst ihn ins Studio. (Token ist vorhanden, siehe M2.)
+- [ ] Nach deinem „ok“ legt Claude den Beitrag über den MCP-Server im
+      Entwurf an (Markdown-Datei in `src/content/beitraege/`, Fotos aus dem
+      Chat über `bild_hochladen`). Die Vorschau neben dem Chat zeigt ihn sofort.
+- [ ] Freigabe im Chat: Text/Foto per Chat nachbessern, dann
+      „veröffentlichen“. Der Beitrag ist nach 1–2 Minuten live.
+- [ ] Rückfallweg, solange Spec 009/010 nicht stehen: Claude legt die
+      Markdown-Datei auf einem Branch an, Veröffentlichung per Merge.
 
 ## Nicht Teil dieser Spec
 
 - Seitenaufteilung / Archiv älterer Beiträge (Folge-Spec, wenn > 60 Beiträge).
 - Kommentare, Newsletter, RSS-Feed, Suche.
-- Automatisches Übernehmen von Instagram-Posts als Sanity-Beiträge.
+- Automatisches Übernehmen von Instagram-Posts als Beiträge.
 - Umstellung auf serverseitiges Rendern; Beiträge sind wie alles andere
   statisch gebaut.
 - Terminliste (CLAUDE.md 6.5) – bleibt separates Thema.
@@ -175,38 +180,33 @@ In `src/components/InstagramFeed.astro` stehen Handle `@fcluebbecke` und
 Profil-URL mit TODO. Bitte bestätigen oder korrigieren (Antwort im Chat
 reicht: „Handle stimmt“ oder der richtige Handle).
 
-### M2 · Sanity-Schreibtoken für Claude — ✅ erledigt (2026-09-03)
+### M2 · ~~Sanity-Schreibtoken~~ — entfällt (2026-11-01, Sanity wird in Spec 008 abgelöst)
 
-`SANITY_WRITE_TOKEN` ist lokal in `.env` gesetzt und funktioniert (Lese-Test
-gegen die Sanity-API erfolgreich). Claude kann damit Entwürfe anlegen.
-Kein weiterer Schritt nötig.
+### M3 · Reihenfolge — neu: Spec 008 zuerst
 
-### M3 · Reihenfolge: Spec 004 zuerst? — ✅ erledigt
-
-Spec 004 (Auto-Rebuild) ist eingerichtet. Neue Beiträge sind nach Publish
-in 1–2 Minuten live.
+Beiträge setzen die Content Collections aus Spec 008 voraus. Für das Anlegen
+per Chat mit Vorschau zusätzlich Spec 009 und 010.
 
 ### M4 · Abnahme (nach Umsetzung, 10 Minuten)
 
-1. Claude legt einen Testbeitrag als Entwurf an (oder du im Studio).
-2. Im Studio Titelbild setzen, Publish.
+1. Testbeitrag per Chat anlegen (oder Claude auf einem Branch), mit Titelbild.
+2. In der Vorschau prüfen, dann veröffentlichen.
 3. Startseite: Beitrag in Ebene 1 sichtbar, Instagram darunter unverändert.
 4. `/aktuelles`: Beitrag und Instagram-Kacheln gemischt, Filter „Fußball“
    zeigt nur passende Einträge.
 5. Detailseite öffnen, Link per WhatsApp an dich selbst schicken: Vorschau
    zeigt Titel und Titelbild.
 6. Auf dem Handy: Karten stapeln, Galerie-Overlay öffnet und schließt.
-7. Testbeitrag im Studio löschen (Unpublish + Delete).
+7. Testbeitrag per Chat löschen und veröffentlichen.
 
 ---
 
 ## Umsetzung (Claude)
 
-1. **Schema** `src/sanity/schemaTypes/beitrag.ts` anlegen und in `index.ts`
-   registrieren; Rich Text als `array` of `block` + `image`.
-2. **Abfragen** in `src/lib/sanity.ts`: `getBeitraege({ sparte?, limit })`,
-   `getBeitrag(slug)`, `getBeitragSlugs()`; Typ `BeitragDoc`. Portable Text
-   rendern mit `astro-portabletext` (klein, keine React-Abhängigkeit).
+1. **Schema** Collection `beitraege` in `src/content.config.ts` (Zod, `image()`
+   für Titelbild/Galerie mit Pflicht-Alt-Text).
+2. **Abfragen** in `src/lib/inhalte.ts`: `getBeitraege({ sparte?, limit })`,
+   `getBeitrag(slug)`; Rendern mit `render()` aus `astro:content`.
 3. **Komponenten:** `BeitragKarte.astro` (Startseite, Liste, Sparten-Block),
    `InstagramKachel.astro` (Strom), `Aktuelles.astro` (Startseiten-Block mit
    beiden Ebenen, nutzt `InstagramFeed`), `SparteAktuelles.astro`.
@@ -218,10 +218,11 @@ in 1–2 Minuten live.
    ergänzen; aktiver Zustand für `/aktuelles*`.
 7. **Startseite:** `InstagramFeed` durch `Aktuelles` ersetzen.
 8. **Sparten:** `SparteAktuelles` in die drei `mannschaften.astro` einbauen.
-9. **Redaktionsskript** `scripts/beitrag-anlegen.ts` (Node, `@sanity/client`):
-   Eingabe JSON/Markdown → Entwurf mit Slug, Bild-Upload optional.
-   Dokumentation in `SANITY.md` (Abschnitt „Beiträge“).
-10. **CLAUDE.md** Abschnitt 6.4 anpassen: „Aktuelles = Beiträge (Sanity) +
+9. **Redaktion:** kein eigenes Skript; Beiträge entstehen über den
+   MCP-Server (Spec 010, `entwurf_anlegen` für `beitraege`). Bis Spec 010
+   steht, legt Claude die Markdown-Datei auf einem Branch an.
+   Dokumentation in `INHALTE.md` (Abschnitt „Beiträge“).
+10. **CLAUDE.md** Abschnitt 6.4 anpassen: „Aktuelles = Beiträge (Dateien) +
     Instagram“, Navigation um „Aktuelles“ ergänzen.
 11. **Test:** Build, Screenshots Startseite/Strom/Detail (Desktop + 390 px),
     OG-Tags im Quelltext, Lighthouse-Kontrast der Sparten-Etiketten.
@@ -232,8 +233,8 @@ in 1–2 Minuten live.
 - `/aktuelles` mischt beide Quellen chronologisch, Instagram klar erkennbar,
   Filter funktioniert mit und ohne JavaScript (ohne JS: alle Einträge).
 - Detailseite hat eigenes OG-Bild, Galerie-Overlay funktioniert per Tastatur.
-- Claude kann aus Chat-Fakten einen Entwurf in Sanity anlegen; Publish im
-  Studio genügt.
+- Ein Beitrag lässt sich per Chat anlegen, erscheint sofort in der Vorschau
+  und nach „veröffentlichen“ live (sobald Spec 009/010 umgesetzt sind).
 - Menüpunkt „Aktuelles“ in Header, Burger-Menü und Footer.
 - Mobil ohne horizontales Scrollen; Tippflächen ≥ 44 px.
 

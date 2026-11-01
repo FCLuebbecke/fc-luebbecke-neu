@@ -1,0 +1,67 @@
+{
+  "schema_version": 2,
+  "versioning": {
+    "enabled": false
+  },
+  "owner": "acceptance",
+  "product": {
+    "id": "fc-webseite",
+    "name": "FC Lübbecke Webseite",
+    "line_id": "main",
+    "line_name": "Hauptlinie"
+  },
+  "versions": [],
+  "usecases": [
+    {
+      "id": "UC-001",
+      "title": "Webseiten-Inhalte über Private AI per MCP ändern",
+      "metadata": {},
+      "legacy_file": null,
+      "legacy_revision": null,
+      "resource_type": "workflow"
+    }
+  ],
+  "states": [],
+  "drafts": [
+    {
+      "id": "d1431eae-a599-4434-8dd7-1084afd26b15",
+      "usecase_id": "UC-001",
+      "title": "Webseiten-Inhalte im Chat mit Private AI ändern – mit Live-Vorschau",
+      "content": "# Webseiten-Inhalte im Chat mit Private AI ändern – mit Live-Vorschau\n\n**Akteur:** Vereinsmitglied mit Pflegerecht (z. B. Abteilungsleitung, Trainer, Vorstand)\n**Beteiligte Systeme:**\n- **Private AI** – Chat, in dem die Person ihre Änderung beschreibt\n- **MCP-Server „FC-Webseite“** – einzige Stelle, die Inhalte liest und schreibt\n- **Vorschau-Server** – laufender Astro-Entwicklungsserver auf dem Entwurfs-Branch `entwurf`, zeigt Änderungen in unter einer Sekunde\n- **Git-Repository** – Inhalte liegen als Dateien unter `src/content/` (JSON/Markdown, Bilder unter `src/assets/`)\n- **Vercel** – baut die Live-Seite aus `main`\n\n**Ziel:** Inhalte der Vereinswebseite im Chat ändern und das Ergebnis dabei sofort neben dem Chat sehen, ohne Git, Editor oder Vercel zu bedienen. Es gibt kein Sanity mehr.\n\n## Auslöser\n\nDie pflegende Person schreibt der Private AI, was sich ändern soll, zum Beispiel:\n„Die Badminton-Trainingszeit am Donnerstag ist jetzt 19:30 bis 21:30.“\n„Neuer Trainer in der D-Jugend: Max Muster, 0171 …“\n„Sponsor Bäckerei Meyer ist raus.“\n\n## Vorbedingungen\n\n- Der MCP-Server ist in Private AI eingebunden. Er hat Schreibzugriff nur auf `src/content/` und `src/assets/content/` im Entwurfs-Branch und darf nur nach `main` übernehmen. Seine Git-Zugangsdaten liegen nur auf dem Server, nie im Chat.\n- Die Person ist in Private AI angemeldet und für den MCP-Server freigeschaltet.\n- Der Vorschau-Server läuft und ist nur mit Anmeldung erreichbar.\n- Neben dem Chat ist die Vorschau sichtbar: als Panel in Private AI, auf einer eigenen Redaktionsseite oder notfalls in einem zweiten Browserfenster.\n\n## Pflegbare Inhalte (Umfang Version 1)\n\n| Inhalt (Datei-Sammlung)                         | Lesen | Ändern | Anlegen / Löschen |\n|-------------------------------------------------|:-----:|:------:|:-----------------:|\n| Fußball-Mannschaften inkl. Trainerteam          | ja    | ja     | ja                |\n| Badminton-/Darts-Mannschaften                   | ja    | ja     | ja                |\n| Sparten-Infos Badminton/Darts (Training, Halle) | ja    | ja     | nein              |\n| Sponsoren                                       | ja    | ja     | ja                |\n| Beiträge „Aktuelles“ (Spec 007)                 | ja    | ja     | ja                |\n\nCode, Layout, Navigation, Impressum und Datenschutz ändert der MCP-Server nicht. Dateien außerhalb der Inhaltsordner sind für ihn gesperrt.\n\n## Hauptablauf\n\n1. Die Person beschreibt die Änderung im Chat.\n2. Private AI liest per MCP den aktuellen Stand (`inhalt_suchen`, `inhalt_lesen`) und öffnet in der Vorschau die betroffene Seite (`vorschau_zeigen` liefert die URL).\n3. Private AI schreibt die Änderung per MCP in den Entwurfs-Branch (`entwurf_aendern`). Der MCP-Server prüft sie vorher gegen das Inhaltsschema (Pflichtfelder, Formate, Alt-Text).\n4. Die Vorschau neben dem Chat zeigt die Änderung in unter einer Sekunde, ohne Klick.\n5. Private AI fasst kurz zusammen, was sich geändert hat (vorher → nachher), und fragt: „So veröffentlichen?“\n6. Die Person kann weitere Änderungen im Chat nachschieben (zurück zu Schritt 1). Jede erscheint sofort in der Vorschau.\n7. Die Person bestätigt die Veröffentlichung.\n8. Der MCP-Server übernimmt die Entwurfs-Änderungen als Commit nach `main` (`veroeffentlichen`). Die Commit-Nachricht nennt die Person und die geänderten Inhalte.\n9. Vercel baut. Private AI meldet: „Veröffentlicht, in 1–2 Minuten live“, mit Link zur Live-Seite.\n\n## Alternativabläufe\n\n- **A1 · Verwerfen:** Die Person sagt „verwerfen“. Der MCP-Server setzt den Entwurf auf den Stand von `main` zurück (`entwurf_verwerfen`), und die Vorschau zeigt wieder die Live-Inhalte.\n- **A2 · Später veröffentlichen:** Die Person beendet den Chat ohne Veröffentlichung. Der Entwurf bleibt erhalten, und Private AI weist beim nächsten Chat darauf hin.\n- **A3 · Neuer Inhalt:** Private AI fragt fehlende Pflichtfelder einzeln nach, bevor sie schreibt.\n- **A4 · Foto:** Die Person hängt ein Foto im Chat an. Der MCP-Server verkleinert es, speichert es unter `src/assets/content/` und verknüpft es. Private AI schlägt einen Alt-Text vor, die Person bestätigt ihn.\n- **A5 · Löschen:** Private AI nennt genau, was entfernt wird, und verlangt eine ausdrückliche Bestätigung. Erst dann wird im Entwurf gelöscht. Die Vorschau zeigt das Ergebnis vor dem Veröffentlichen.\n- **A6 · Mehrdeutig:** Passen mehrere Inhalte (z. B. „die Zweite“), fragt Private AI nach, statt zu raten.\n- **A7 · Rückgängig nach Veröffentlichung:** Die Person sagt „mach die letzte Änderung rückgängig“. Der MCP-Server erzeugt einen Gegen-Commit im Entwurf, die Vorschau zeigt den alten Stand, Veröffentlichen wie oben.\n\n## Fehlerfälle\n\n- **F1 · Entwurf ist nicht leer:** Beim Start liegen im Entwurf schon unveröffentlichte Änderungen, z. B. von einer anderen Person. Private AI zeigt sie an und fragt, ob sie mitveröffentlicht, verworfen oder abgewartet werden sollen. Nie stillschweigend mitveröffentlichen.\n- **F2 · `main` hat sich geändert:** Seit Beginn des Entwurfs wurde z. B. Code nach `main` gemergt. Der MCP-Server holt `main` in den Entwurf (rebase). Bei einem Konflikt veröffentlicht er nicht und meldet den Konflikt.\n- **F3 · Nicht erlaubte Datei oder nicht erlaubter Inhalt:** Der MCP-Server lehnt ab. Private AI erklärt, dass das eine Code-Änderung ist (Spec, Branch).\n- **F4 · Validierung:** Ein Pflichtfeld fehlt oder ein Format ist falsch. Es wird nicht geschrieben, Private AI fragt nach. Ein Inhalt, den Astro nicht bauen kann, erreicht nie `main`.\n- **F5 · Vorschau-Server, GitHub oder Vercel nicht erreichbar:** Private AI meldet den Fehler ehrlich. Nichts gilt als veröffentlicht, solange der Server keinen Erfolg bestätigt hat.\n\n## Nachbedingungen\n\n- Die Änderung steht als Commit in `main` und ist nach dem Vercel-Build live, oder sie liegt unveröffentlicht im Entwurf (A2) bzw. ist verworfen (A1).\n- Die Git-Historie zeigt für jede Veröffentlichung, wer, wann und was geändert hat (Diff), und jede Änderung lässt sich zurücknehmen.\n\n## Akzeptanzkriterien\n\n1. Wenn die Person im Chat eine Trainingszeit ändert, dann zeigt die Vorschau neben dem Chat die neue Zeit nach spätestens 2 Sekunden, ohne Klick.\n2. Wenn die Person danach „veröffentlichen“ bestätigt, dann zeigt die Live-Seite die neue Zeit nach spätestens 5 Minuten, und in `main` steht ein Commit mit Person und Änderung.\n3. Wenn die Person „verwerfen“ sagt, dann zeigt die Vorschau wieder den Live-Stand und `main` bleibt unverändert.\n4. Wenn die Person nicht bestätigt, dann ändert sich die Live-Seite nicht.\n5. Wenn per Chat eine Datei außerhalb der Inhaltsordner (Code, Layout, Impressum) geändert werden soll, dann lehnt der MCP-Server ab.\n6. Wenn ein Inhalt das Schema verletzt (z. B. Foto ohne Alt-Text), dann wird er nicht in den Entwurf geschrieben.\n7. Wenn im Entwurf beim Start fremde unveröffentlichte Änderungen liegen, dann nennt Private AI sie und veröffentlicht sie nicht ohne Rückfrage.\n8. Wenn eine Person ohne Freischaltung den MCP-Server oder die Vorschau nutzt, dann wird nichts gelesen, gezeigt oder geschrieben.\n\n## Nicht Teil dieses Use Cases\n\n- Änderungen an Code, Layout oder Navigation. Die bleiben Specs mit eigenem Branch.\n- Impressum und Datenschutz.\n- Ein eigener Entwurf pro Person oder Chat. Version 1 hat einen gemeinsamen Entwurf, F1 schützt vor versehentlichem Mitveröffentlichen.\n- Eine Bearbeitungsoberfläche ohne KI (z. B. Keystatic). Kann später ergänzt werden.\n- Automatisches Posten auf Instagram.\n\n## Offene Fragen\n\n1. Kann Private AI die Vorschau als Panel neben dem Chat einbetten (iframe oder MCP Apps), oder braucht es eine eigene Redaktionsseite?\n2. Wo laufen Vorschau-Server und MCP-Server (z. B. kleiner Server bei Hetzner oder Fly.io)?\n3. Wer wird freigeschaltet, und reicht die Anmeldung in Private AI?\n4. Nutzt fcl-live.de das bisherige Sanity-Projekt noch (z. B. für Ticketkäufe)? Dann bleibt das Sanity-Projekt bestehen, auch wenn die Webseite es nicht mehr nutzt.\n",
+      "metadata": {},
+      "min_version": "",
+      "max_version": null,
+      "base_state_id": null,
+      "base_state_revision": null,
+      "evidence": "",
+      "revision": "2d14f981768cb7b013ae188403d751a5d3995dde836b2d6f6ace0d00395a1fcc"
+    }
+  ],
+  "spec_bindings": [],
+  "history": [
+    {
+      "at": "2026-11-01T13:29:29.978905+00:00",
+      "operation": "project_initialize",
+      "details": {
+        "id": "fc-webseite",
+        "name": "FC Lübbecke Webseite",
+        "line_id": "main",
+        "line_name": "Hauptlinie"
+      }
+    },
+    {
+      "at": "2026-11-01T13:29:38.501714+00:00",
+      "operation": "usecase_create",
+      "details": {
+        "id": "UC-001"
+      }
+    },
+    {
+      "at": "2026-11-01T13:43:56.573023+00:00",
+      "operation": "draft_save",
+      "details": {
+        "id": "d1431eae-a599-4434-8dd7-1084afd26b15"
+      }
+    }
+  ]
+}

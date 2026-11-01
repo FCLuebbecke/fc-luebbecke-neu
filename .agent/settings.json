@@ -1,0 +1,60 @@
+{
+  "modules": [
+    {
+      "name": "inhalte",
+      "description": "Inhaltsdaten und Datenschicht: Content Collections mit Schemas, Inhaltsbilder, Zugriffsfunktionen, statische Daten. Bis Spec 008 auch die Sanity-Anbindung.",
+      "paths": [
+        "src/content/**",
+        "src/content.config.ts",
+        "src/assets/content/**",
+        "src/lib/**",
+        "src/data/**",
+        "src/sanity/**",
+        "sanity.config.ts",
+        "sanity.cli.ts"
+      ]
+    },
+    {
+      "name": "seiten",
+      "description": "Seiten, Komponenten, Layout, Styles und öffentliche Dateien der Webseite.",
+      "paths": [
+        "src/pages/**",
+        "src/components/**",
+        "src/layouts/**",
+        "src/styles/**",
+        "public/**"
+      ]
+    },
+    {
+      "name": "vorschau",
+      "description": "Vorschau-Server mit Entwurfs-Branch: Einrichtung, Proxy, Zugangsschutz, Betrieb.",
+      "paths": [
+        "vorschau/**",
+        "VORSCHAU.md"
+      ]
+    },
+    {
+      "name": "mcp",
+      "description": "MCP-Server „FC-Webseite“ für Private AI: Werkzeuge, Validierung, Veröffentlichen.",
+      "paths": [
+        "mcp/**",
+        "MCP.md"
+      ]
+    },
+    {
+      "name": "infra",
+      "description": "Build- und Deploy-Konfiguration: Astro-Konfiguration, Vercel, Middleware, GitHub-Workflows, Abhängigkeiten, Betriebsdoku.",
+      "paths": [
+        "astro.config.mjs",
+        "vercel.json",
+        "middleware.ts",
+        "package.json",
+        "package-lock.json",
+        ".github/**",
+        "DEPLOY.md",
+        "SANITY.md",
+        "INHALTE.md"
+      ]
+    }
+  ]
+}

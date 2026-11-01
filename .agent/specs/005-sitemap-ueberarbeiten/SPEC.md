@@ -1,4 +1,6 @@
 ---
+modules: infra, seiten
+station: Doing
 nummer: 005
 titel: Sitemap & kanonische Domain korrigieren (www.fcluebbecke.de)
 status: in-arbeit
