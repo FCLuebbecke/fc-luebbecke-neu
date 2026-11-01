@@ -115,7 +115,7 @@ export function werkzeuge(ctx) {
     return { inhalt: await pipe.toBuffer(), ext };
   }
 
-  return {
+  const w = {
     async inhalt_suchen({ sammlung, text } = {}) {
       const sammlungen = sammlung ? [sammlung] : SAMMLUNGEN;
       sammlungen.forEach(pruefeSammlung);
@@ -198,7 +198,7 @@ export function werkzeuge(ctx) {
       if (FESTE_IDS[sammlung]) throw new InhaltsFehler(`In ${sammlung} gibt es nur die festen Einträge ${FESTE_IDS[sammlung].join(', ')}.`);
       await entwurfAktualisieren();
       const kopf = await repo.kopf(ENTWURF);
-      const neueId = id ?? idAusName(felder?.name ?? '');
+      const neueId = id ?? idAusName(felder?.name ?? felder?.titel ?? '');
       pruefeId(neueId);
       const pfad = inhaltsPfad(sammlung, neueId);
       if (await repo.leseDatei(ENTWURF, pfad)) throw new InhaltsFehler(`Es gibt schon einen Eintrag "${neueId}" in ${sammlung}.`);
@@ -426,6 +426,81 @@ export function werkzeuge(ctx) {
         hinweis: 'Die Rücknahme liegt im Entwurf. Nach Prüfung in der Vorschau veröffentlichen.',
         vorschau: vorschauUrl ?? null,
       };
+    },
+  };
+
+  // ── News-Werkzeuge (Spec 013): Hüllen um die allgemeinen Werkzeuge ──────
+  const B = 'beitraege';
+  const heute = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Berlin' });
+  const newsFelder = ({ titel, datum, sparte, teaser, text, autor }) =>
+    Object.fromEntries(
+      Object.entries({ titel, datum, sparte, teaser, inhalt: text, autor }).filter(([, v]) => v !== undefined),
+    );
+  const titelbildHinweis = (daten) =>
+    daten?.titelbild
+      ? 'Titelbild ist gesetzt. Zum Live-Stellen: entwurf_status, dann nach Zustimmung veroeffentlichen.'
+      : 'Es fehlt noch ein Titelbild – ohne Titelbild wird nicht veröffentlicht. Foto mit news_foto (art "titelbild") setzen.';
+
+  return {
+    ...w,
+
+    async news_auflisten({ sparte, text } = {}) {
+      const dateien = (await repo.listeOrdner(ENTWURF, `src/content/${B}`)).filter((d) => d.name.endsWith('.json'));
+      const inhalte = await Promise.all(dateien.map((d) => repo.leseDatei(ENTWURF, d.pfad)));
+      const suche = text?.toLowerCase().trim();
+      const liste = dateien
+        .map((d, i) => ({ id: d.name.replace(/\.json$/, ''), datei: inhalte[i] }))
+        .filter((e) => e.datei)
+        .map((e) => ({ ...e, daten: json(e.datei.inhalt) }))
+        .filter((e) => !sparte || e.daten.sparte === sparte)
+        .filter((e) => !suche || JSON.stringify(e.daten).toLowerCase().includes(suche) || e.id.includes(suche))
+        .sort((a, b) => b.daten.datum.localeCompare(a.daten.datum))
+        .map((e) => ({
+          id: e.id,
+          titel: e.daten.titel,
+          datum: e.daten.datum,
+          sparte: e.daten.sparte,
+          titelbild: Boolean(e.daten.titelbild),
+          galerie: e.daten.galerie?.length ?? 0,
+          revision: e.datei.sha,
+        }));
+      return {
+        anzahl: liste.length,
+        beitraege: liste,
+        stand: 'Entwurf (Branch preview) – enthält auch noch nicht veröffentlichte Beiträge',
+        vorschau: vorschauUrl ? `${vorschauUrl}/aktuelles/` : null,
+      };
+    },
+
+    async news_lesen({ id }) {
+      const e = await w.inhalt_lesen({ sammlung: B, id });
+      const { inhalt, ...rest } = e.daten;
+      return { ...e, daten: { ...rest, text: inhalt }, hinweis: titelbildHinweis(e.daten) };
+    },
+
+    async news_anlegen({ titel, datum, sparte, teaser, text, autor, id }) {
+      const erg = await w.entwurf_anlegen({
+        sammlung: B,
+        ...(id ? { id } : {}),
+        felder: newsFelder({ titel, datum: datum ?? heute(), sparte, teaser, text, autor }),
+      });
+      return { ...erg, hinweis: `${titelbildHinweis(erg.daten)} ${erg.hinweis ?? ''}`.trim() };
+    },
+
+    async news_bearbeiten({ id, erwartete_revision, titel, datum, sparte, teaser, text, autor }) {
+      const felder = newsFelder({ titel, datum, sparte, teaser, text, autor });
+      if (Object.keys(felder).length === 0) throw new InhaltsFehler('Keine Änderung angegeben (titel, datum, sparte, teaser, text oder autor).');
+      return w.entwurf_aendern({ sammlung: B, id, felder, erwartete_revision });
+    },
+
+    async news_foto({ id, erwartete_revision, art = 'titelbild', datei_base64, url, alt, fokus }) {
+      if (!['titelbild', 'galerie'].includes(art)) throw new InhaltsFehler('art muss "titelbild" oder "galerie" sein.');
+      const erg = await w.bild_hochladen({ sammlung: B, id, feld: art, datei_base64, url, alt, fokus, erwartete_revision });
+      return { ...erg, hinweis: `${titelbildHinweis(erg.daten)} ${erg.hinweis ?? ''}`.trim() };
+    },
+
+    async news_loeschen({ id, erwartete_revision, bestaetigung }) {
+      return w.entwurf_loeschen({ sammlung: B, id, erwartete_revision, bestaetigung });
     },
   };
 }

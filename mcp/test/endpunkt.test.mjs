@@ -63,9 +63,14 @@ test('initialize, tools/list, tools/call über HTTP', async () => {
   const namen = liste.result.tools.map((t) => t.name).sort();
   assert.deepEqual(namen, [
     'bild_hochladen', 'entwurf_aendern', 'entwurf_anlegen', 'entwurf_loeschen', 'entwurf_status',
-    'entwurf_verwerfen', 'inhalt_lesen', 'inhalt_suchen', 'rueckgaengig', 'schema_lesen',
-    'veroeffentlichen', 'vorschau_zeigen',
+    'entwurf_verwerfen', 'inhalt_lesen', 'inhalt_suchen',
+    'news_anlegen', 'news_auflisten', 'news_bearbeiten', 'news_foto', 'news_lesen', 'news_loeschen',
+    'rueckgaengig', 'schema_lesen', 'veroeffentlichen', 'vorschau_zeigen',
   ]);
+  for (const t of liste.result.tools.filter((t) => t.name.startsWith('news_'))) {
+    assert.match(t.description, /News|Beitrag/, t.name);
+  }
+  assert.match(initJson.result.instructions, /news_anlegen/);
 
   const lesen = await (
     await rufe({ jsonrpc: '2.0', id: 3, method: 'tools/call', params: { name: 'inhalt_lesen', arguments: { sammlung: 'sparten-infos', id: 'darts' } } })

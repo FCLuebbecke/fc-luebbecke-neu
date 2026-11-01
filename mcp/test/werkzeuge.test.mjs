@@ -286,3 +286,60 @@ test('Beiträge: Regeln (Datum, Sparte, Teaser-Länge)', async () => {
   assert.match(await fehlerText(w.entwurf_anlegen({ sammlung: 'beitraege', id: 'b', felder: { ...basis, sparte: 'tennis' } })), /sparte/);
   assert.match(await fehlerText(w.entwurf_anlegen({ sammlung: 'beitraege', id: 'c', felder: { ...basis, teaser: 'x'.repeat(300) } })), /teaser/);
 });
+
+test('News-Werkzeuge: anlegen (Datum heute), Foto, bearbeiten, auflisten, löschen', async () => {
+  const { repo, w } = aufbau();
+  const heute = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Berlin' });
+  const neu = await w.news_anlegen({
+    titel: 'D1 gewinnt 4:2 gegen Tengern',
+    sparte: 'fussball',
+    teaser: 'Nach 0:2-Rückstand dreht unsere D1 das Spiel.',
+    text: 'Starke zweite Hälfte.\n\n- 1:2\n- 2:2',
+  });
+  assert.equal(neu.id, 'd1-gewinnt-4-2-gegen-tengern');
+  assert.equal(neu.daten.datum, heute);
+  assert.equal(neu.daten.inhalt, 'Starke zweite Hälfte.\n\n- 1:2\n- 2:2');
+  assert.match(neu.hinweis, /Titelbild/);
+  assert.match(neu.vorschau, /\/aktuelles\/d1-gewinnt-4-2-gegen-tengern\/$/);
+
+  const jpg = await sharp({ create: { width: 300, height: 200, channels: 3, background: '#0a6e12' } }).jpeg().toBuffer();
+  const foto = await w.news_foto({ id: neu.id, erwartete_revision: neu.revision, datei_base64: jpg.toString('base64'), alt: 'Jubel nach dem 4:2' });
+  assert.equal(foto.daten.titelbild.alt, 'Jubel nach dem 4:2');
+  assert.match(foto.hinweis, /Titelbild ist gesetzt/);
+  const gal = await w.news_foto({ id: neu.id, erwartete_revision: foto.revision, art: 'galerie', datei_base64: jpg.toString('base64'), alt: 'Fans' });
+  assert.equal(gal.daten.galerie.length, 1);
+
+  const liste = await w.news_auflisten({ sparte: 'fussball' });
+  const eintrag = liste.beitraege.find((b) => b.id === neu.id);
+  assert.deepEqual([eintrag.titelbild, eintrag.galerie], [true, 1]);
+
+  const geaendert = await w.news_bearbeiten({ id: neu.id, erwartete_revision: eintrag.revision, text: 'Neuer Text.' });
+  assert.equal(geaendert.daten.inhalt, 'Neuer Text.');
+  const gelesen = await w.news_lesen({ id: neu.id });
+  assert.equal(gelesen.daten.text, 'Neuer Text.');
+
+  assert.match(await fehlerText(w.news_bearbeiten({ id: neu.id, erwartete_revision: gelesen.revision })), /Keine Änderung/);
+  assert.match(await fehlerText(w.news_bearbeiten({ id: neu.id, erwartete_revision: gelesen.revision, sparte: 'tennis' })), /sparte/);
+  assert.match(await fehlerText(w.news_foto({ id: neu.id, erwartete_revision: gelesen.revision, art: 'logo', url: 'https://x', alt: 'x' })), /art/);
+  assert.match(await fehlerText(w.news_loeschen({ id: neu.id, erwartete_revision: gelesen.revision })), /bestaetigung/);
+  await w.news_loeschen({ id: neu.id, erwartete_revision: gelesen.revision, bestaetigung: true });
+  assert.equal((await w.news_auflisten()).beitraege.some((b) => b.id === neu.id), false);
+  assert.equal(await repo.leseDatei('preview', 'src/assets/content/beitraege/d1-gewinnt-4-2-gegen-tengern.jpg'), null);
+});
+
+test('News-Werkzeuge: Teaser zu lang wird abgelehnt', async () => {
+  const { w } = aufbau();
+  assert.match(
+    await fehlerText(w.news_anlegen({ titel: 'X', sparte: 'verein', teaser: 'x'.repeat(250), text: 'y' })),
+    /teaser/,
+  );
+});
+
+test('entwurf_anlegen für Beiträge bildet die ID aus dem Titel', async () => {
+  const { w } = aufbau();
+  const neu = await w.entwurf_anlegen({
+    sammlung: 'beitraege',
+    felder: { titel: 'Grünkohlessen 2026', datum: '2026-11-01', sparte: 'verein', teaser: 't', inhalt: 'x' },
+  });
+  assert.equal(neu.id, 'gruenkohlessen-2026');
+});

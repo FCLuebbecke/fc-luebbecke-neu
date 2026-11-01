@@ -26,8 +26,9 @@ Ablauf:
 3. Vor dem Veröffentlichen entwurf_status aufrufen und der Person alle offenen Änderungen zeigen – auch die anderer Personen.
 4. Nur nach ausdrücklicher Zustimmung ("veröffentlichen", "passt so") veroeffentlichen mit bestaetigung: true.
    Bei "verwerfen" entwurf_verwerfen. Löschen nur nach ausdrücklicher Bestätigung.
-Beiträge (Sammlung beitraege): Fakten im Chat erfragen (Anlass, Ergebnis, Datum, Namen nur mit Einverständnis),
-Titel, Teaser und Text (Markdown) vorschlagen, nach "ok" mit entwurf_anlegen anlegen, dann Titelbild mit bild_hochladen setzen.
+News / Beiträge „Aktuelles“: immer die news_*-Werkzeuge nutzen (news_auflisten, news_lesen, news_anlegen,
+news_bearbeiten, news_foto, news_loeschen). Fakten im Chat erfragen (Anlass, Ergebnis, Datum, Namen nur mit Einverständnis),
+Titel, Teaser und Text (Markdown) vorschlagen, nach "ok" mit news_anlegen anlegen, dann das Foto mit news_foto als Titelbild setzen.
 Regeln: Ton bodenständig und sachlich. Telefon/E-Mail von Trainern nur mit Zustimmung der Person (veroeffentlichen: true).
 Code, Layout, Impressum und Datenschutz kann dieser Server nicht ändern – dafür den Webmaster ansprechen.
 Fehlermeldungen ehrlich weitergeben; nichts gilt als veröffentlicht, bevor veroeffentlichen Erfolg meldet.`;
@@ -147,6 +148,76 @@ export function erstelleServer(ctx) {
     { commit: z.string().describe('Commit-SHA der Änderung, z. B. aus entwurf_status') },
     schreiben,
     w.rueckgaengig,
+  );
+
+  // ── News (Spec 013) ─────────────────────────────────────────────────────
+  const nsparte = z.enum(['fussball', 'badminton', 'darts', 'verein']).describe('Sparte des Beitrags');
+  const nid = z.string().describe('ID des Beitrags (aus news_auflisten), z. B. "saisonstart-2026"');
+  const nrev = z.string().describe('Revision aus news_auflisten/news_lesen/news_anlegen');
+  const ntext = z.string().describe('Text in Markdown: Absätze, ## Zwischenüberschrift, **fett**, *kursiv*, [Link](https://…), - Aufzählung');
+
+  tool('news_auflisten', 'News / Beiträge „Aktuelles“ auflisten (neueste zuerst), mit ID, Datum, Sparte, Titelbild ja/nein und Revision.', {
+    sparte: nsparte.optional(),
+    text: z.string().optional().describe('Suchbegriff'),
+  }, lesen, w.news_auflisten);
+
+  tool('news_lesen', 'Einen News-Beitrag mit Titel, Teaser, Text, Bildern und Revision lesen.', { id: nid }, lesen, w.news_lesen);
+
+  tool(
+    'news_anlegen',
+    'Neuen News-Beitrag für „Aktuelles“ anlegen (Spielbericht, Termin, Vereinsleben). Landet im Entwurf; danach mit news_foto ein Titelbild setzen.',
+    {
+      titel: z.string().describe('Überschrift, höchstens 120 Zeichen'),
+      sparte: nsparte,
+      teaser: z.string().describe('Kurztext für die Karten, höchstens ~200 Zeichen'),
+      text: ntext,
+      datum: z.string().optional().describe('JJJJ-MM-TT, Standard: heute'),
+      autor: z.string().optional().describe('z. B. "Jugendabteilung"'),
+      id: z.string().optional().describe('Adresse /aktuelles/<id>/; Standard: aus dem Titel gebildet'),
+    },
+    schreiben,
+    w.news_anlegen,
+  );
+
+  tool(
+    'news_bearbeiten',
+    'Einen News-Beitrag ändern: nur die angegebenen Felder (titel, datum, sparte, teaser, text, autor) werden ersetzt.',
+    {
+      id: nid,
+      erwartete_revision: nrev,
+      titel: z.string().optional(),
+      datum: z.string().optional().describe('JJJJ-MM-TT'),
+      sparte: nsparte.optional(),
+      teaser: z.string().optional(),
+      text: ntext.optional(),
+      autor: z.string().optional(),
+    },
+    schreiben,
+    w.news_bearbeiten,
+  );
+
+  tool(
+    'news_foto',
+    'Foto zu einem News-Beitrag: als Titelbild setzen (art "titelbild") oder an die Galerie anhängen (art "galerie"). Bildbeschreibung (alt) ist Pflicht.',
+    {
+      id: nid,
+      erwartete_revision: nrev,
+      art: z.enum(['titelbild', 'galerie']).optional().describe('Standard: titelbild'),
+      datei_base64: z.string().optional().describe('Bilddatei als Base64'),
+      url: z.string().optional().describe('alternativ: https-URL des Bildes'),
+      alt: z.string().describe('Bildbeschreibung, z. B. "Jubel nach dem 4:2"'),
+      fokus: z.string().optional().describe('Bildpunkt, der sichtbar bleiben soll, z. B. "50% 30%"'),
+    },
+    schreiben,
+    w.news_foto,
+  );
+
+  tool(
+    'news_loeschen',
+    'Einen News-Beitrag löschen (inkl. Fotos). Nur nach ausdrücklicher Zustimmung der Person.',
+    { id: nid, erwartete_revision: nrev, bestaetigung: z.boolean().describe('true nur nach Zustimmung im Chat') },
+    kritisch,
+    w.news_loeschen,
   );
 
   return server;
