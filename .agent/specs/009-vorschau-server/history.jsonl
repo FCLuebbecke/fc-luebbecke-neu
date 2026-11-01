@@ -1,2 +1,4 @@
 {"timestamp":"2026-11-01T14:22:23Z","spec_id":"009-vorschau-server","event_type":"spec_edited","actor":"user","summary":"Frage Q1 beantwortet"}
 {"timestamp":"2026-11-01T14:23:18Z","spec_id":"009-vorschau-server","event_type":"spec_edited","actor":"user","summary":"Frage Q2 beantwortet"}
+{"timestamp":"2026-11-01T14:32:18Z","spec_id":"009-vorschau-server","event_type":"station_changed","actor":"project","summary":"Backlog → Doing, Branch spec/009-vorschau-vercel von dev; Überschneidung infra mit 008 (gemergt, nur Abnahme offen) im Chat genannt"}
+{"timestamp":"2026-11-01T14:33:58Z","spec_id":"009-vorschau-server","event_type":"agent_run","actor":"project","summary":"build.json, VorschauHinweis (Band + Neuladen), noindex, vercel.json no-store, VORSCHAU.md; lokal und in Chrome headless geprüft; offen: entwurf-Branch pushen, Vorschau-Adresse, Messung auf Vercel, frame-ancestors (Q2)"}
