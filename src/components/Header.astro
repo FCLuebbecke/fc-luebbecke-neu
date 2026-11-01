@@ -25,8 +25,6 @@ const nav = [
       // FCL LIVE läuft extern unter fcl-live.de (siehe Spec 006)
       { label: "FCL LIVE – Livestream & Videos", href: "https://fcl-live.de/", external: true },
       { label: "Jugendförderverein", href: "/fussball/foerderverein" },
-      // Jubiläumsbuch (Spec 014) – Seite liegt unter /100-jahre
-      { label: "100 Jahre FCL – Jubiläumsbuch", href: "/100-jahre" },
       { label: "Kontakt", href: "/fussball/kontakt" },
     ],
   },
@@ -56,6 +54,8 @@ const nav = [
     href: "https://luebbecker-bergloewen.de/", // Lübbecker Berglöwen (extern)
     external: true,
   },
+  // Jubiläumsbuch gehört zum ganzen Verein, nicht zu einer Sparte (Spec 015)
+  { id: "100-jahre", label: "100 Jahre", href: "/100-jahre" },
   // "Verein/Über uns" gestrichen; Kontakt liegt im "Mitglied werden"-Block (#mitglied-werden)
 ];
 ---
@@ -295,6 +295,21 @@ const nav = [
 
   /* CTA klar von der Navigation absetzen */
   .nav__item--cta { margin-left: 1.25rem; }
+  .nav__link, .nav__item--cta .btn { white-space: nowrap; }
+
+  /* Mittlere Breiten: 7 Menüpunkte + Button passen nur mit engeren
+     Abständen in eine Zeile (seit „100 Jahre“, Spec 015) */
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    .nav__list { gap: 0.1rem; }
+    .nav__link {
+      padding-inline: 0.55rem;
+      font-size: 0.88rem;
+      letter-spacing: 0.04em;
+    }
+    .nav__link::after { left: 0.55rem; right: 0.55rem; }
+    .nav__item--cta { margin-left: 0.5rem; }
+    .nav__item--cta .btn { padding-inline: 1rem; }
+  }
 
   /* ---- Burger ---- */
   .header__burger {
@@ -359,7 +374,7 @@ const nav = [
   /* =========================================================
      Mobil: Burger-Menü (claude.md Abschnitt 9: Mobil zuerst)
      ========================================================= */
-  @media (max-width: 859px) {
+  @media (max-width: 1023px) {
     .header__burger { display: inline-flex; }
 
     .nav {
@@ -458,13 +473,13 @@ const nav = [
   });
 
   // Bei Wechsel auf Desktop zurücksetzen
-  const mq = window.matchMedia("(min-width: 860px)");
+  const mq = window.matchMedia("(min-width: 1024px)");
   mq.addEventListener("change", (e) => {
     if (e.matches) setOpen(false);
   });
 
   // Untermenüs auf dem Handy ein-/ausklappen (Desktop: Hover-Dropdown, unverändert)
-  const mqMobile = window.matchMedia("(max-width: 859px)");
+  const mqMobile = window.matchMedia("(max-width: 1023px)");
   document
     .querySelectorAll<HTMLAnchorElement>(".nav__item--has-sub > .nav__link")
     .forEach((link) => {
