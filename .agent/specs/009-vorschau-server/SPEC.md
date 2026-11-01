@@ -1,6 +1,8 @@
 ---
 modules: vorschau, infra
-station: Backlog
+station: Doing
+branch: spec/009-vorschau-vercel
+owner: FC Luebbecke <Git@fcluebbecke.de>
 order: 2
 needs_human: true
 angelegt: 2026-11-01
@@ -81,18 +83,34 @@ Nicht im Umfang:
 
 ## Tasks
 
-- [ ] Feature-Branch `spec/009-vorschau-vercel` von `dev` anlegen
-- [ ] `/build.json` beim Build erzeugen (Commit-SHA, Zeitpunkt)
-- [ ] Neuladen-Skript und Hinweisband im Layout, nur für Branch `entwurf`
-- [ ] Branch `entwurf` von `main` anlegen und pushen
+- [x] Feature-Branch `spec/009-vorschau-vercel` von `dev` anlegen
+- [x] `/build.json` beim Build erzeugen (Commit-SHA, Zeitpunkt)
+      `src/pages/build.json.ts`, `src/lib/vorschau.ts`; `Cache-Control: no-store` in `vercel.json`
+- [x] Neuladen-Skript und Hinweisband im Layout, nur für Branch `entwurf`
+      `src/components/VorschauHinweis.astro`; zusätzlich `noindex`-Meta; lokal per `VORSCHAU=1`
+- [ ] Branch `entwurf` von `main` anlegen und pushen (manuell, Push hier nicht möglich; Befehl in VORSCHAU.md)
       Hinweis: `entwurf` zweigt von `main` ab; Neuladen-Skript und
       Hinweisband wirken dort erst, wenn dieser Code live (in `main`) ist.
 - [ ] Vorschau-Adresse festlegen (Vercel-Branch-Adresse oder eigene Domain)
 - [ ] Zeit Commit → sichtbare Änderung messen
 - [ ] `frame-ancestors` setzen (nach Q2)
-- [ ] `VORSCHAU.md` schreiben
+- [x] `VORSCHAU.md` schreiben
 
 ## Verification
+
+- `npm run build` (normal): `/build.json` = `{"commit":"lokal",…}`, kein
+  Hinweisband, kein Skript, kein `noindex` in den Seiten; `/build.json` nicht
+  in der Sitemap.
+- `VORSCHAU=1 VERCEL_GIT_COMMIT_SHA=aaa111 VERCEL_GIT_COMMIT_REF=entwurf npm run build`:
+  Hinweisband mit `data-commit="aaa111"` und `noindex, nofollow` auf allen
+  Seiten.
+- Neuladen im echten Browser (Chrome headless über DevTools-Protokoll, statisch
+  ausgelieferter Vorschau-Build): `/fussball/mannschaften/` geöffnet, auf
+  1200 px gescrollt, dann `commit` in `build.json` geändert → Seite lud nach
+  3,3 s neu, Scroll-Position 1200 px wiederhergestellt, Band zeigt
+  „· aktualisiert“.
+- Offen: Messung auf Vercel (braucht den gepushten Branch `entwurf` mit diesem
+  Code in `main`).
 
 ## Review
 

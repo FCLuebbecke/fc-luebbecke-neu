@@ -1,0 +1,74 @@
+---
+/**
+ * Hinweisband + automatisches Neuladen der Entwurfs-Vorschau (Spec 009).
+ * Wird nur in Builds des Branches `entwurf` eingebunden (siehe Layout.astro).
+ *
+ * Das Skript fragt alle 5 Sekunden /build.json ab. Sobald dort ein anderer
+ * Commit steht (neuer Vercel-Build ist fertig), lädt die Seite neu und stellt
+ * die Scroll-Position wieder her. In einem verborgenen Tab wird nicht
+ * abgefragt.
+ */
+import { buildInfo } from "../lib/vorschau";
+---
+
+<div class="vorschau-band" role="status" data-commit={buildInfo.commit}>
+  <strong>Vorschau</strong> – nicht veröffentlicht
+  <span class="vorschau-band__status" aria-live="polite"></span>
+</div>
+
+<script>
+  const band = document.querySelector<HTMLElement>(".vorschau-band");
+  const status = band?.querySelector<HTMLElement>(".vorschau-band__status");
+  const meinCommit = band?.dataset.commit;
+  const SCROLL_KEY = "vorschau-scroll:" + location.pathname;
+  const INTERVALL = 5000;
+
+  // Scroll-Position nach dem Neuladen wiederherstellen.
+  try {
+    const y = sessionStorage.getItem(SCROLL_KEY);
+    if (y !== null) {
+      sessionStorage.removeItem(SCROLL_KEY);
+      window.scrollTo(0, Number(y));
+      if (status) status.textContent = " · aktualisiert";
+    }
+  } catch {
+    /* sessionStorage nicht verfügbar – dann eben ohne */
+  }
+
+  async function pruefen() {
+    if (document.hidden) return;
+    try {
+      const res = await fetch("/build.json?t=" + Date.now(), { cache: "no-store" });
+      if (!res.ok) return;
+      const { commit } = await res.json();
+      if (commit && meinCommit && commit !== meinCommit) {
+        try {
+          sessionStorage.setItem(SCROLL_KEY, String(window.scrollY));
+        } catch {
+          /* ignorieren */
+        }
+        location.reload();
+      }
+    } catch {
+      /* offline oder Build läuft gerade – beim nächsten Mal erneut */
+    }
+  }
+
+  setInterval(pruefen, INTERVALL);
+  document.addEventListener("visibilitychange", pruefen);
+</script>
+
+<style>
+  .vorschau-band {
+    background: #fff4cc;
+    color: #1a1a1a;
+    border-bottom: 2px solid #c99a00;
+    font-size: 14px;
+    line-height: 1.4;
+    text-align: center;
+    padding: 8px 16px;
+  }
+  .vorschau-band__status {
+    color: #555555;
+  }
+</style>
