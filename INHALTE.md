@@ -2,7 +2,7 @@
 
 Mannschaften, Trainer, Trainingszeiten und Sponsoren liegen als **JSON-Dateien**
 im Repo, eine Datei pro Eintrag. Die Regeln (Pflichtfelder, Formate) stehen in
-[`src/content.config.ts`](src/content.config.ts); Astro prüft sie bei jedem
+[`src/content/schemas.mjs`](src/content/schemas.mjs) (gemeinsam für Build und MCP-Server); Astro prüft sie bei jedem
 Build. Ist eine Datei fehlerhaft, bricht der Build mit einer Meldung ab, und
 nichts Falsches geht live.
 
