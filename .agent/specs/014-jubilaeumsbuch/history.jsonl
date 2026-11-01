@@ -1,0 +1,3 @@
+{"timestamp":"2026-11-01T18:00:00Z","spec_id":"014-jubilaeumsbuch","event_type":"spec_created","actor":"project","summary":"Spec aus UC-002 angelegt (Preis 19,25 €, Navigation Fußball-Untermenü, Bestellung per Mail, Leseprobe als Galerie)"}
+{"timestamp":"2026-11-01T18:00:30Z","spec_id":"014-jubilaeumsbuch","event_type":"station_changed","actor":"project","summary":"→ Doing, Branch spec/014-jubilaeumsbuch von main"}
+{"timestamp":"2026-11-01T18:10:00Z","spec_id":"014-jubilaeumsbuch","event_type":"agent_run","actor":"project","summary":"Seite /100-jahre, Leseprobe-WebPs, Bestellformular (mailto), Teaser/Menü/Footer; Build 5,2 s → 4,8 s; Review R1–R4, Q1 Versand/Widerruf; ready"}

@@ -1,0 +1,80 @@
+---
+/**
+ * Startseiten-Teaser zum Jubiläumsbuch (Spec 014, UC-002).
+ * Bild aus public/ (vorab optimiert) – keine Bildverarbeitung beim Build.
+ */
+import { BUCH, preisText, seitenBild } from "../data/jubilaeumsbuch";
+---
+
+<section class="jt" aria-labelledby="jt-title">
+  <div class="container jt__inner">
+    <a class="jt__bild" href="/100-jahre" tabindex="-1" aria-hidden="true">
+      <img
+        src={seitenBild("001", true)}
+        width="480"
+        height="480"
+        alt=""
+        loading="lazy"
+        decoding="async"
+      />
+    </a>
+    <div class="jt__text">
+      <span class="jt__kicker">1925 – 2025</span>
+      <h2 id="jt-title" class="jt__title">{BUCH.titel} – das Jubiläumsbuch</h2>
+      <p>
+        {BUCH.seiten} Seiten Vereinsgeschichte: von den Gründerjahren über die
+        Gellesch-Elf bis ins neue Vereinsheim. Jetzt reinblättern und für
+        <strong>{preisText}</strong> bestellen.
+      </p>
+      <div class="jt__actions">
+        <a class="btn btn--primary" href="/100-jahre">Zum Jubiläumsbuch</a>
+        <a class="btn btn--secondary" href="/100-jahre#leseprobe">Leseprobe</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .jt { padding-block: var(--space-6); background: var(--color-white); }
+  .jt__inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    align-items: center;
+    background: var(--color-green-050);
+    border: 1px solid rgba(10, 80, 18, 0.12);
+    border-left: 6px solid var(--color-green-500);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+  }
+  .jt__bild img {
+    display: block;
+    width: min(100%, 260px);
+    height: auto;
+    margin-inline: auto;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-card);
+  }
+  .jt__kicker {
+    font-family: var(--font-head);
+    font-weight: 500;
+    font-size: var(--fs-small);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-green-700);
+  }
+  .jt__title { color: var(--color-green-900); margin-top: 0.25rem; }
+  .jt__text p { margin-top: var(--space-2); max-width: 60ch; }
+  .jt__actions {
+    margin-top: var(--space-3);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  @media (max-width: 520px) {
+    .jt__actions .btn { width: 100%; }
+  }
+  @media (min-width: 760px) {
+    .jt__inner { grid-template-columns: 240px 1fr; padding: var(--space-4) var(--space-5); gap: var(--space-5); }
+  }
+</style>

@@ -1,0 +1,539 @@
+---
+/**
+ * Jubiläumsbuch „100 Jahre FC Lübbecke“ (Spec 014, UC-002).
+ * Aufbau: Bühne mit Cover · Über das Buch + Kapitel · Leseprobe (Galerie mit
+ * Großansicht) · Bestellen (Formular füllt eine E-Mail an kontakt@ vor) · Fragen.
+ *
+ * Build-Zeit-Vorgabe: keine PDFs, keine Bilder aus src/assets – nur vorab
+ * optimierte WebP-Dateien aus public/jubilaeumsbuch/, kein Download beim Build.
+ */
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { KONTAKT_MAIL, KONTAKT_MAILTO } from "../data/kontakt";
+import { BUCH, LESEPROBE, preisText, seitenBild } from "../data/jubilaeumsbuch";
+
+const kapitel = [
+  { titel: "Die Vorsitzenden", text: "Ernst Ober-Entgelmeier, Bernd Sasse-Westermann und Gerhard Blase im Gespräch." },
+  { titel: "Die Geschichte des Vereins", text: "Von der Gründung 1925 über die 70er bis 90er bis zum Aufstieg in die Landesliga." },
+  { titel: "Jugendarbeit beim FCL", text: "Die jungen Grün-Weißen, Lichtblicke und das Holle-Zeitalter." },
+  { titel: "Die grauen Grün-Weißen", text: "Kicken nach dem aktiven Fußball – und der Alt-Herren-Boom ab 2015." },
+  { titel: "Unsere Heimat", text: "Das Stadion an der Obernfelder Allee und unser neues Vereinsheim." },
+];
+
+const mailtoEinfach = `${KONTAKT_MAILTO}?subject=${encodeURIComponent(BUCH.bestellBetreff)}`;
+---
+
+<Layout
+  title="100 Jahre FC Lübbecke – das Jubiläumsbuch"
+  description={`Das Jubiläumsbuch zum 100-jährigen Bestehen des FC Lübbecke von 1925: ${BUCH.seiten} Seiten Vereinsgeschichte, Jugendarbeit und Heimat. Leseprobe ansehen und für ${preisText} bestellen.`}
+  ogImage={seitenBild("001")}
+>
+  <Header active="fussball" />
+
+  <!-- Bühne -->
+  <section class="jb-hero" aria-labelledby="jb-title">
+    <div class="container jb-hero__inner">
+      <div class="jb-hero__text">
+        <span class="jb-kicker">1925 – 2025 · Das Jubiläumsbuch</span>
+        <h1 id="jb-title">{BUCH.titel}</h1>
+        <p class="jb-hero__claim">Ein Jahrhundert Grün-Weiß zum Nachlesen.</p>
+        <p class="jb-hero__lead">
+          Gründerjahre, Gellesch-Elf, Kassenbericht von 1951, Pokalfinale und der
+          Durchmarsch bis in die Landesliga: {BUCH.seiten} Seiten voller
+          Geschichten, Fotos und Erinnerungen aus 100 Jahren FC Lübbecke.
+        </p>
+        <p class="jb-preis">
+          <span class="jb-preis__betrag">{preisText}</span>
+          <span class="jb-preis__info">{BUCH.seiten} Seiten · {BUCH.format} · gedruckt</span>
+        </p>
+        <div class="jb-hero__actions">
+          {BUCH.lieferbar
+            ? <a class="btn btn--light" href="#bestellen">Buch bestellen</a>
+            : <span class="jb-vergriffen">Leider vergriffen</span>}
+          <a class="btn btn--ghost-light" href="#leseprobe">Leseprobe ansehen</a>
+        </div>
+      </div>
+      <img
+        class="jb-cover"
+        src={seitenBild("001")}
+        srcset={`${seitenBild("001", true)} 480w, ${seitenBild("001")} 1200w`}
+        sizes="(min-width: 960px) 420px, 80vw"
+        width="1200"
+        height="1200"
+        alt={LESEPROBE[0].alt}
+        fetchpriority="high"
+      />
+    </div>
+  </section>
+
+  <main id="inhalt">
+    <!-- Über das Buch -->
+    <section class="container section">
+      <h2 class="section-title">Darum geht's</h2>
+      <p class="jb-intro">
+        Zum 100. Geburtstag erzählt das Buch die Geschichte des FC Lübbecke –
+        von der Gründung im Oktober 1925 bis heute, mit vielen historischen
+        Mannschaftsfotos, Anekdoten und Interviews.
+      </p>
+      <ul class="jb-kapitel">
+        {kapitel.map((k) => (
+          <li class="jb-kapitel__item">
+            <h3>{k.titel}</h3>
+            <p>{k.text}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- Leseprobe -->
+    <section class="jb-leseprobe-wrap" id="leseprobe">
+      <div class="container section">
+        <h2 class="section-title">Leseprobe</h2>
+        <p class="jb-intro">Blättere in {LESEPROBE.length} ausgewählten Seiten. Tippe auf eine Seite für die Großansicht.</p>
+        <ul class="jb-galerie">
+          {LESEPROBE.map((s, i) => (
+            <li>
+              <a class="jb-seite" href={seitenBild(s.nr)} data-index={i} data-alt={s.alt}>
+                <img
+                  src={seitenBild(s.nr, true)}
+                  width="480"
+                  height="480"
+                  alt={s.alt}
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span class="jb-seite__titel">{s.titel}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <!-- Bestellen -->
+    <section class="container section" id="bestellen">
+      <h2 class="section-title">Buch bestellen</h2>
+      {BUCH.lieferbar ? (
+        <div class="jb-bestellen">
+          <div class="prose jb-bestellen__info">
+            <p>
+              Das Buch kostet <strong>{preisText}</strong>. Du kannst es im
+              Vereinsheim abholen oder dir schicken lassen – die Versandkosten
+              nennen wir dir in unserer Antwort.
+            </p>
+            <p>
+              Fülle das Formular aus: Es öffnet sich dein E-Mail-Programm mit
+              einer fertigen Bestellung an <strong>{KONTAKT_MAIL}</strong>. Du
+              musst sie nur noch absenden. Wir melden uns mit Zahlungs- und
+              Abholinformationen.
+            </p>
+            <p class="jb-hinweis">
+              Deine Angaben werden erst übertragen, wenn du die E-Mail selbst
+              absendest – diese Seite speichert nichts.
+            </p>
+          </div>
+
+          <form class="jb-form" id="jb-form" novalidate>
+            <div class="jb-feld">
+              <label for="jb-name">Name *</label>
+              <input id="jb-name" name="name" type="text" autocomplete="name" required />
+            </div>
+            <div class="jb-feld">
+              <label for="jb-anzahl">Anzahl *</label>
+              <input id="jb-anzahl" name="anzahl" type="number" min="1" max="50" value="1" inputmode="numeric" required />
+            </div>
+            <fieldset class="jb-feld jb-lieferart">
+              <legend>Lieferart *</legend>
+              <label><input type="radio" name="lieferart" value="Abholung im Vereinsheim" checked /> Abholung im Vereinsheim</label>
+              <label><input type="radio" name="lieferart" value="Versand" /> Versand (zzgl. Versandkosten)</label>
+            </fieldset>
+            <div class="jb-feld" id="jb-adresse-feld" hidden>
+              <label for="jb-adresse">Lieferadresse *</label>
+              <textarea id="jb-adresse" name="adresse" rows="3" autocomplete="street-address"></textarea>
+            </div>
+            <div class="jb-feld">
+              <label for="jb-telefon">Telefon <span class="jb-optional">(optional)</span></label>
+              <input id="jb-telefon" name="telefon" type="tel" autocomplete="tel" />
+            </div>
+            <p class="jb-fehler" id="jb-fehler" role="alert" hidden></p>
+            <button class="btn btn--primary" type="submit">Bestellung per E-Mail vorbereiten</button>
+            <p class="jb-alternativ">
+              Klappt nicht? Schreib uns direkt an
+              <a href={mailtoEinfach}>{KONTAKT_MAIL}</a>.
+            </p>
+          </form>
+        </div>
+      ) : (
+        <p class="jb-intro">
+          Das Jubiläumsbuch ist leider vergriffen. Wenn du für einen möglichen
+          Nachdruck vorgemerkt werden möchtest, schreib uns an
+          <a href={`${KONTAKT_MAILTO}?subject=${encodeURIComponent("Vormerkung Jubiläumsbuch")}`}>{KONTAKT_MAIL}</a>.
+        </p>
+      )}
+    </section>
+
+    <!-- Fragen -->
+    <section class="jb-cta">
+      <div class="container jb-cta__inner">
+        <div>
+          <h2 class="jb-cta__title">Fragen zum Buch?</h2>
+          <p class="jb-cta__text">Melde dich gern – wir helfen dir weiter.</p>
+        </div>
+        <a class="btn btn--primary" href={mailtoEinfach}>{KONTAKT_MAIL}</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Großansicht der Leseprobe -->
+  <dialog class="jb-lightbox" id="jb-lightbox" aria-label="Leseprobe – Großansicht">
+    <img id="jb-lightbox-bild" alt="" width="1200" height="1200" />
+    <p class="jb-lightbox__zaehler" id="jb-lightbox-zaehler" aria-live="polite"></p>
+    <button class="jb-lightbox__btn jb-lightbox__zu" type="button" data-aktion="zu" aria-label="Schließen">✕</button>
+    <button class="jb-lightbox__btn jb-lightbox__zurueck" type="button" data-aktion="zurueck" aria-label="Vorherige Seite">‹</button>
+    <button class="jb-lightbox__btn jb-lightbox__weiter" type="button" data-aktion="weiter" aria-label="Nächste Seite">›</button>
+  </dialog>
+
+  <Footer />
+</Layout>
+
+<script define:vars={{ mail: KONTAKT_MAIL, betreff: BUCH.bestellBetreff, preis: BUCH.preis }}>
+  // ── Bestellformular → vorausgefüllte E-Mail ──
+  const form = document.getElementById("jb-form");
+  if (form) {
+    const adresseFeld = document.getElementById("jb-adresse-feld");
+    const adresse = document.getElementById("jb-adresse");
+    const fehler = document.getElementById("jb-fehler");
+    const istVersand = () => form.elements.lieferart.value === "Versand";
+    form.addEventListener("change", () => {
+      adresseFeld.hidden = !istVersand();
+      adresse.required = istVersand();
+    });
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const felder = [form.elements.name, form.elements.anzahl, ...(istVersand() ? [adresse] : [])];
+      const leer = felder.filter((f) => !f.value.trim() || !f.checkValidity());
+      felder.forEach((f) => f.setAttribute("aria-invalid", leer.includes(f) ? "true" : "false"));
+      if (leer.length) {
+        fehler.textContent = "Bitte fülle die markierten Pflichtfelder aus.";
+        fehler.hidden = false;
+        leer[0].focus();
+        return;
+      }
+      fehler.hidden = true;
+      const anzahl = parseInt(form.elements.anzahl.value, 10);
+      const summe = (anzahl * preis).toLocaleString("de-DE", { style: "currency", currency: "EUR" });
+      const zeilen = [
+        "Hallo FC Lübbecke,",
+        "",
+        `hiermit bestelle ich ${anzahl} × Jubiläumsbuch „100 Jahre FC Lübbecke“ (${summe}${istVersand() ? " zzgl. Versand" : ""}).`,
+        "",
+        `Name: ${form.elements.name.value.trim()}`,
+        `Lieferart: ${form.elements.lieferart.value}`,
+        ...(istVersand() ? [`Lieferadresse: ${adresse.value.trim().replace(/\n+/g, ", ")}`] : []),
+        ...(form.elements.telefon.value.trim() ? [`Telefon: ${form.elements.telefon.value.trim()}`] : []),
+        "",
+        "Bitte schickt mir die Zahlungs- bzw. Abholinformationen.",
+        "",
+        "Viele Grüße",
+      ];
+      window.location.href = `mailto:${mail}?subject=${encodeURIComponent(betreff)}&body=${encodeURIComponent(zeilen.join("\n"))}`;
+    });
+  }
+
+  // ── Leseprobe: Großansicht mit Blättern ──
+  const dialog = document.getElementById("jb-lightbox");
+  const bild = document.getElementById("jb-lightbox-bild");
+  const zaehler = document.getElementById("jb-lightbox-zaehler");
+  const seiten = [...document.querySelectorAll(".jb-seite")];
+  let aktuell = 0;
+  const zeige = (i) => {
+    aktuell = (i + seiten.length) % seiten.length;
+    bild.src = seiten[aktuell].getAttribute("href");
+    bild.alt = seiten[aktuell].dataset.alt;
+    zaehler.textContent = `Seite ${aktuell + 1} von ${seiten.length}`;
+  };
+  if (dialog && typeof dialog.showModal === "function") {
+    seiten.forEach((a, i) =>
+      a.addEventListener("click", (e) => {
+        e.preventDefault();
+        zeige(i);
+        dialog.showModal();
+      })
+    );
+    dialog.addEventListener("click", (e) => {
+      const aktion = e.target.closest("[data-aktion]")?.dataset.aktion;
+      if (aktion === "zu" || e.target === dialog) dialog.close();
+      if (aktion === "weiter") zeige(aktuell + 1);
+      if (aktion === "zurueck") zeige(aktuell - 1);
+    });
+    dialog.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") zeige(aktuell + 1);
+      if (e.key === "ArrowLeft") zeige(aktuell - 1);
+    });
+    let startX = null;
+    dialog.addEventListener("touchstart", (e) => (startX = e.touches[0].clientX), { passive: true });
+    dialog.addEventListener("touchend", (e) => {
+      if (startX === null) return;
+      const dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) > 50) zeige(aktuell + (dx < 0 ? 1 : -1));
+      startX = null;
+    });
+  }
+</script>
+
+<style>
+  .section { padding-block: var(--space-6); }
+  .jb-intro { margin-top: var(--space-2); color: var(--color-muted); max-width: 60ch; }
+
+  /* ── Bühne ── */
+  .jb-hero {
+    background: linear-gradient(135deg, var(--color-green-700) 0%, var(--color-green-900) 100%);
+    color: #fff;
+    padding-block: var(--space-6);
+  }
+  .jb-hero__inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+    align-items: center;
+  }
+  .jb-hero__text { max-width: 60ch; }
+  .jb-kicker {
+    display: inline-block;
+    font-family: var(--font-head);
+    font-weight: 500;
+    font-size: var(--fs-small);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.9);
+  }
+  .jb-hero h1 { color: #fff; margin-top: var(--space-2); }
+  .jb-hero__claim {
+    margin-top: var(--space-2);
+    font-family: var(--font-head);
+    font-weight: 500;
+    font-size: var(--fs-h2);
+    color: rgba(255, 255, 255, 0.95);
+  }
+  .jb-hero__lead { margin-top: var(--space-3); color: rgba(255, 255, 255, 0.88); }
+  .jb-preis {
+    margin-top: var(--space-3);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem var(--space-2);
+  }
+  .jb-preis__betrag {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: var(--fs-h2);
+    color: #fff;
+    border-bottom: 4px solid var(--color-green-500);
+  }
+  .jb-preis__info { font-size: var(--fs-small); color: rgba(255, 255, 255, 0.85); }
+  .jb-hero__actions {
+    margin-top: var(--space-4);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .jb-vergriffen {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding-inline: var(--space-3);
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.15);
+    font-weight: 600;
+  }
+  .jb-cover {
+    width: min(100%, 420px);
+    height: auto;
+    justify-self: center;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  }
+
+  /* ── Kapitel ── */
+  .jb-kapitel {
+    list-style: none;
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+  .jb-kapitel__item {
+    background: var(--color-green-050);
+    border: 1px solid rgba(10, 80, 18, 0.12);
+    border-left: 4px solid var(--color-green-500);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-4);
+  }
+  .jb-kapitel__item h3 { color: var(--color-green-900); }
+  .jb-kapitel__item p { margin-top: 0.25rem; color: var(--color-muted); }
+
+  /* ── Leseprobe ── */
+  .jb-leseprobe-wrap { background: var(--color-green-050); }
+  .jb-galerie {
+    list-style: none;
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+  }
+  .jb-seite {
+    display: block;
+    text-decoration: none;
+    background: #fff;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .jb-seite:hover, .jb-seite:focus-visible {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-card);
+  }
+  .jb-seite img { display: block; width: 100%; height: auto; aspect-ratio: 1; }
+  .jb-seite__titel {
+    display: block;
+    padding: 0.6rem 0.8rem;
+    font-family: var(--font-head);
+    font-size: 1rem;
+    color: var(--color-green-700);
+  }
+
+  /* ── Großansicht ── */
+  .jb-lightbox {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    max-width: 100vw;
+    max-height: 100vh;
+    width: 100vw;
+    height: 100vh;
+  }
+  .jb-lightbox::backdrop { background: rgba(10, 30, 12, 0.92); }
+  .jb-lightbox[open] { display: grid; place-items: center; }
+  .jb-lightbox img {
+    max-width: min(92vw, calc(100vh - 100px));
+    max-height: calc(100vh - 100px);
+    width: auto;
+    height: auto;
+    border-radius: var(--radius-sm);
+    background: #fff;
+  }
+  .jb-lightbox__zaehler {
+    position: fixed;
+    bottom: 16px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: #fff;
+    font-size: var(--fs-small);
+  }
+  .jb-lightbox__btn {
+    position: fixed;
+    display: grid;
+    place-items: center;
+    width: var(--tap);
+    height: var(--tap);
+    border: 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .jb-lightbox__btn:hover, .jb-lightbox__btn:focus-visible { background: var(--color-green-700); }
+  .jb-lightbox__zu { top: 16px; right: 16px; font-size: 1.2rem; }
+  .jb-lightbox__zurueck { left: 12px; top: 50%; transform: translateY(-50%); }
+  .jb-lightbox__weiter { right: 12px; top: 50%; transform: translateY(-50%); }
+
+  /* ── Bestellen ── */
+  #bestellen, #leseprobe { scroll-margin-top: 88px; }
+  .jb-bestellen {
+    margin-top: var(--space-3);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+    align-items: start;
+  }
+  .jb-hinweis { font-size: var(--fs-small); color: var(--color-muted); }
+  .jb-form {
+    display: grid;
+    gap: var(--space-3);
+    background: #fff;
+    border: 1px solid rgba(10, 80, 18, 0.12);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-soft);
+    padding: var(--space-4);
+  }
+  .jb-feld { display: grid; gap: 0.35rem; border: 0; margin: 0; padding: 0; min-width: 0; }
+  .jb-feld[hidden] { display: none; }
+  .jb-feld > label, .jb-lieferart legend { font-weight: 600; color: var(--color-ink); }
+  .jb-optional { font-weight: 400; color: var(--color-muted); }
+  .jb-feld input[type="text"],
+  .jb-feld input[type="number"],
+  .jb-feld input[type="tel"],
+  .jb-feld textarea {
+    font: inherit;
+    min-height: var(--tap);
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #b9c7ba;
+    border-radius: var(--radius-sm);
+    background: #fff;
+    color: var(--color-ink);
+  }
+  .jb-feld input:focus-visible, .jb-feld textarea:focus-visible {
+    outline: 3px solid var(--color-green-500);
+    outline-offset: 1px;
+  }
+  .jb-feld [aria-invalid="true"] { border-color: #b3261e; box-shadow: 0 0 0 1px #b3261e; }
+  .jb-feld input[type="number"] { max-width: 8rem; }
+  .jb-lieferart label {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: var(--tap);
+    cursor: pointer;
+  }
+  .jb-lieferart input { width: 20px; height: 20px; accent-color: var(--color-green-700); }
+  .jb-fehler { color: #b3261e; font-weight: 600; }
+  .jb-alternativ { font-size: var(--fs-small); color: var(--color-muted); }
+
+  /* ── Fragen ── */
+  .jb-cta { background: var(--color-white); padding-bottom: var(--space-6); }
+  .jb-cta__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    background: var(--color-green-050);
+    border: 1px solid rgba(10, 80, 18, 0.12);
+    border-radius: var(--radius-md);
+    padding: var(--space-4) var(--space-5);
+  }
+  .jb-cta__title { color: var(--color-green-700); }
+  .jb-cta__text { margin-top: var(--space-2); }
+
+  @media (max-width: 520px) {
+    .jb-hero__actions .btn, .jb-form .btn { width: 100%; }
+    .jb-cta__inner { padding: var(--space-3); }
+    .jb-cta__inner .btn { width: 100%; }
+  }
+  @media (min-width: 640px) {
+    .jb-kapitel { grid-template-columns: repeat(2, 1fr); }
+    .jb-galerie { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (min-width: 960px) {
+    .jb-hero__inner { grid-template-columns: 1.2fr 0.8fr; }
+    .jb-galerie { grid-template-columns: repeat(5, 1fr); }
+    .jb-bestellen { grid-template-columns: 1fr 1fr; gap: var(--space-6); }
+  }
+</style>
