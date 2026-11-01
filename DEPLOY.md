@@ -6,14 +6,15 @@ Jede Änderung – Code oder Inhalt – ist ein Git-Commit.
 
 ```
 Push auf main  ──▶  Vercel baut  ──▶  live (1–2 Minuten)
-Push auf dev / spec/*  ──▶  Vercel-Vorschau-URL (nicht live)
+Push auf spec/* oder preview  ──▶  Vercel-Vorschau-URL (nicht live)
 ```
 
 ## Branches
 
 - **`main`** wird bei jedem Push sofort live deployt.
-- Gearbeitet wird auf **`dev`** bzw. `spec/NNN-…`-Branches (CLAUDE.md
-  Abschnitt 12). Vercel baut dafür eigene Vorschau-URLs.
+- Code-Arbeit läuft auf `spec/NNN-…`-Branches, die nach Freigabe direkt nach
+  `main` gehen (CLAUDE.md Abschnitt 12). Vercel baut dafür Vorschau-URLs.
+- **`preview`** enthält nur Inhaltsvorschläge aus dem Chat (VORSCHAU.md).
 
 ## Projekt auf Vercel
 

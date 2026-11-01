@@ -210,26 +210,29 @@ Ablauf steht in `.agent/agent.md` und ist verbindlich:
 Zusätzlich gilt in diesem Projekt verbindlich:
 
 **Branches:** `main` wird bei jedem Push sofort live deployt (Vercel).
-Deshalb läuft alle Arbeit über den Branch **`dev`**:
+Jede Spec läuft auf einem eigenen Branch, der nach Freigabe direkt nach
+`main` geht (seit 2026-11-01; der frühere Sammel-Branch `dev` entfällt):
 
 ```
-main  ← nur nach ausdrücklicher Freigabe aus dev gemergt (= Livegang)
- └─ dev  ← Sammelstand aller fertigen Specs
-     └─ spec/NNN-kurzer-titel  ← Arbeit an einer Spec
+main  ← Spec-Branch nach ausdrücklicher Freigabe gemergt (= Livegang)
+ ├─ spec/NNN-kurzer-titel  ← Code-Arbeit an einer Spec (Vercel-Vorschau)
+ └─ preview  ← nur Inhaltsvorschläge aus dem Chat (VORSCHAU.md), nie von Hand
 ```
 
 1. **Immer zuerst einen Feature-Branch anlegen:** `spec/NNN-kurzer-titel`,
-   abgezweigt von `dev`. Keine Spec-Umsetzung direkt auf `dev` oder `main`.
+   abgezweigt von `main`. Keine Spec-Umsetzung direkt auf `main`.
 2. Beim Start `station: Doing` setzen, den Branch im Frontmatter (`branch:`)
    eintragen, falls die App das nicht schon getan hat.
 3. Alle Commits auf dem Feature-Branch, Spec-ID im Commit-Text nennen.
 4. Nach Abschluss Tasks, `## Verification` und History-Eintrag vervollständigen;
    bei `needs_human: true` `ready: true` setzen und `## Review` schreiben,
    sonst `station: Done`.
-5. **Am Ende fragen, ob nach `dev` gemergt werden darf.** Nie ohne
-   ausdrückliche Freigabe mergen. Nach dem Merge den Spec-Branch löschen.
-6. **`dev` → `main` nur auf ausdrückliche Anweisung** („live stellen“).
-   Nie von selbst nach `main` mergen oder pushen.
+5. **Am Ende fragen, ob nach `main` gemergt werden darf** – das ist der
+   Livegang. Vorher die Vercel-Vorschau des Spec-Branches prüfen lassen.
+   Nie ohne ausdrückliche Freigabe nach `main` mergen oder pushen. Nach dem
+   Merge den Spec-Branch löschen.
+6. Der Arbeitsordner steht auf `main` bzw. dem aktuellen Spec-Branch, nie auf
+   `preview`.
 
 ---
 

@@ -101,7 +101,8 @@ Nicht im Umfang:
    `veroeffentlichen` nicht ohne vorherigen `entwurf_status` in derselben
    Sitzung läuft.
 3. 2026-11-01 · Inhalts-Veröffentlichungen gehen direkt nach `main` (= live),
-   Code-Arbeit läuft über `dev` (CLAUDE.md Abschnitt 12). Damit beide nicht
+   Code-Arbeit lief damals über `dev` (CLAUDE.md Abschnitt 12, inzwischen
+   geändert, siehe Decision 5). Damit beide nicht
    auseinanderlaufen, übernimmt `dev` nach jeder Inhalts-Veröffentlichung den
    Stand von `main`. Der MCP-Server ändert nur Inhaltsordner, daher sind
    Konflikte selten; bei einem Konflikt wird nicht automatisch aufgelöst.
@@ -110,6 +111,10 @@ Nicht im Umfang:
    in einer lokalen Arbeitskopie. Der Build-Test vor dem Veröffentlichen ist
    der Vercel-Preview-Build des `preview`-Commits; schlägt er fehl, wird nicht
    veröffentlicht. Die Vorschau erscheint 30–60 s nach einer Änderung.
+5. 2026-11-01 · Der Sammel-Branch `dev` entfällt (Wunsch im Chat):
+   Spec-Branches gehen direkt nach `main`. Decision 3 (dev nach jeder
+   Inhalts-Veröffentlichung nachziehen) ist damit hinfällig; Spec-Branches
+   holen sich bei Bedarf `main`, bevor sie gemergt werden.
 
 ## Tasks
 
@@ -131,8 +136,8 @@ Nicht im Umfang:
       mit live.
 - [ ] Einbindung in Private AI und Durchlauf der UC-001-Akzeptanzkriterien
 - [ ] `MCP.md` schreiben
-- [ ] (added) Nach `veroeffentlichen` `main` in `dev` mergen (fast-forward oder
-      Merge-Commit, nie force); bei Konflikt abbrechen und melden
+- [x] ~~(added) Nach `veroeffentlichen` `main` in `dev` mergen~~ – entfällt
+      (Decision 5, kein `dev` mehr)
 
 ## Verification
 
