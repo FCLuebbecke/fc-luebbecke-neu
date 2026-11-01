@@ -85,6 +85,7 @@ Mobil: Burger-Menü. Header bleibt beim Scrollen oben (sticky).
 | Menüpunkt     | Inhalt / Verhalten                                      | Untermenü |
 |---------------|---------------------------------------------------------|-----------|
 | Start         | Startseite                                              | nein      |
+| Aktuelles     | Beiträge + Instagram (`/aktuelles`), Detailseiten        | nein      |
 | Fußball       | Mannschaften, Trainingszeiten, Spielplan …              | ja ▾      |
 | Badminton     | Eine einzelne Seite                                     | nein      |
 | Darts         | Eine einzelne Seite                                     | nein      |
@@ -106,10 +107,11 @@ Mobil: Burger-Menü. Header bleibt beim Scrollen oben (sticky).
     - **Fußball:** große Karte über volle Breite, Foto + Button „Zur Fußball-Abteilung“.
     - **Badminton · Darts · Laufsport ↗:** drei gleich große Karten darunter.
       Laufsport-Karte mit ↗, führt nach außen.
-4. **Aktuelles via Instagram** – statt selten gepflegter News der Live-Feed des
-   Fußball-Instagram-Accounts. **DSGVO: 2-Klick-Lösung** – Instagram lädt erst nach
-   aktiver Zustimmung (Einwilligung wird gemerkt). Feed-Widget extern (z. B.
-   LightWidget). Zusätzlich „Auf Instagram folgen"-Button.
+4. **Aktuelles** *(Spec 007)* – bis zu drei neueste Beiträge (Karten mit Bild,
+   Datum, Sparten-Etikett, Teaser) und „Alle Beiträge →“ zu `/aktuelles`;
+   darunter „Frisch von Instagram“ (Raster, Bilder selbst gehostet, kein
+   Consent nötig) mit „Auf Instagram folgen“. Ohne Beiträge nur Instagram.
+   Beiträge werden per Chat (Private AI, MCP) gepflegt, siehe INHALTE.md.
 5. **Nächste Termine** – kompakte Liste (Datum, Gegner/Anlass, Ort, Uhrzeit).
 6. **Mitglied werden** – grüner Block über volle Breite mit Button.
 7. **Fußzeile (Footer):**

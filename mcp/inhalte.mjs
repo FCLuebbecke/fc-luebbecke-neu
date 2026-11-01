@@ -16,7 +16,22 @@ export const BILDFELDER = {
   'sparten-mannschaften': ['foto'],
   'sparten-infos': [],
   sponsoren: ['logo'],
+  beitraege: ['titelbild', 'galerie'],
 };
+
+/** Bildfelder, die eine Liste von Bildern sind (bild_hochladen hängt an). */
+export const BILDLISTEN = { beitraege: ['galerie'] };
+
+/** Alle Bilder eines Eintrags als Liste von src-Pfaden. */
+export function bildPfadeVon(sammlung, daten) {
+  const pfade = [];
+  for (const f of BILDFELDER[sammlung] ?? []) {
+    const wert = daten?.[f];
+    if (Array.isArray(wert)) pfade.push(...wert.map((b) => b?.src).filter(Boolean));
+    else if (wert?.src) pfade.push(wert.src);
+  }
+  return pfade;
+}
 
 /** Feste Einträge: Hier dürfen keine Dateien angelegt oder gelöscht werden. */
 export const FESTE_IDS = { 'sparten-infos': ['badminton', 'darts'] };
@@ -155,6 +170,13 @@ export function beschreibeSchema(sammlung) {
     hinweise: [
       'reihenfolge: kleiner = weiter oben; Zehnerschritte, dazwischen einfügen erlaubt (z. B. 15).',
       'Bilder nur über bild_hochladen setzen; alt (Bildbeschreibung) ist Pflicht.',
+      ...(sammlung === 'beitraege'
+        ? [
+            'Ton: bodenständig, wir-Form, kurze Sätze, keine Superlative. Bei Jugend nur Vornamen oder keine Namen.',
+            'inhalt ist Markdown. Titelbild nach dem Anlegen mit bild_hochladen setzen – ohne Titelbild wird nicht veröffentlicht.',
+            'galerie: weitere Fotos mit bild_hochladen (feld "galerie") anhängen; entfernen/umsortieren über entwurf_aendern.',
+          ]
+        : []),
       ...(sammlung === 'mannschaften'
         ? ['Trainer: telefon/email erscheinen nur mit veroeffentlichen: true und nur mit Zustimmung der Person.']
         : []),
@@ -173,6 +195,8 @@ export function seitenPfad(sammlung, id, daten) {
       return `/${id ?? 'badminton'}/trainingszeiten/`;
     case 'sponsoren':
       return '/#sponsoren-title';
+    case 'beitraege':
+      return id ? `/aktuelles/${id}/` : '/aktuelles/';
     default:
       return '/';
   }

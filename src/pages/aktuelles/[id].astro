@@ -1,0 +1,208 @@
+---
+/**
+ * Detailseite eines Beitrags /aktuelles/<id>/ (Spec 007).
+ * Statisch pro Beitrag gebaut; eigenes Vorschaubild für WhatsApp & Co.
+ */
+import { Image, getImage } from "astro:assets";
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import { getBeitraege, SPARTEN_NAMEN, datumLang, type Beitrag } from "../../lib/inhalte";
+import { markdownZuHtml } from "../../lib/markdown";
+
+export async function getStaticPaths() {
+  const beitraege = await getBeitraege();
+  return beitraege.map((b) => ({ params: { id: b.id }, props: { b } }));
+}
+
+interface Props {
+  b: Beitrag;
+}
+const { b } = Astro.props;
+const html = markdownZuHtml(b.inhalt);
+const og = b.titelbild
+  ? (await getImage({ src: b.titelbild.src, width: 1200, height: 630, fit: "cover", format: "jpg" })).src
+  : undefined;
+const galerie = await Promise.all(
+  (b.galerie ?? []).map(async (g) => ({ ...g, gross: (await getImage({ src: g.src, width: 1600 })).src })),
+);
+const url = new URL(`/aktuelles/${b.id}/`, Astro.site).href;
+const whatsapp = `https://wa.me/?text=${encodeURIComponent(`${b.titel} – ${url}`)}`;
+---
+
+<Layout title={`${b.titel} – FC Lübbecke`} description={b.teaser} ogImage={og} ogType="article">
+  <Header active="aktuelles" />
+  <main id="inhalt" class="container beitrag">
+    <p class="beitrag__zurueck"><a href="/aktuelles/">← Alle Beiträge</a></p>
+    <article>
+      <header class="beitrag__kopf">
+        <span class={`etikett etikett--${b.sparte}`}>{SPARTEN_NAMEN[b.sparte]}</span>
+        <h1 class="beitrag__titel">{b.titel}</h1>
+        <p class="beitrag__meta">
+          <time datetime={b.datum}>{datumLang(b.datum)}</time>
+          {b.autor && <> · {b.autor}</>}
+        </p>
+      </header>
+
+      {b.titelbild && (
+        <figure class="beitrag__titelbild">
+          <Image
+            src={b.titelbild.src}
+            alt={b.titelbild.alt}
+            width={1200}
+            style={b.titelbild.fokus ? `object-position: ${b.titelbild.fokus}` : undefined}
+          />
+          <figcaption>{b.titelbild.alt}</figcaption>
+        </figure>
+      )}
+
+      <div class="beitrag__text" set:html={html} />
+
+      {galerie.length > 0 && (
+        <section class="galerie" aria-label="Fotos">
+          <h2 class="sr-only">Fotos</h2>
+          <ul class="galerie__raster">
+            {galerie.map((g) => (
+              <li>
+                <a class="galerie__link" href={g.gross} data-galerie-gross={g.gross} data-galerie-alt={g.alt}>
+                  <Image src={g.src} alt={g.alt} width={480} loading="lazy" />
+                  <span class="sr-only"> (groß ansehen)</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+          <dialog class="galerie__dialog" aria-label="Foto">
+            <img class="galerie__gross" src="" alt="" />
+            <button class="galerie__schliessen" type="button" aria-label="Schließen">×</button>
+          </dialog>
+        </section>
+      )}
+
+      <footer class="beitrag__teilen">
+        <span>Teilen:</span>
+        <a class="btn btn--secondary" href={whatsapp} target="_blank" rel="noopener noreferrer">
+          WhatsApp <span aria-hidden="true">↗</span><span class="sr-only"> (öffnet in neuem Fenster)</span>
+        </a>
+        <button class="btn btn--secondary" type="button" data-kopieren={url}>Link kopieren</button>
+        <span class="beitrag__kopiert" role="status" aria-live="polite"></span>
+      </footer>
+    </article>
+  </main>
+  <Footer />
+</Layout>
+
+<script>
+  // Galerie: Klick öffnet das Foto groß im nativen <dialog> (wie Spec 003).
+  const dialog = document.querySelector<HTMLDialogElement>(".galerie__dialog");
+  const gross = dialog?.querySelector<HTMLImageElement>(".galerie__gross");
+  document.querySelectorAll<HTMLAnchorElement>("[data-galerie-gross]").forEach((a) => {
+    a.addEventListener("click", (e) => {
+      if (!dialog || !gross || typeof dialog.showModal !== "function") return;
+      e.preventDefault();
+      gross.src = a.dataset.galerieGross ?? "";
+      gross.alt = a.dataset.galerieAlt ?? "";
+      dialog.showModal();
+    });
+  });
+  dialog?.querySelector(".galerie__schliessen")?.addEventListener("click", () => dialog.close());
+  dialog?.addEventListener("click", (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+
+  // Link kopieren
+  const knopf = document.querySelector<HTMLButtonElement>("[data-kopieren]");
+  const meldung = document.querySelector<HTMLElement>(".beitrag__kopiert");
+  knopf?.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(knopf.dataset.kopieren ?? location.href);
+      if (meldung) meldung.textContent = "Link kopiert.";
+    } catch {
+      if (meldung) meldung.textContent = "Kopieren nicht möglich – bitte Adresse aus der Adresszeile nehmen.";
+    }
+  });
+</script>
+
+<style>
+  .beitrag { padding-block: var(--space-4) var(--space-6); max-width: 820px; }
+  .beitrag__zurueck a {
+    display: inline-block;
+    min-height: var(--tap);
+    line-height: var(--tap);
+    color: var(--color-green-700);
+    font-weight: 600;
+  }
+  .beitrag__kopf { margin-top: var(--space-2); }
+  .beitrag__titel { margin-top: var(--space-1); }
+  .beitrag__meta { margin-top: var(--space-1); color: var(--color-muted); }
+  .beitrag__titelbild { margin: var(--space-4) 0 0; }
+  .beitrag__titelbild :global(img) {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+  }
+  .beitrag__titelbild figcaption {
+    margin-top: var(--space-1);
+    color: var(--color-muted);
+    font-size: var(--fs-small);
+  }
+  .beitrag__text {
+    margin-top: var(--space-4);
+    max-width: var(--measure);
+  }
+  .beitrag__text :global(p),
+  .beitrag__text :global(ul),
+  .beitrag__text :global(ol) { margin-top: var(--space-2); }
+  .beitrag__text :global(h2) { margin-top: var(--space-4); font-size: 1.5rem; }
+  .beitrag__text :global(h3) { margin-top: var(--space-3); }
+  .beitrag__text :global(a) { color: var(--color-green-700); }
+  .galerie__raster {
+    list-style: none;
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .galerie__link :global(img) {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+  }
+  .galerie__link:focus-visible { outline: 3px solid var(--color-green-500); outline-offset: 2px; }
+  .galerie__dialog {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    max-width: min(96vw, 1600px);
+  }
+  .galerie__dialog::backdrop { background: rgba(0, 0, 0, 0.82); }
+  .galerie__gross { max-height: 88vh; width: auto; border-radius: var(--radius-sm); }
+  .galerie__schliessen {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: var(--tap);
+    height: var(--tap);
+    border: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-size: 1.6rem;
+    cursor: pointer;
+  }
+  .beitrag__teilen {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-5);
+    padding-top: var(--space-3);
+    border-top: 1px solid #e3e3e3;
+  }
+  .beitrag__kopiert { color: var(--color-muted); font-size: var(--fs-small); }
+  @media (min-width: 720px) {
+    .galerie__raster { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>

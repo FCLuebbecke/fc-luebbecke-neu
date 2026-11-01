@@ -34,6 +34,10 @@ export const collections = {
     loader: jsonIn('sparten-infos'),
     schema: (ctx) => regeln(ctx)['sparten-infos'],
   }),
+  beitraege: defineCollection({
+    loader: jsonIn('beitraege'),
+    schema: (ctx) => regeln(ctx).beitraege,
+  }),
   sponsoren: defineCollection({
     loader: jsonIn('sponsoren'),
     schema: (ctx) => regeln(ctx).sponsoren,

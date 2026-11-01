@@ -91,6 +91,25 @@ export function inhaltsSchemas(bild) {
       ortAdresse: z.string().trim().min(1),
     }),
 
+    /** Beiträge „Aktuelles“ (Spec 007); Datei-Name = Adresse /aktuelles/<id>/. */
+    beitraege: z.object({
+      titel: z.string().trim().min(1).max(120),
+      datum: z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, 'Datum im Format JJJJ-MM-TT')
+        .describe('Datum des Beitrags, z. B. "2026-11-01"'),
+      sparte: z.enum(['fussball', 'badminton', 'darts', 'verein']),
+      teaser: z.string().trim().min(1).max(220).describe('Kurztext für Karten, höchstens ~200 Zeichen'),
+      inhalt: z
+        .string()
+        .trim()
+        .min(1)
+        .describe('Text in Markdown: Absätze, ## Zwischenüberschrift, **fett**, *kursiv*, [Link](https://…), - Aufzählung'),
+      titelbild: bild.optional().describe('Pflicht zum Veröffentlichen; über bild_hochladen setzen'),
+      galerie: z.array(bild).max(30).optional().describe('weitere Fotos; über bild_hochladen (feld "galerie") anhängen'),
+      autor: z.string().optional().describe('z. B. "Jugendabteilung"'),
+    }),
+
     /** Sponsoren & Partner (Startseite). */
     sponsoren: z.object({
       name: z.string().trim().min(1),
@@ -102,4 +121,4 @@ export function inhaltsSchemas(bild) {
   };
 }
 
-export const SAMMLUNGEN = ['mannschaften', 'sparten-mannschaften', 'sparten-infos', 'sponsoren'];
+export const SAMMLUNGEN = ['mannschaften', 'sparten-mannschaften', 'sparten-infos', 'sponsoren', 'beitraege'];

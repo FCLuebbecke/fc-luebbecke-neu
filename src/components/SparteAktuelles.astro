@@ -1,0 +1,48 @@
+---
+/**
+ * „Aktuelles aus der Sparte“ (Spec 007): bis zu drei Beiträge einer Sparte.
+ * Ohne Beiträge wird nichts gerendert.
+ */
+import BeitragKarte from "./BeitragKarte.astro";
+import { getBeitraege, SPARTEN_NAMEN, type BeitragSparte } from "../lib/inhalte";
+
+interface Props {
+  sparte: BeitragSparte;
+}
+const { sparte } = Astro.props;
+const beitraege = await getBeitraege({ sparte, limit: 3 });
+---
+
+{beitraege.length > 0 && (
+  <section class="container sparte-aktuelles" aria-labelledby={`aktuelles-${sparte}`}>
+    <h2 id={`aktuelles-${sparte}`} class="section-title">Aktuelles aus dem {SPARTEN_NAMEN[sparte]}</h2>
+    <ul class="sparte-aktuelles__grid">
+      {beitraege.map((b) => (
+        <li><BeitragKarte beitrag={b} /></li>
+      ))}
+    </ul>
+    <p class="sparte-aktuelles__alle"><a href={`/aktuelles/?sparte=${sparte}`}>Alle Beiträge →</a></p>
+  </section>
+)}
+
+<style>
+  .sparte-aktuelles { padding-block: var(--space-5); }
+  .sparte-aktuelles__grid {
+    list-style: none;
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+  .sparte-aktuelles__alle { margin-top: var(--space-3); text-align: right; }
+  .sparte-aktuelles__alle a {
+    display: inline-block;
+    min-height: var(--tap);
+    line-height: var(--tap);
+    font-weight: 600;
+    color: var(--color-green-700);
+  }
+  @media (min-width: 720px) {
+    .sparte-aktuelles__grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>

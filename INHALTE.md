@@ -18,6 +18,7 @@ daneben (Use Case UC-001, Specs 009/010). Bis dahin: Datei ändern, mit
 | Badminton-/Darts-Mannschaften | `src/content/sparten-mannschaften/` | `/badminton/mannschaften`, `/darts/mannschaften` |
 | Trainingszeiten & Ort Badminton/Darts | `src/content/sparten-infos/badminton.json`, `darts.json` | `/badminton/trainingszeiten`, `/darts/trainingszeiten` |
 | Sponsoren | `src/content/sponsoren/` | Startseite |
+| Beiträge „Aktuelles“ | `src/content/beitraege/` | Startseite, `/aktuelles`, Sparten-Seiten |
 
 Bilder liegen unter `src/assets/content/<sammlung>/` und werden relativ zur
 JSON-Datei angegeben. Astro rechnet sie beim Build automatisch klein (WebP).
@@ -93,6 +94,25 @@ Köpfe abgeschnitten werden.
 | `reihenfolge` | ja | |
 | `website` | | vollständige URL |
 | `logo` | | Ohne Logo erscheint der Name als Text. |
+
+### Beitrag „Aktuelles“ (`beitraege/*.json`, Spec 007)
+
+Der Dateiname ist die Adresse: `saisonstart-2026.json` → `/aktuelles/saisonstart-2026/`.
+
+| Feld | Pflicht | Hinweis |
+|---|---|---|
+| `titel` | ja | höchstens 120 Zeichen |
+| `datum` | ja | `JJJJ-MM-TT`, z. B. `2026-11-01` |
+| `sparte` | ja | `fussball`, `badminton`, `darts` oder `verein` |
+| `teaser` | ja | Kurztext für die Karten, höchstens ~200 Zeichen |
+| `inhalt` | ja | Text in Markdown: Absätze, `## Zwischenüberschrift`, `**fett**`, `*kursiv*`, `[Link](https://…)`, `- Aufzählung`. HTML wird nicht übernommen. |
+| `titelbild` | (ja) | Bild mit `alt`; ohne Titelbild veröffentlicht der MCP-Server nicht |
+| `galerie` | | Liste von Bildern mit `alt` |
+| `autor` | | z. B. „Jugendabteilung“ |
+
+Ton: bodenständig, wir-Form, kurze Sätze. Namen nur mit Einverständnis, bei
+der Jugend nur Vornamen oder keine Namen; Fotos von Kindern nur mit
+Einwilligung der Eltern.
 
 ## Neuen Eintrag anlegen
 
