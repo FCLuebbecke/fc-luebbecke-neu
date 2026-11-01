@@ -1,0 +1,2 @@
+{"timestamp":"2026-11-01T14:58:51Z","spec_id":"010-mcp-server-private-ai","event_type":"station_changed","actor":"project","summary":"Backlog → Doing, Branch spec/010-mcp-server von main; Q1 im Chat beantwortet"}
+{"timestamp":"2026-11-01T15:06:41Z","spec_id":"010-mcp-server-private-ai","event_type":"agent_run","actor":"project","summary":"MCP-Server: api/mcp.mjs, mcp/{server,werkzeuge,inhalte,repo-github,repo-speicher}.mjs, gemeinsame Regeln src/content/schemas.mjs, 19 Tests grün, MCP.md; offen: Einrichtung und Durchlauf mit Private AI (manuell)"}

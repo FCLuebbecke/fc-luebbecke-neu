@@ -1,11 +1,13 @@
 ---
 modules: mcp, inhalte
-station: Backlog
+station: Doing
+ready: true
+branch: spec/010-mcp-server
+owner: FC Luebbecke <Git@fcluebbecke.de>
 order: 3
 needs_human: true
 angelegt: 2026-11-01
 usecase: UC-001
-open_question: Q1
 depends_on: 008-inhalte-als-dateien, 009-vorschau-server
 ---
 
@@ -115,36 +117,119 @@ Nicht im Umfang:
    Spec-Branches gehen direkt nach `main`. Decision 3 (dev nach jeder
    Inhalts-Veröffentlichung nachziehen) ist damit hinfällig; Spec-Branches
    holen sich bei Bedarf `main`, bevor sie gemergt werden.
+6. 2026-11-01 · Aus A1: **Ein gemeinsamer Schlüssel für Private AI**
+   (`Authorization: Bearer …`). Private AI reicht Name und E-Mail der
+   angemeldeten Person in Kopfzeilen mit (`X-FC-Person-Email`,
+   `X-FC-Person-Name`); der Server lässt nur E-Mails aus der Freigabeliste zu
+   (Vercel-Variable, nicht im Repo) und trägt die Person als Commit-Autor ein.
+   Die Werkzeuge selbst bekommen keine Identität als Parameter, damit das
+   Modell sie nicht verändern kann. Zum Start ist nur Peter freigeschaltet.
+7. 2026-11-01 · Server in plain JavaScript (`.mjs`) statt TypeScript: läuft
+   ohne Build-Schritt identisch auf Vercel und in den lokalen Tests (Node).
+   Die gemeinsamen Regeln liegen deshalb in `src/content/schemas.mjs`.
+8. 2026-11-01 · Statt „veroeffentlichen nur nach entwurf_status in derselben
+   Sitzung“ (Decision 2) – der Server ist zustandslos – verlangt
+   `veroeffentlichen`/`entwurf_verwerfen` den `erwarteter_stand` aus
+   `entwurf_status`. Ändert sich der Entwurf dazwischen, wird abgelehnt.
+9. 2026-11-01 · Zusätzliche Sperre: Veröffentlichen wird verweigert, wenn der
+   Entwurf Dateien außerhalb der Inhalte ändert. So kann über `preview` nie
+   Code live gehen (Anlass: `preview` stand zum Testen auf `dev`).
+10. 2026-11-01 · Vercel-Variablen nur für Production setzen; in Vorschau-Builds
+    antwortet `/api/mcp` dann mit 503 (zum Testen gezielt für den Spec-Branch
+    freischalten).
 
 ## Tasks
 
-- [ ] Feature-Branch `spec/010-mcp-server-private-ai` anlegen
-- [ ] Vercel-Function `api/mcp.ts` mit MCP-SDK (Streamable HTTP, zustandslos), Code unter `mcp/`
-- [ ] GitHub-Zugriff (Token als Vercel-Variable, nur dieses Repo): Lesen, Commit mehrerer Dateien, Ref-Update, Merge
-- [ ] Zod-Schemas nach `src/content/schemas.ts` auslagern, von Astro und MCP gemeinsam genutzt
-- [ ] Lese-Werkzeuge und `schema_lesen`
-- [ ] Schreib-Werkzeuge mit Pfad-Sperre, Zod-Validierung, Revisionsprüfung
-- [ ] `bild_hochladen` mit Verkleinerung (sharp)
-- [ ] `entwurf_status`, `vorschau_zeigen`
-- [ ] `veroeffentlichen` (Vercel-Build-Status prüfen, Merge nach `main`), `entwurf_verwerfen`, `rueckgaengig`
-- [ ] Anmeldung und Freischaltung (Q1)
-- [ ] Protokoll
-- [ ] Tests: Pfad-Sperre, Validierung, Revision, Konflikt beim Veröffentlichen
-- [ ] (added) Vor Inbetriebnahme sicherstellen, dass `preview` = `main` ist.
-      Am 2026-11-01 wurde `preview` zum Testen der Vorschau auf den Stand von
-      `dev` gesetzt; sonst ginge beim ersten „veröffentlichen“ Code aus `dev`
-      mit live.
-- [ ] Einbindung in Private AI und Durchlauf der UC-001-Akzeptanzkriterien
-- [ ] `MCP.md` schreiben
+- [x] Feature-Branch `spec/010-mcp-server` von `main` anlegen
+- [x] Vercel-Function mit MCP-SDK (Streamable HTTP, zustandslos), Code unter `mcp/`
+      `api/mcp.mjs` (plain JS statt TS, Decision 7)
+- [x] GitHub-Zugriff: Lesen, Commit mehrerer Dateien, Ref-Update, Merge (`mcp/repo-github.mjs`)
+- [x] Zod-Schemas auslagern, von Astro und MCP gemeinsam genutzt (`src/content/schemas.mjs`)
+- [x] Lese-Werkzeuge und `schema_lesen`
+- [x] Schreib-Werkzeuge mit Pfad-Sperre, Zod-Validierung, Revisionsprüfung
+- [x] `bild_hochladen` mit Verkleinerung (sharp)
+- [x] `entwurf_status`, `vorschau_zeigen`
+- [x] `veroeffentlichen` (Vercel-Build-Status prüfen, Merge nach `main`), `entwurf_verwerfen`, `rueckgaengig`
+- [x] Anmeldung und Freischaltung (Decision 6)
+- [x] Protokoll
+      JSON-Zeile je Schreibaktion im Vercel-Log; dauerhaft über Git (Autor = Person)
+- [x] Tests: Pfad-Sperre, Validierung, Revision, Konflikt beim Veröffentlichen
+      `npm run test:mcp`, 19 Tests
+- [x] `MCP.md` schreiben
+- [x] (added) Veröffentlichen sperren, wenn der Entwurf Nicht-Inhalts-Dateien ändert
 - [x] ~~(added) Nach `veroeffentlichen` `main` in `dev` mergen~~ – entfällt
       (Decision 5, kein `dev` mehr)
+- [ ] (added) Vor Inbetriebnahme sicherstellen, dass `preview` = `main` ist
+      (manuell: Push von `preview`, siehe Chat/VORSCHAU.md)
+- [ ] Einrichtung (manuell): GitHub-Token, Vercel-Variablen, Private AI (MCP.md)
+- [ ] Einbindung in Private AI und Durchlauf der UC-001-Akzeptanzkriterien
 
 ## Verification
 
+- `npm run test:mcp`: 19 Tests grün, ohne Netzwerk.
+  - Werkzeuge gegen ein Repository im Arbeitsspeicher mit den echten
+    Inhaltsdateien: suchen/lesen; ändern schreibt genau einen Commit auf
+    `preview` mit der Person als Autor, `main` bleibt unverändert; falsche
+    Revision abgelehnt; Pflichtfeld/unbekanntes Feld/leerer Alt-Text
+    abgelehnt; anlegen → Bild hochladen (PNG ohne Transparenz → JPG) →
+    löschen ohne/mit Bestätigung; feste Einträge geschützt.
+  - Veröffentlichen: ohne Bestätigung, mit falschem Stand, ohne
+    erfolgreichen Build abgelehnt; danach `main` = Entwurf. Code-Datei im
+    Entwurf blockiert das Veröffentlichen, `main` bleibt unverändert. Nach
+    einem Code-Livegang (diverged) wird zusammengeführt, ohne die neue
+    Code-Änderung zu überschreiben, danach `preview` = `main`.
+  - Verwerfen, Rückgängig, Nachziehen von `preview`, wenn `main` weiter ist.
+  - Endpunkt `api/mcp.mjs` über echte HTTP-Requests (Web-API): falscher/
+    fehlender Schlüssel 401, nicht freigeschaltete Person 403; initialize
+    (Server-Name, Anleitung), tools/list (12 Werkzeuge), tools/call lesen und
+    ändern; unbekannte Sammlung als Fehler.
+  - GitHub-Anbindung mit aufgezeichnetem fetch: Blobs → Tree (mit
+    Löschung) → Commit (Eltern, Autor) → Ref-Update mit `force: false`;
+    Abbruch bei weitergewandertem Branch; Lesen, Build-Status.
+- `npm run build`: unverändert grün; gemeinsame Regeln greifen weiterhin
+  (leerer Alt-Text bricht den Build ab).
+- Nicht geprüft: Aufruf gegen das echte GitHub und Vercel (braucht Token und
+  Variablen, siehe Review).
+
 ## Review
+
+Build: Branch `spec/010-mcp-server` · Vercel-Vorschau des Branches
+Not part of this acceptance: weitere Personen freischalten, Einbettung der Vorschau (Spec 009 Q2)
+
+Vorher einrichten (MCP.md): GitHub-Token, Vercel-Variablen als Preview für
+den Branch `spec/010-mcp-server`, `preview` = `main`, MCP-Server in Private AI
+mit der Vorschau-Adresse des Spec-Branches.
+
+### R1 · Änderung im Chat landet in der Vorschau
+- Given: Private AI ist mit dem MCP-Server verbunden, die Vorschau ist offen
+- When: du im Chat eine Trainingszeit änderst
+- Then: Private AI zeigt vorher → nachher, die Vorschau zeigt die neue Zeit nach dem Vercel-Build, die Live-Seite nicht
+- [ ] ok
+
+### R2 · Veröffentlichen
+- Given: eine Änderung liegt im Entwurf, Vorschau-Build ist fertig
+- When: du „veröffentlichen“ sagst
+- Then: Private AI zeigt vorher die offenen Änderungen; nach 1–2 Minuten ist die Änderung live, auf GitHub steht ein Commit mit dir als Autor
+- [ ] ok
+
+### R3 · Verwerfen
+- Given: eine Änderung liegt im Entwurf
+- When: du „verwerfen“ sagst
+- Then: die Vorschau zeigt wieder den Live-Stand
+- [ ] ok
+
+### R4 · Grenzen
+- Given: Private AI ist verbunden
+- When: du bittest, das Impressum oder Layout zu ändern, oder ein Foto ohne Beschreibung zu setzen
+- Then: Private AI erklärt, dass das nicht geht bzw. fragt nach der Beschreibung
+- [ ] ok
 
 ## Questions
 
 ### Q1 · open · 2026-11-01T14:00:00Z
 Wie meldet Private AI die Person beim MCP-Server an (OAuth, API-Schlüssel pro
 Person, durchgereichte Identität)? Und wer wird freigeschaltet?
+
+### A1 · bo · 2026-11-01T15:00:00Z
+(im Chat) Ein Schlüssel für Private AI, Private AI reicht Name/E-Mail mit.
+Zu Beginn nur Peter freigeschaltet.
