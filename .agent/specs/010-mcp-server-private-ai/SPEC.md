@@ -24,7 +24,7 @@ Im Umfang:
 - MCP-Server (TypeScript, offizielles MCP-SDK, Transport Streamable HTTP,
   zustandslos) als **Vercel-Function** im selben Projekt (`api/mcp.ts`).
   Er hat keine Git-Arbeitskopie, sondern liest und schreibt über die
-  **GitHub-API** auf dem Branch `entwurf` (Decision 4). Zugang über ein
+  **GitHub-API** auf dem Branch `preview` (Decision 4). Zugang über ein
   Fine-grained Token nur für dieses Repo (Contents: Read and write) als
   Vercel-Umgebungsvariable.
 - Werkzeuge:
@@ -38,13 +38,13 @@ Im Umfang:
   - `entwurf_status()` – unveröffentlichte Änderungen gegenüber `main` (Diff,
     wer, wann)
   - `vorschau_zeigen(sammlung?, id?)` – URL der betroffenen Seite in der
-    Vercel-Vorschau des Branches `entwurf` (Spec 009) und Build-Status
+    Vercel-Vorschau des Branches `preview` (Spec 009) und Build-Status
     („wird gebaut“ / „fertig“)
   - `veroeffentlichen(bestaetigung)` – nur wenn der Vercel-Build des
-    aktuellen `entwurf`-Commits erfolgreich war (Commit-Status auf GitHub);
-    dann `entwurf` nach `main` mergen (GitHub-Merge-API), danach `entwurf` =
+    aktuellen `preview`-Commits erfolgreich war (Commit-Status auf GitHub);
+    dann `preview` nach `main` mergen (GitHub-Merge-API), danach `preview` =
     `main`
-  - `entwurf_verwerfen(bestaetigung)` – `entwurf` auf den Stand von `main`
+  - `entwurf_verwerfen(bestaetigung)` – `preview` auf den Stand von `main`
     zurücksetzen
   - `rueckgaengig(commit)` – Gegen-Commit im Entwurf
 - Schutz:
@@ -74,7 +74,7 @@ Nicht im Umfang:
 ## Acceptance
 
 - Wenn Private AI `entwurf_aendern` für eine Trainingszeit aufruft, dann ist
-  die Datei im Branch `entwurf` geändert (ein Commit) und die Vorschau zeigt
+  die Datei im Branch `preview` geändert (ein Commit) und die Vorschau zeigt
   sie, sobald der Vercel-Build fertig ist (Ziel unter 90 Sekunden).
 - Wenn ein Werkzeug einen Pfad außerhalb von `src/content/` bzw.
   `src/assets/content/` ändern soll, dann lehnt der Server ab und schreibt
@@ -84,7 +84,7 @@ Nicht im Umfang:
 - Wenn sich die Datei seit `inhalt_lesen` geändert hat, dann lehnt
   `entwurf_aendern` ab und nennt die neue Revision.
 - Wenn `veroeffentlichen` aufgerufen wird, dann steht danach ein Commit mit
-  der Person als Autor in `main`, Vercel baut, und `entwurf` ist gleich `main`.
+  der Person als Autor in `main`, Vercel baut, und `preview` ist gleich `main`.
 - Wenn der Vercel-Build des Entwurfs fehlgeschlagen ist oder der Merge nach
   `main` einen Konflikt hat, dann wird nichts nach `main` übernommen.
 - Wenn `entwurf_status` beim Start fremde Änderungen zeigt, dann sind Person
@@ -108,7 +108,7 @@ Nicht im Umfang:
 4. 2026-11-01 · Folge aus Spec 009 Decision 1 (alles auf Vercel): Der
    MCP-Server läuft als Vercel-Function und arbeitet über die GitHub-API statt
    in einer lokalen Arbeitskopie. Der Build-Test vor dem Veröffentlichen ist
-   der Vercel-Preview-Build des `entwurf`-Commits; schlägt er fehl, wird nicht
+   der Vercel-Preview-Build des `preview`-Commits; schlägt er fehl, wird nicht
    veröffentlicht. Die Vorschau erscheint 30–60 s nach einer Änderung.
 
 ## Tasks
