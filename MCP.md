@@ -33,6 +33,21 @@ Code, Layout, Impressum und Datenschutz kann er nicht ändern.
 | `entwurf_verwerfen` | Entwurf verwerfen (Bestätigung + `erwarteter_stand`) |
 | `rueckgaengig` | Frühere Änderung zurücknehmen (Gegenänderung im Entwurf) |
 
+**News „Aktuelles“** (Spec 013) – eigene Werkzeuge, intern dieselbe Logik:
+
+| Werkzeug | Zweck |
+|---|---|
+| `news_auflisten` | Beiträge, neueste zuerst (ID, Datum, Sparte, Titelbild ja/nein, Revision) |
+| `news_lesen` | Ein Beitrag mit allen Feldern |
+| `news_anlegen` | Neuer Beitrag: `titel`, `sparte`, `teaser`, `text` (Markdown), optional `datum` (Standard heute), `autor` |
+| `news_bearbeiten` | Einzelne Felder ändern |
+| `news_foto` | Titelbild setzen (`art: "titelbild"`) oder Galeriebild anhängen (`art: "galerie"`) |
+| `news_loeschen` | Beitrag löschen (nur mit Bestätigung) |
+
+Veröffentlicht wird wie alles andere mit `entwurf_status` → `veroeffentlichen`;
+ohne Titelbild lehnt der Server ab. Nach einer Server-Aktualisierung in
+Private AI die Werkzeugliste neu laden (Verbindung trennen/neu verbinden).
+
 Schutzregeln:
 - Ändern/Löschen nur mit passender **Revision**, sonst „neu lesen“.
 - **Veröffentlichen** nur
