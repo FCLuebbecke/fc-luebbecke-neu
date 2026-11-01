@@ -3,5 +3,9 @@
   "datum": "2026-11-01",
   "sparte": "verein",
   "teaser": "Die Jubiläumsausgabe „100 Jahre FC Lübbecke\" ist für 19,25 € erhältlich – Bestellung per E-Mail.",
-  "inhalt": "Zum Vereinsjubiläum ist die Festschrift „100 Jahre FC Lübbecke\" erschienen und kann für **19,25 €** erworben werden.\n\nInteressierte melden sich per E-Mail an **kontakt@fcluebbecke.de**."
+  "inhalt": "Zum Vereinsjubiläum ist die Festschrift „100 Jahre FC Lübbecke\" erschienen und kann für **19,25 €** erworben werden.\n\nInteressierte melden sich per E-Mail an **kontakt@fcluebbecke.de**.",
+  "titelbild": {
+    "src": "../../assets/content/beitraege/jubilaeumsbuch-100-jahre-fc-luebbecke-zu-verkaufen.jpg",
+    "alt": "Cover der Festschrift 100 Jahre FC Lübbecke"
+  }
 }
