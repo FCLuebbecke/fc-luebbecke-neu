@@ -71,8 +71,12 @@ Betroffene Stellen:
       (Quellcode, robots, Doku-Hinweis in CLAUDE.md prüfen).
 - [ ] Property in der Google Search Console angelegt (Domain-Property
       `fcluebbecke.de`), Sitemap eingereicht, keine Indexierungsfehler.
-- [ ] Nach Deploy live geprüft: Canonical, Sitemap und robots.txt zeigen
+- [x] Nach Deploy live geprüft: Canonical, Sitemap und robots.txt zeigen
       auf `www.fcluebbecke.de`, `lastmod` vorhanden.
+      2026-11-01 per curl: Startseite 200, `<link rel="canonical"
+      href="https://www.fcluebbecke.de/">`, robots.txt mit Sitemap-URL auf www,
+      sitemap-index/sitemap-0 mit www-URLs und `lastmod`, kein
+      `fc-luebbecke.de` in der Sitemap, `fcluebbecke.de` → 308 auf www.
 
 ## Nicht Teil dieser Spec
 

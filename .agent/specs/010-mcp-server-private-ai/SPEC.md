@@ -88,6 +88,11 @@ Nicht im Umfang:
    nur nach Zustimmung im Chat gesetzt; der Server erzwingt zusätzlich, dass
    `veroeffentlichen` nicht ohne vorherigen `entwurf_status` in derselben
    Sitzung läuft.
+3. 2026-11-01 · Inhalts-Veröffentlichungen gehen direkt nach `main` (= live),
+   Code-Arbeit läuft über `dev` (CLAUDE.md Abschnitt 12). Damit beide nicht
+   auseinanderlaufen, übernimmt `dev` nach jeder Inhalts-Veröffentlichung den
+   Stand von `main`. Der MCP-Server ändert nur Inhaltsordner, daher sind
+   Konflikte selten; bei einem Konflikt wird nicht automatisch aufgelöst.
 
 ## Tasks
 
@@ -103,6 +108,8 @@ Nicht im Umfang:
 - [ ] Tests: Pfad-Sperre, Validierung, Revision, Konflikt beim Veröffentlichen
 - [ ] Einbindung in Private AI und Durchlauf der UC-001-Akzeptanzkriterien
 - [ ] `MCP.md` schreiben
+- [ ] (added) Nach `veroeffentlichen` `main` in `dev` mergen (fast-forward oder
+      Merge-Commit, nie force); bei Konflikt abbrechen und melden
 
 ## Verification
 
