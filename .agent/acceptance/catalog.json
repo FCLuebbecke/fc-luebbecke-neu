@@ -19,6 +19,14 @@
       "legacy_file": null,
       "legacy_revision": null,
       "resource_type": "workflow"
+    },
+    {
+      "id": "UC-002",
+      "title": "Jubiläumsbuch „100 Jahre FC Lübbecke“ auf der Webseite zeigen und verkaufen",
+      "metadata": {},
+      "legacy_file": null,
+      "legacy_revision": null,
+      "resource_type": "workflow"
     }
   ],
   "states": [],
@@ -35,6 +43,19 @@
       "base_state_revision": null,
       "evidence": "",
       "revision": "7072fdc4649244ba477fd4d94f278d69e76f2a5243be456d510bfbe96de64186"
+    },
+    {
+      "id": "51dbd90b-bdf2-4fdc-a8f3-87e117204625",
+      "usecase_id": "UC-002",
+      "title": "Jubiläumsbuch „100 Jahre FC Lübbecke“ auf der Webseite zeigen und verkaufen",
+      "content": "# Jubiläumsbuch „100 Jahre FC Lübbecke“ auf der Webseite zeigen und verkaufen\n\n**Akteure:**\n- **Besucher/in** – Vereinsmitglied, Ehemalige, Fans, Sponsoren, Lübbecker Interessierte\n- **Verkaufsverantwortliche/r** – Vorstand oder Geschäftsstelle; bearbeitet Bestellungen, gibt Bücher aus bzw. verschickt sie\n\n**Beteiligte Systeme:**\n- **Webseite** (Astro, Vercel) – neue Seite „100 Jahre FCL“ unter *Verein*, Teaser auf der Startseite\n- **Datei-Ablage für große Dateien** – Leseprobe/Web-PDF und Seitenbilder (nicht im Git-Repository, siehe Vorbedingungen)\n- **Bestellweg** – Version 1: Bestellformular → E-Mail an den Verein; optional später Zahlungslink (z. B. PayPal oder Stripe Payment Link)\n- **Rechnungsverwaltung** – Skill `rechnung-fc-luebbecke` / Karteikasten für Rechnung und Zahlungseingang\n\n**Ziel:** Das Jubiläumsbuch zum 100-jährigen Bestehen (1925–2025) wird auf der Webseite würdig vorgestellt. Besucher können darin blättern bzw. eine Leseprobe lesen und ein gedrucktes Exemplar (optional auch das E-Book) bestellen. Der Verein erhält die Bestellung so, dass er sie ohne Zusatzaufwand abwickeln kann.\n\n## Ausgangslage\n\n- Fertige Druckdatei `FC-Buch final .pdf` (Adobe InDesign, 116 Seiten, quadratisch 21 × 21 cm, **125 MB**).\n- Inhalt u. a.: Vorwort des 1. Vorsitzenden, die Vorsitzenden, Vereinsgeschichte (1925–1975, 70er–90er, 90er bis heute), Jugendarbeit, „Die jungen / grauen Grün-Weißen“, Stadion Obernfelder Allee, Vereinsheim.\n- Die Datei ist zu groß für Git (GitHub-Grenze 100 MB pro Datei) und für einen bequemen Download auf dem Handy.\n\n## Vorgabe: Build- und Deploy-Zeit\n\nDie Umsetzung darf die Build- und Deploy-Zeit bei Vercel **nicht spürbar verlängern** (Richtwert: höchstens wenige Sekunden mehr als vorher).\n\n- **PDFs nie im Build:** Druckdatei, Web-Fassung und Leseprobe liegen nicht im Repository und nicht unter `public/`, sondern in einer externen Ablage (z. B. Vercel Blob) und werden nur verlinkt.\n- **Bilder vorab optimiert:** Cover und Beispielseiten werden einmalig vorab als WebP in Zielgröße erzeugt und unter `public/` abgelegt, damit Astro sie beim Build nicht umrechnen muss. Keine neuen Bilder in `src/assets/` für diese Seite.\n- **Kein Download beim Build:** Die Seite lädt beim Build nichts aus dem Internet (anders als der Instagram-Feed).\n- **Bestellformular schlank:** Mailversand über eine kleine Serverfunktion oder einen externen Formulardienst; keine zusätzlichen Build-Schritte oder schweren Abhängigkeiten.\n\n## Auslöser\n\n- Besucher/in sieht auf der Startseite oder im Menü *Verein* den Hinweis „100 Jahre FCL – das Jubiläumsbuch“.\n- Oder: Link aus Instagram, Vereinsnewsletter, QR-Code im Vereinsheim / auf Plakaten.\n\n## Vorbedingungen\n\n- **Web-Fassung erstellt:** Aus der Druckdatei wird eine verkleinerte Web-Fassung erzeugt (Bilder auf ca. 150 dpi, Ziel < 15 MB) sowie eine **Leseprobe** (z. B. Vorwort, Inhaltsverzeichnis, 8–12 ausgewählte Seiten, Ziel < 5 MB). Die Druckdatei selbst wird nie veröffentlicht.\n- **Ablage geklärt:** Große Dateien liegen nicht im Repository, sondern in einer Datei-Ablage (z. B. Vercel Blob) und werden per Link eingebunden; Coverbild und Seitenbilder der Leseprobe als optimierte Bilder (WebP) im Projekt.\n- **Rechte geklärt:** Für Fotos und Texte im Buch liegt die Zustimmung zur **Online**-Veröffentlichung vor (eine Druckfreigabe reicht nicht automatisch). Besonders Fotos von Kindern/Jugendlichen und Namen von Privatpersonen werden für die Leseprobe geprüft, im Zweifel ausgelassen.\n- **Verkaufsbedingungen festgelegt:** Preis, Versandkosten (oder nur Abholung im Vereinsheim), Zahlungsweg, Bestand gedruckter Exemplare, Ansprechperson. Steuerliche Einordnung (Verkauf im wirtschaftlichen Geschäftsbetrieb, Bücher 7 % USt) mit dem Kassenwart geklärt.\n- **Rechtstexte ergänzt:** Datenschutzerklärung (Bestellformular, ggf. Zahlungsdienst), bei Versand bzw. E-Book-Verkauf Widerrufsbelehrung und Verkaufsbedingungen; Impressum bleibt im Footer.\n\n## Hauptablauf (Buch ansehen und Druckexemplar bestellen)\n\n1. Besucher/in öffnet die Seite **„100 Jahre FCL“** (Menü *Verein* → *100 Jahre* oder Teaser auf der Startseite).\n2. Die Seite zeigt im Vereinsdesign (Bühne mit Buchcover, Oswald/Source Sans, Grün/Weiß):\n   - Cover, Titel, kurzer Einleitungstext (z. B. aus dem Vorwort), Eckdaten (116 Seiten, Format 21 × 21 cm, Preis)\n   - Inhaltsübersicht der Kapitel\n   - 4–6 ausgewählte Doppelseiten als Bildergalerie (16:9 bzw. quadratisch, mit Alt-Texten)\n   - Button **„Leseprobe ansehen“** (Sekundär) und **„Buch bestellen“** (Primär)\n3. Mit „Leseprobe ansehen“ öffnet sich die Leseprobe als PDF in neuem Tab (oder als Bildergalerie mit Blättern). Sie lädt auf dem Handy in wenigen Sekunden.\n4. Mit „Buch bestellen“ springt die Seite zum Bestellblock: Anzahl, Name, E-Mail, Telefon (optional), Lieferart **Abholung im Vereinsheim** oder **Versand** (dann Adresse), Hinweis zu Preis und Zahlung, Datenschutz-Einwilligung.\n5. Besucher/in schickt die Bestellung ab. Die Seite bestätigt: „Danke! Wir melden uns mit Zahlungs- und Abholinformationen.“ Besucher/in erhält eine Bestätigungs-E-Mail mit Zusammenfassung; Antworten darauf gehen an `kontakt@fcluebbecke.de`.\n6. Der Verein erhält die Bestellung per E-Mail (an die bestehende Vereinsadresse `kontakt@fcluebbecke.de`, Betreff „Bestellung Jubiläumsbuch“, damit sie sich im Postfach filtern lässt).\n7. Verkaufsverantwortliche/r erstellt eine Rechnung (Skill `rechnung-fc-luebbecke`, 7 % USt) mit Bankverbindung bzw. vereinbart Barzahlung bei Abholung.\n8. Nach Zahlungseingang wird das Buch verschickt oder zur Abholung bereitgelegt; die Zahlung wird im Karteikasten als bezahlt markiert.\n\n## Alternativabläufe\n\n- **A1 · Direkt online bezahlen (Ausbaustufe):** Statt Formular führt „Buch bestellen“ zu einem Zahlungslink (PayPal oder Stripe Payment Link, extern, neuer Tab). Nach Zahlung erhält der Verein eine Benachrichtigung mit Lieferadresse; die Seite selbst speichert keine Zahlungsdaten.\n- **A2 · E-Book kaufen (optional):** Besucher/in wählt „Als PDF (E-Book)“. Nach Zahlung erhält er/sie einen persönlichen, zeitlich begrenzten Download-Link zur Web-Fassung. Die Web-Fassung ist nie öffentlich verlinkt.\n- **A3 · Komplett frei lesen (statt Verkauf):** Entscheidet der Vorstand, das Buch nicht (mehr) zu verkaufen, zeigt die Seite die ganze Web-Fassung zum Blättern/Download; der Bestellblock entfällt.\n- **A4 · Ausverkauft:** Ist der Bestand erschöpft, zeigt die Seite „Leider vergriffen“ statt des Bestellbuttons, optional mit „Vormerken für Nachdruck“ (E-Mail-Adresse). Leseprobe bleibt verfügbar.\n- **A5 · Abholung vor Ort:** Bei Abholung zeigt die Seite die Öffnungszeiten des Vereinsheims / Heimspieltage, an denen das Buch erhältlich ist; bezahlt wird bar oder per EC/PayPal vor Ort.\n\n## Fehlerfälle\n\n- **F1 · Formular unvollständig:** Pflichtfelder (Name, E-Mail, Anzahl, Lieferart, ggf. Adresse, Einwilligung) werden direkt am Feld gemeldet; nichts wird verschickt.\n- **F2 · Versand der Bestellung schlägt fehl:** Die Seite zeigt „Bestellung konnte nicht gesendet werden“ und nennt die E-Mail-Adresse bzw. Telefonnummer als Ausweg.\n- **F3 · Spam:** Das Formular hat einen unsichtbaren Spam-Schutz (Honeypot/Zeitprüfung), kein Tracking-Captcha.\n\n## Nachbedingungen\n\n- Das Buch ist auf der Webseite in max. zwei Klicks erreichbar (Startseite → Teaser, oder Menü *Verein* → *100 Jahre*).\n- Leseprobe und Bilder sind auf dem Handy schnell geladen; die 125-MB-Druckdatei ist nirgends öffentlich.\n- Jede Bestellung liegt als E-Mail beim Verein vor und kann als Rechnung im Karteikasten weiterverfolgt werden.\n- Datenschutzerklärung (und bei Versand/E-Book Widerrufsbelehrung) decken Formular und Zahlungsweg ab.\n\n## Abnahmekriterien\n\n- Wenn ich auf der Startseite bin, dann sehe ich einen Teaser zum Jubiläumsbuch, der zur Seite „100 Jahre FCL“ führt.\n- Wenn ich im Menü *Verein* bin, dann finde ich den Punkt „100 Jahre“.\n- Wenn ich auf „Leseprobe ansehen“ tippe, dann öffnet sich die Leseprobe (< 5 MB) in neuem Tab.\n- Wenn ich das Bestellformular vollständig ausfülle und absende, dann sehe ich eine Bestätigung, erhalte eine Bestätigungs-E-Mail, und der Verein erhält die Bestellung mit allen Angaben.\n- Wenn ich ein Pflichtfeld leer lasse, dann wird das Feld markiert und nichts verschickt.\n- Wenn der Bestand auf „vergriffen“ steht, dann sehe ich statt des Bestellbuttons den Hinweis „Leider vergriffen“.\n- Wenn die Seite umgesetzt ist, dann dauert ein Vercel-Build höchstens wenige Sekunden länger als der Build davor (Vergleich der Build-Dauer im Vercel-Dashboard), und im Repository liegt keine PDF-Datei des Buchs.\n- Die Seite erfüllt das Designsystem (Farben, Schriften, Buttons ≥ 44 px, Alt-Texte) und ist auf dem Handy ohne horizontales Scrollen lesbar.\n\n## Offene Entscheidungen (Vorstand)\n\n1. **Verkaufen oder frei zeigen?** Druckexemplar verkaufen + Leseprobe (empfohlen) · zusätzlich E-Book · komplett frei.\n2. **Preis** je Buch, Versandkosten oder nur Abholung.\n3. **Zahlungsweg Version 1:** Rechnung/Überweisung bzw. bar bei Abholung (empfohlen, kein Zusatzdienst) · PayPal · Stripe.\n4. **Umfang der Leseprobe:** welche Seiten (Rechte- und Datenschutzprüfung der Fotos).\n5. **Bestand:** Anzahl verfügbarer gedruckter Exemplare, wer pflegt „vergriffen“ (ggf. als Inhalt über Private AI, vgl. UC-001).\n6. **Wer bearbeitet die Bestellungen** aus dem Postfach `kontakt@fcluebbecke.de`?\n\n## Abgrenzung\n\n- Kein eigener Webshop mit Warenkorb, Kundenkonto oder Lagerverwaltung.\n- Die Druckdatei wird nicht verändert; nur verkleinerte Fassungen/Bilder werden daraus erzeugt.\n- Andere Fanartikel sind nicht Teil dieses Use Cases.\n",
+      "metadata": {},
+      "min_version": "",
+      "max_version": null,
+      "base_state_id": null,
+      "base_state_revision": null,
+      "evidence": "",
+      "revision": "8b503897bb3129a3c79c2708d75266ba2cc5ee0502cd6e47bf8ed6ae93fd94a6"
     }
   ],
   "spec_bindings": [],
@@ -82,6 +103,27 @@
       "operation": "draft_save",
       "details": {
         "id": "d1431eae-a599-4434-8dd7-1084afd26b15"
+      }
+    },
+    {
+      "at": "2026-11-01T17:15:12.526882+00:00",
+      "operation": "usecase_create",
+      "details": {
+        "id": "UC-002"
+      }
+    },
+    {
+      "at": "2026-11-01T17:18:19.527046+00:00",
+      "operation": "draft_save",
+      "details": {
+        "id": "51dbd90b-bdf2-4fdc-a8f3-87e117204625"
+      }
+    },
+    {
+      "at": "2026-11-01T17:19:32.178324+00:00",
+      "operation": "draft_save",
+      "details": {
+        "id": "51dbd90b-bdf2-4fdc-a8f3-87e117204625"
       }
     }
   ]
