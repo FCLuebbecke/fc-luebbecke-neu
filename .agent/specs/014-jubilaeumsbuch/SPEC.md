@@ -6,7 +6,6 @@ branch: spec/014-jubilaeumsbuch
 owner: FC Luebbecke <Git@fcluebbecke.de>
 order: 1
 needs_human: true
-open_question: Q1
 angelegt: 2026-11-01
 usecase: UC-002
 ---
@@ -23,16 +22,17 @@ Leseprobe und einer einfachen Bestellmöglichkeit (UC-002).
 
 - Neue Seite `/100-jahre`: Bühne mit Cover und Preis, Kapitelübersicht,
   Leseprobe (10 Seiten als Galerie mit Großansicht), Bestellblock, Fragen-Block.
-- Bestellformular (Name, Anzahl, Lieferart Abholung/Versand, Adresse bei
-  Versand, Telefon optional) füllt eine E-Mail an `kontakt@fcluebbecke.de`
-  vor, Betreff „Bestellung Jubiläumsbuch“. Kein Server, kein Maildienst.
+- Bestellformular (Name, Anzahl, Telefon optional) – **nur Abholung im
+  Vereinsheim**, Bezahlung bei Abholung – füllt eine E-Mail an
+  `kontakt@fcluebbecke.de` vor, Betreff „Bestellung Jubiläumsbuch“.
+  Kein Server, kein Maildienst.
 - Verlinkung: Fußball-Untermenü, Footer (Spalte Verein), Teaser auf der
   Startseite nach „Aktuelles“.
 - Buchdaten zentral in `src/data/jubilaeumsbuch.ts` (Preis, lieferbar,
   Leseprobe-Seiten); `lieferbar: false` zeigt „Leider vergriffen“.
 
-Nicht enthalten: Online-Zahlung, E-Book, Bestätigungsmail, Pflege des
-Preises/Bestands per Private AI (MCP), Rechtstexte für Versandhandel.
+Nicht enthalten: Versand, Online-Zahlung, E-Book, Bestätigungsmail, Pflege
+des Preises/Bestands per Private AI (MCP).
 
 ## Acceptance
 
@@ -45,7 +45,9 @@ Preises/Bestands per Private AI (MCP), Rechtstexte für Versandhandel.
 - Wenn ich das Formular vollständig ausfülle und absende, dann öffnet sich
   mein Mailprogramm mit einer fertigen Bestellung an `kontakt@fcluebbecke.de`.
 - Wenn ich ein Pflichtfeld leer lasse, dann wird es markiert und keine Mail
-  geöffnet; die Lieferadresse ist nur bei „Versand“ sichtbar und Pflicht.
+  geöffnet.
+- Auf der Seite wird kein Versand angeboten; Text und Mail nennen
+  „Abholung im Vereinsheim“.
 - Wenn `lieferbar` auf `false` steht, dann steht statt Bestellbutton und
   Formular „Leider vergriffen“.
 - Der Build dauert höchstens wenige Sekunden länger als vorher; im
@@ -69,6 +71,9 @@ Preises/Bestands per Private AI (MCP), Rechtstexte für Versandhandel.
    `public/jubilaeumsbuch/` – keine Bildverarbeitung beim Build.
 6. 2026-11-01 · Buchdaten in `src/data/` (nicht `src/content/`), daher noch
    nicht per Private AI pflegbar. Bei Bedarf eigene Spec.
+7. 2026-11-01 · (aus Q1/A1) **Erst nur Abholung, Versand raus.** Damit
+   entfallen Lieferart-Auswahl, Adressfeld und Fernabsatz-Rechtstexte.
+   Bezahlung bei Abholung (UC-002 A5). Versand ggf. später als eigene Spec.
 
 ## Tasks
 
@@ -81,6 +86,7 @@ Preises/Bestands per Private AI (MCP), Rechtstexte für Versandhandel.
 - [x] Build und Build-Zeit vorher/nachher messen
 - [x] Screenshots Desktop prüfen
 - [x] (added) Lieferadresse war trotz `hidden` sichtbar (`display:grid` überschrieb `hidden`) → `.jb-feld[hidden]{display:none}`
+- [x] (added) Versand entfernt (Entscheidung 7): Lieferart, Adressfeld, Versandtexte, Skript und Styles
 
 ## Verification
 
@@ -103,7 +109,7 @@ Preises/Bestands per Private AI (MCP), Rechtstexte für Versandhandel.
 ## Review
 
 Build: Vercel-Vorschau des Branches spec/014-jubilaeumsbuch
-Not part of this acceptance: Rechtstexte (Widerruf/AGB) für Versand – siehe Questions
+Not part of this acceptance: Versand (bewusst nicht angeboten, Entscheidung 7)
 
 ### R1 · Seite und Verlinkung
 - Given: Vercel-Vorschau ist geöffnet
@@ -119,8 +125,8 @@ Not part of this acceptance: Rechtstexte (Widerruf/AGB) für Versand – siehe Q
 
 ### R3 · Bestellung
 - Given: Seite `/100-jahre`, Abschnitt „Buch bestellen“
-- When: du einmal leer absendest, dann „Versand“ wählst, alles ausfüllst und absendest
-- Then: erst Fehlermeldung mit markierten Feldern; dann öffnet sich dein Mailprogramm mit Betreff „Bestellung Jubiläumsbuch“ an kontakt@fcluebbecke.de, Summe und Adresse stehen drin
+- When: du einmal ohne Namen absendest, dann Name und Anzahl 2 einträgst und absendest
+- Then: erst Fehlermeldung mit markiertem Feld; dann öffnet sich dein Mailprogramm mit Betreff „Bestellung Jubiläumsbuch“ an kontakt@fcluebbecke.de, „2 × … (38,50 €) zur Abholung im Vereinsheim“; nirgends wird Versand angeboten
 - [ ] ok
 
 ### R4 · Handy-Darstellung
@@ -131,7 +137,10 @@ Not part of this acceptance: Rechtstexte (Widerruf/AGB) für Versand – siehe Q
 
 ## Questions
 
-### Q1 · open · 2026-11-01T18:10:00Z
+### Q1 · answered · 2026-11-01T18:10:00Z
 Bei Versand an Privatpersonen gelten für den Verein ggf. Fernabsatzregeln
 (Widerrufsbelehrung, Angaben zu Versandkosten). Soll Versand in Version 1
 angeboten bleiben (dann Rechtstext klären) oder erst nur Abholung?
+
+### A1 · bo · 2026-11-01T18:20:00Z
+Erst nur Abholung, Versand raus. → Entscheidung 7.

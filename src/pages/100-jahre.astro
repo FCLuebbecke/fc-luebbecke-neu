@@ -118,15 +118,15 @@ const mailtoEinfach = `${KONTAKT_MAILTO}?subject=${encodeURIComponent(BUCH.beste
         <div class="jb-bestellen">
           <div class="prose jb-bestellen__info">
             <p>
-              Das Buch kostet <strong>{preisText}</strong>. Du kannst es im
-              Vereinsheim abholen oder dir schicken lassen – die Versandkosten
-              nennen wir dir in unserer Antwort.
+              Das Buch kostet <strong>{preisText}</strong> und ist zur
+              <strong>Abholung im Vereinsheim</strong> erhältlich – einen
+              Termin sprechen wir mit dir ab. Versand bieten wir derzeit nicht an.
             </p>
             <p>
               Fülle das Formular aus: Es öffnet sich dein E-Mail-Programm mit
               einer fertigen Bestellung an <strong>{KONTAKT_MAIL}</strong>. Du
-              musst sie nur noch absenden. Wir melden uns mit Zahlungs- und
-              Abholinformationen.
+              musst sie nur noch absenden. Wir melden uns mit einem Abholtermin;
+              bezahlt wird bei Abholung.
             </p>
             <p class="jb-hinweis">
               Deine Angaben werden erst übertragen, wenn du die E-Mail selbst
@@ -142,15 +142,6 @@ const mailtoEinfach = `${KONTAKT_MAILTO}?subject=${encodeURIComponent(BUCH.beste
             <div class="jb-feld">
               <label for="jb-anzahl">Anzahl *</label>
               <input id="jb-anzahl" name="anzahl" type="number" min="1" max="50" value="1" inputmode="numeric" required />
-            </div>
-            <fieldset class="jb-feld jb-lieferart">
-              <legend>Lieferart *</legend>
-              <label><input type="radio" name="lieferart" value="Abholung im Vereinsheim" checked /> Abholung im Vereinsheim</label>
-              <label><input type="radio" name="lieferart" value="Versand" /> Versand (zzgl. Versandkosten)</label>
-            </fieldset>
-            <div class="jb-feld" id="jb-adresse-feld" hidden>
-              <label for="jb-adresse">Lieferadresse *</label>
-              <textarea id="jb-adresse" name="adresse" rows="3" autocomplete="street-address"></textarea>
             </div>
             <div class="jb-feld">
               <label for="jb-telefon">Telefon <span class="jb-optional">(optional)</span></label>
@@ -201,17 +192,10 @@ const mailtoEinfach = `${KONTAKT_MAILTO}?subject=${encodeURIComponent(BUCH.beste
   // ── Bestellformular → vorausgefüllte E-Mail ──
   const form = document.getElementById("jb-form");
   if (form) {
-    const adresseFeld = document.getElementById("jb-adresse-feld");
-    const adresse = document.getElementById("jb-adresse");
     const fehler = document.getElementById("jb-fehler");
-    const istVersand = () => form.elements.lieferart.value === "Versand";
-    form.addEventListener("change", () => {
-      adresseFeld.hidden = !istVersand();
-      adresse.required = istVersand();
-    });
     form.addEventListener("submit", (e) => {
       e.preventDefault();
-      const felder = [form.elements.name, form.elements.anzahl, ...(istVersand() ? [adresse] : [])];
+      const felder = [form.elements.name, form.elements.anzahl];
       const leer = felder.filter((f) => !f.value.trim() || !f.checkValidity());
       felder.forEach((f) => f.setAttribute("aria-invalid", leer.includes(f) ? "true" : "false"));
       if (leer.length) {
@@ -226,14 +210,12 @@ const mailtoEinfach = `${KONTAKT_MAILTO}?subject=${encodeURIComponent(BUCH.beste
       const zeilen = [
         "Hallo FC Lübbecke,",
         "",
-        `hiermit bestelle ich ${anzahl} × Jubiläumsbuch „100 Jahre FC Lübbecke“ (${summe}${istVersand() ? " zzgl. Versand" : ""}).`,
+        `hiermit bestelle ich ${anzahl} × Jubiläumsbuch „100 Jahre FC Lübbecke“ (${summe}) zur Abholung im Vereinsheim.`,
         "",
         `Name: ${form.elements.name.value.trim()}`,
-        `Lieferart: ${form.elements.lieferart.value}`,
-        ...(istVersand() ? [`Lieferadresse: ${adresse.value.trim().replace(/\n+/g, ", ")}`] : []),
         ...(form.elements.telefon.value.trim() ? [`Telefon: ${form.elements.telefon.value.trim()}`] : []),
         "",
-        "Bitte schickt mir die Zahlungs- bzw. Abholinformationen.",
+        "Bitte meldet euch mit einem Abholtermin.",
         "",
         "Viele Grüße",
       ];
@@ -473,14 +455,12 @@ const mailtoEinfach = `${KONTAKT_MAILTO}?subject=${encodeURIComponent(BUCH.beste
     box-shadow: var(--shadow-soft);
     padding: var(--space-4);
   }
-  .jb-feld { display: grid; gap: 0.35rem; border: 0; margin: 0; padding: 0; min-width: 0; }
-  .jb-feld[hidden] { display: none; }
-  .jb-feld > label, .jb-lieferart legend { font-weight: 600; color: var(--color-ink); }
+  .jb-feld { display: grid; gap: 0.35rem; min-width: 0; }
+  .jb-feld > label { font-weight: 600; color: var(--color-ink); }
   .jb-optional { font-weight: 400; color: var(--color-muted); }
   .jb-feld input[type="text"],
   .jb-feld input[type="number"],
-  .jb-feld input[type="tel"],
-  .jb-feld textarea {
+  .jb-feld input[type="tel"] {
     font: inherit;
     min-height: var(--tap);
     padding: 0.5rem 0.75rem;
@@ -489,20 +469,12 @@ const mailtoEinfach = `${KONTAKT_MAILTO}?subject=${encodeURIComponent(BUCH.beste
     background: #fff;
     color: var(--color-ink);
   }
-  .jb-feld input:focus-visible, .jb-feld textarea:focus-visible {
+  .jb-feld input:focus-visible {
     outline: 3px solid var(--color-green-500);
     outline-offset: 1px;
   }
   .jb-feld [aria-invalid="true"] { border-color: #b3261e; box-shadow: 0 0 0 1px #b3261e; }
   .jb-feld input[type="number"] { max-width: 8rem; }
-  .jb-lieferart label {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    min-height: var(--tap);
-    cursor: pointer;
-  }
-  .jb-lieferart input { width: 20px; height: 20px; accent-color: var(--color-green-700); }
   .jb-fehler { color: #b3261e; font-weight: 600; }
   .jb-alternativ { font-size: var(--fs-small); color: var(--color-muted); }
 
