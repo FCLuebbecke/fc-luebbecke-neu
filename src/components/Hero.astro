@@ -38,6 +38,14 @@ const sparten = [
        damit Handys nicht das 1920er-Bild laden; eigenes Bild via Prop = 1:1. -->
   {image === "/hero.jpg" ? (
     <picture>
+      <!-- Handy: eigener Hochkant-Ausschnitt (Spec 013), sonst würde das
+           breite Foto per object-fit auf einen schmalen Streifen beschnitten -->
+      <source
+        type="image/webp"
+        media="(max-width: 767px)"
+        srcset="/hero-hochkant-640.webp 640w, /hero-hochkant-980.webp 980w"
+        sizes="100vw"
+      />
       <source
         type="image/webp"
         srcset="/hero-768.webp 768w, /hero-1280.webp 1280w, /hero-1920.webp 1920w"
