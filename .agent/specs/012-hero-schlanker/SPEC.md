@@ -1,6 +1,6 @@
 ---
 modules: seiten
-station: Doing
+station: Done
 ready: true
 branch: spec/012-hero-schlanker
 order: 5
@@ -72,12 +72,12 @@ Build: Branch spec/012-hero-schlanker · Vercel-Vorschau
 - Given: die Startseite der Vorschau auf Desktop und Handy
 - When: du den Hero anschaust
 - Then: nur Titel, Claim, „Mitglied werden“ und die vier Sparten; es fehlt dir nichts
-- [ ] ok
+- [x] ok
 
 ### R2 · Sparten-Chips führen zur Sparte
 - Given: der Hero
 - When: du „Darts“ und „Laufsport ↗“ anklickst
 - Then: Darts öffnet die Darts-Seite, Laufsport die Berglöwen in neuem Tab
-- [ ] ok
+- [x] ok
 
 ## Questions
