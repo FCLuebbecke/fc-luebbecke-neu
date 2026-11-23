@@ -1,6 +1,6 @@
 ---
 modules: seiten
-station: Doing
+station: Done
 ready: true
 branch: spec/016-header-schlanker
 order: 8
@@ -78,12 +78,12 @@ Build: Branch spec/016-header-schlanker · Vercel-Vorschau
 - Given: eine beliebige Seite der Vorschau auf dem Desktop
 - When: du den Header anschaust
 - Then: fünf Menüpunkte sitzen mittig zwischen Logo und Button, nichts wirkt gedrängt
-- [ ] ok
+- [x] ok
 
 ### R2 · Verein-Menü
 - Given: der Header auf Desktop und im Handy-Burger
 - When: du „Verein“ öffnest und „Aktuelles“ bzw. „100 Jahre FC Lübbecke“ wählst
 - Then: die jeweilige Seite öffnet sich und „Verein“ ist dort unterstrichen
-- [ ] ok
+- [x] ok
 
 ## Questions

@@ -1,3 +1,4 @@
 {"timestamp":"2026-11-23T11:25:00Z","spec_id":"016-header-schlanker","event_type":"spec_created","actor":"project","summary":"Spec angelegt: Header entschlacken"}
 {"timestamp":"2026-11-23T11:25:01Z","spec_id":"016-header-schlanker","event_type":"station_changed","actor":"project","summary":"Backlog → Doing, Branch spec/016-header-schlanker"}
 {"timestamp":"2026-11-23T12:05:00Z","spec_id":"016-header-schlanker","event_type":"agent_run","actor":"project","summary":"Tasks 1–3: Navigation umgebaut (Start raus, Verein-Untermenü mit Aktuelles + 100 Jahre), Menü zentriert, Build + Playwright-Screenshots; ready: true"}
+{"timestamp":"2026-11-23T12:15:00Z","spec_id":"016-header-schlanker","event_type":"station_changed","actor":"project","summary":"Doing → Done: Freigabe im Chat, Merge nach main"}
