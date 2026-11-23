@@ -13,8 +13,7 @@ interface Props {
 const { active = "start" } = Astro.props;
 
 const nav = [
-  { id: "start", label: "Start", href: "/" },
-  { id: "aktuelles", label: "Aktuelles", href: "/aktuelles/" },
+  // "Start" entfällt – das Logo führt zur Startseite (Spec 016)
   {
     id: "fussball",
     label: "Fußball",
@@ -54,10 +53,22 @@ const nav = [
     href: "https://luebbecker-bergloewen.de/", // Lübbecker Berglöwen (extern)
     external: true,
   },
-  // Jubiläumsbuch gehört zum ganzen Verein, nicht zu einer Sparte (Spec 015)
-  { id: "100-jahre", label: "100 Jahre", href: "/100-jahre" },
-  // "Verein/Über uns" gestrichen; Kontakt liegt im "Mitglied werden"-Block (#mitglied-werden)
+  {
+    // Alles, was zum ganzen Verein gehört (Spec 016); Jubiläum siehe Spec 015
+    id: "verein",
+    label: "Verein",
+    href: "/aktuelles/",
+    sub: [
+      { id: "aktuelles", label: "Aktuelles", href: "/aktuelles/" },
+      { id: "100-jahre", label: "100 Jahre FC Lübbecke", href: "/100-jahre" },
+      // "Mitglied werden" ist der Button rechts – nicht doppelt im Untermenü
+    ],
+  },
 ];
+
+/** Elternpunkt gilt als aktiv, wenn er selbst oder eine Unterseite aktiv ist */
+const istAktiv = (item: (typeof nav)[number]) =>
+  item.id === active || (item.sub?.some((s) => "id" in s && s.id === active) ?? false);
 ---
 
 <header class="header">
@@ -87,9 +98,9 @@ const nav = [
         {nav.map((item) => (
           <li class:list={["nav__item", { "nav__item--has-sub": item.sub }]}>
             <a
-              class:list={["nav__link", { "is-active": item.id === active }]}
+              class:list={["nav__link", { "is-active": istAktiv(item) }]}
               href={item.href}
-              aria-current={item.id === active ? "page" : undefined}
+              aria-current={istAktiv(item) ? "page" : undefined}
               target={item.external ? "_blank" : undefined}
               rel={item.external ? "noopener noreferrer" : undefined}
               aria-expanded={item.sub ? "false" : undefined}
@@ -170,6 +181,8 @@ const nav = [
     gap: var(--space-3);
     min-height: 72px;
   }
+  /* Desktop: Menü mittig zwischen Logo und Button, Button ganz rechts */
+  .nav { flex: 1 1 auto; }
 
   .header__logo {
     display: inline-flex;
@@ -188,7 +201,8 @@ const nav = [
     padding: 0;
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    justify-content: center;
+    gap: 0.25rem;
   }
 
   .nav__link {
@@ -294,11 +308,10 @@ const nav = [
   }
 
   /* CTA klar von der Navigation absetzen */
-  .nav__item--cta { margin-left: 1.25rem; }
+  .nav__item--cta { margin-left: auto; }
   .nav__link, .nav__item--cta .btn { white-space: nowrap; }
 
-  /* Mittlere Breiten: 7 Menüpunkte + Button passen nur mit engeren
-     Abständen in eine Zeile (seit „100 Jahre“, Spec 015) */
+  /* Mittlere Breiten: etwas engere Abstände, damit alles in eine Zeile passt */
   @media (min-width: 1024px) and (max-width: 1279px) {
     .nav__list { gap: 0.1rem; }
     .nav__link {
@@ -307,7 +320,7 @@ const nav = [
       letter-spacing: 0.04em;
     }
     .nav__link::after { left: 0.55rem; right: 0.55rem; }
-    .nav__item--cta { margin-left: 0.5rem; }
+    .nav__item--cta { margin-left: auto; }
     .nav__item--cta .btn { padding-inline: 1rem; }
   }
 
