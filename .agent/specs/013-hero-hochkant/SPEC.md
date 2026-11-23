@@ -1,6 +1,6 @@
 ---
 modules: seiten
-station: Doing
+station: Done
 ready: true
 branch: spec/013-hero-hochkant
 order: 6
@@ -64,6 +64,6 @@ Build: Branch spec/013-hero-hochkant · Vercel-Vorschau
 - Given: die Startseite der Vorschau auf deinem Handy
 - When: du den Hero anschaust
 - Then: Spielfeld und Vereinsheim sind zu sehen, nicht nur Himmel und Parkplatz
-- [ ] ok
+- [x] ok
 
 ## Questions
