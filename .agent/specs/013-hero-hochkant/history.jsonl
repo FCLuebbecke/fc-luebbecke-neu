@@ -1,0 +1,4 @@
+{"timestamp":"2026-11-23T10:55:00Z","spec_id":"013-hero-hochkant","event_type":"spec_created","actor":"project","summary":"Spec angelegt: Hochkant-Ausschnitt fürs Hero-Foto"}
+{"timestamp":"2026-11-23T10:55:01Z","spec_id":"013-hero-hochkant","event_type":"station_changed","actor":"project","summary":"Backlog → Doing, Branch spec/013-hero-hochkant"}
+{"timestamp":"2026-11-23T11:05:00Z","spec_id":"013-hero-hochkant","event_type":"agent_run","actor":"project","summary":"Tasks 1–3: Ausschnitte mit ImageMagick, picture-Source in Hero.astro, Build + Playwright-Screenshots; ready: true"}
+{"timestamp":"2026-11-23T11:20:00Z","spec_id":"013-hero-hochkant","event_type":"station_changed","actor":"project","summary":"Doing → Done: Freigabe im Chat, Merge nach main"}
