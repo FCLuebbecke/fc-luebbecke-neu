@@ -2,9 +2,10 @@
 /**
  * Hero – Startseite (claude.md Abschnitt 6.2)
  * Stil: "Immersives Vollbild-Foto" – das echte Vereinsfoto füllt die volle
- * Breite, ein sattes Grün-Schleier sorgt für Kontrast. Inhalt mittig zentriert:
- * Kicker, große weiße Oswald-Überschrift, Claim und zwei CTAs. Bewusst der
- * einzige dunkle, wuchtige Block – sticht gegen den hellen Rest der Seite heraus.
+ * Breite, ein sattes Grün-Schleier sorgt für Kontrast. Inhalt mittig zentriert
+ * und bewusst knapp (Spec 012): Titel, Claim, ein Button, vier Sparten-Links.
+ * Was Logo (seit 1925) und Sparten-Block schon sagen, steht hier nicht noch
+ * einmal. Bewusst der einzige dunkle, wuchtige Block der Seite.
  *
  * Das Foto ist 1:1 austauschbar (Prop `image`); Platzhalter funktioniert.
  */
@@ -22,12 +23,13 @@ const {
 } = Astro.props;
 
 /* Die vier Sportangebote als Signatur im Hero – „ein Verein, vier Sparten".
-   Icons wie im Sparten-Block (Inline-SVG, siehe SparteIcon.astro). */
+   Verlinkt auf die Sparten-Seiten (Laufsport extern). Icons wie im
+   Sparten-Block (Inline-SVG, siehe SparteIcon.astro). */
 const sparten = [
-  { label: "Fußball", icon: "fussball" },
-  { label: "Badminton", icon: "badminton" },
-  { label: "Darts", icon: "darts" },
-  { label: "Laufsport", icon: "laufsport" },
+  { label: "Fußball", icon: "fussball", href: "/fussball/mannschaften" },
+  { label: "Badminton", icon: "badminton", href: "/badminton/mannschaften" },
+  { label: "Darts", icon: "darts", href: "/darts/mannschaften" },
+  { label: "Laufsport", icon: "laufsport", href: "https://luebbecker-bergloewen.de/", external: true },
 ] as const;
 ---
 
@@ -64,42 +66,36 @@ const sparten = [
 
   <div class="container hero__inner">
     <div class="hero__content">
-      <p class="hero__kicker">
-        <span class="hero__kicker-bar" aria-hidden="true"></span>
-        Sportverein seit 1925 · Lübbecke
-      </p>
-
       <h1 id="hero-title" class="hero__title">FC Lübbecke</h1>
 
       <p class="hero__claim">Unser Verein. Unser Lübbecke.</p>
 
-      <p class="hero__lead">
-        Fußball, Badminton, Darts und Laufsport – vier Sparten, ein Verein.
-        Bei uns ist jeder willkommen, der Sport und Gemeinschaft liebt.
-      </p>
-
       <div class="hero__actions">
         <a class="btn btn--light" href="/mitglied-werden">Mitglied werden</a>
-        <a class="btn btn--ghost-light" href="#sparten">Unsere Sparten</a>
       </div>
 
-      <!-- Signatur: ein Verein, vier Sparten -->
-      <ul class="hero__sparten" aria-label="Unsere vier Sportangebote">
-        {sparten.map((s) => (
-          <li class="hero__sparte">
-            <span class="hero__sparte-icon" aria-hidden="true"><SparteIcon name={s.icon} /></span>
-            <span>{s.label}</span>
-          </li>
-        ))}
-      </ul>
+      <!-- Signatur: ein Verein, vier Sparten – verlinkt -->
+      <nav class="hero__sparten-nav" aria-label="Unsere vier Sportangebote">
+        <ul class="hero__sparten">
+          {sparten.map((s) => (
+            <li>
+              <a
+                class="hero__sparte"
+                href={s.href}
+                target={"external" in s ? "_blank" : undefined}
+                rel={"external" in s ? "noopener noreferrer" : undefined}
+              >
+                <span class="hero__sparte-icon" aria-hidden="true"><SparteIcon name={s.icon} /></span>
+                <span>{s.label}</span>
+                {"external" in s && <span aria-hidden="true">↗</span>}
+                {"external" in s && <span class="sr-only"> (öffnet in neuem Fenster)</span>}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
     </div>
   </div>
-
-  <!-- dezentes "gegründet 1925"-Siegel -->
-  <span class="hero__seal" aria-hidden="true">
-    <span class="hero__seal-year">1925</span>
-    <span class="hero__seal-label">gegründet</span>
-  </span>
 </section>
 
 <style>
@@ -159,26 +155,6 @@ const sparten = [
     color: var(--color-white);
   }
 
-  .hero__kicker {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.6rem;
-    font-family: var(--font-head);
-    font-weight: 500;
-    font-size: var(--fs-small);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.92);
-    margin-bottom: var(--space-3);
-  }
-  .hero__kicker-bar {
-    width: 38px;
-    height: 4px;
-    background: var(--color-green-500);
-    border-radius: 2px;
-    flex: none;
-  }
 
   .hero__title {
     font-size: clamp(3rem, 1.6rem + 7vw, 6rem);
@@ -201,12 +177,6 @@ const sparten = [
     text-shadow: 0 1px 16px rgba(6, 30, 10, 0.4);
   }
 
-  .hero__lead {
-    margin-top: var(--space-3);
-    color: rgba(255, 255, 255, 0.88);
-    max-width: 46ch;
-    margin-inline: auto;
-  }
 
   .hero__actions {
     margin-top: var(--space-5);
@@ -217,11 +187,15 @@ const sparten = [
   }
 
   /* ---- Sparten-Signatur (ein Verein, vier Sparten) ---- */
+  .hero__sparten-nav {
+    margin-top: var(--space-5);
+    padding-top: var(--space-3);
+    border-top: 1px solid rgba(255, 255, 255, 0.22);
+  }
   .hero__sparten {
     list-style: none;
-    margin: var(--space-5) 0 0;
-    padding: var(--space-3) 0 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.22);
+    margin: 0;
+    padding: 0;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -231,12 +205,37 @@ const sparten = [
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
+    min-height: var(--tap);
     font-family: var(--font-head);
     font-weight: 500;
     font-size: var(--fs-small);
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.92);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .hero__sparte:hover,
+  .hero__sparte:focus-visible {
+    color: var(--color-white);
+  }
+  .hero__sparte:hover .hero__sparte-icon,
+  .hero__sparte:focus-visible .hero__sparte-icon {
+    background: var(--color-green-500);
+    border-color: var(--color-green-500);
+  }
+  .hero__sparte:focus-visible {
+    outline: 2px solid var(--color-white);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap; border: 0;
   }
   .hero__sparte-icon {
     display: inline-grid;
@@ -251,60 +250,22 @@ const sparten = [
     border-radius: 999px;
   }
 
-  /* rundes "gegründet 1925"-Siegel – dezentes Detail oben rechts */
-  .hero__seal {
-    position: absolute;
-    z-index: 1;
-    top: var(--space-4);
-    right: var(--space-4);
-    width: 92px;
-    height: 92px;
-    display: grid;
-    place-content: center;
-    text-align: center;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    color: var(--color-white);
-    border: 2px solid rgba(255, 255, 255, 0.55);
-    font-family: var(--font-head);
-    line-height: 1;
-  }
-  .hero__seal-year {
-    display: block;
-    font-size: 1.6rem;
-    font-weight: 700;
-  }
-  .hero__seal-label {
-    display: block;
-    margin-top: 3px;
-    font-size: 0.6rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.85);
-  }
 
   @keyframes hero-kenburns {
     from { transform: scale(1.04); }
     to   { transform: scale(1.14) translate(-1.5%, -1%); }
   }
 
-  /* Cinematisches, gestaffeltes Einblenden beim Laden */
-  .hero__kicker,
+  /* Einblenden beim Laden: Titel + Claim zuerst, der Rest kurz danach */
   .hero__title,
   .hero__claim,
-  .hero__lead,
   .hero__actions,
-  .hero__sparten {
+  .hero__sparten-nav {
     opacity: 0;
-    animation: hero-rise 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: hero-rise 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
-  .hero__title   { animation-delay: 0.2s; }
-  .hero__claim   { animation-delay: 0.45s; }
-  .hero__lead    { animation-delay: 0.7s; }
-  .hero__actions { animation-delay: 0.95s; }
-  .hero__sparten { animation-delay: 1.15s; }
+  .hero__actions,
+  .hero__sparten-nav { animation-delay: 0.35s; }
 
   @keyframes hero-rise {
     from { opacity: 0; transform: translateY(28px); }
@@ -322,21 +283,16 @@ const sparten = [
 
   @media (prefers-reduced-motion: reduce) {
     .hero__bg { animation: none; }
-    .hero__kicker,
     .hero__title,
     .hero__claim,
-    .hero__lead,
     .hero__actions,
-    .hero__sparten {
+    .hero__sparten-nav {
       opacity: 1;
       animation: none;
     }
   }
 
-  /* Mobil: „1925"-Siegel ausblenden (stört auf kleinen Screens), CTAs volle Breite */
-  @media (max-width: 640px) {
-    .hero__seal { display: none; }
-  }
+  /* Mobil: CTA volle Breite */
   @media (max-width: 520px) {
     .hero__actions .btn { width: 100%; }
   }
