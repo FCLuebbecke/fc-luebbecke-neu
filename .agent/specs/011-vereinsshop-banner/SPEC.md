@@ -25,7 +25,8 @@ Im Umfang:
   Grund, Logo-Lockup, große Überschrift, Text, Link „Zum Vereinsshop →“,
   Rabatt-Badge „−10 % bis 10.12.“, zwei Produktkarten Trikot + Sweatjacke).
   Position: direkt unter dem Hero, vor „Unsere Sparten“.
-- Header: Menüpunkt „Shop ↗“ (extern, neuer Tab, wie Laufsport).
+- Header: „Vereinsshop ↗“ im Untermenü „Verein“ (extern, neuer Tab);
+  seit Spec 016 nicht mehr auf oberster Ebene, damit der Header ruhig bleibt.
 - Footer: Link „Vereinsshop ↗“ in der Sparten-/Vereinsliste.
 - Rabatt-Badge und Rabatt-Satz hängen an einem Enddatum im Code; nach dem
   10.12.2026 bleibt der Banner ohne Rabatt stehen (nächster Build).
@@ -42,9 +43,9 @@ Nicht im Umfang:
   der Link öffnet den Macron-Shop in einem neuen Tab.
 - Wenn die Startseite auf einem Handy (≤ 600 px) geladen wird, dann stehen
   Text und Produktkarten untereinander, nichts läuft über den Rand.
-- Wenn eine beliebige Seite geladen wird, dann enthält das Hauptmenü
-  „Shop ↗“ und der Footer „Vereinsshop ↗“, beide mit `target="_blank"`
-  und `rel="noopener noreferrer"`.
+- Wenn eine beliebige Seite geladen wird, dann enthält das Untermenü
+  „Verein“ den Punkt „Vereinsshop ↗“ und der Footer „Vereinsshop ↗“, beide
+  mit `target="_blank"` und `rel="noopener noreferrer"`.
 - Wenn das Build-Datum nach dem 10.12.2026 liegt, dann zeigt der Banner
   weder Badge noch Rabatt-Satz noch Streichpreise.
 
@@ -56,14 +57,17 @@ Nicht im Umfang:
 2. 2026-11-22 – Produktbilder aus der gelieferten Vorlage ausgeschnitten
    (`public/shop-trikot.webp`, `public/shop-jacke.webp`). Bessere Originale
    aus dem Shop können 1:1 ersetzt werden.
-3. 2026-11-22 – Cremeton und Limettengrün aus der Vorlage übernommen
+3. 2026-11-24 – Branch auf main (Spec 012/013/016) umgesetzt; Shop-Link
+   wandert ins Verein-Untermenü (Wunsch im Chat), der frühere Header-Fix
+   für mittlere Breiten entfällt mit dem schlankeren Header.
+4. 2026-11-22 – Cremeton und Limettengrün aus der Vorlage übernommen
    (bewusste Ausnahme vom Grün/Weiß-Schema für den Aktionsbanner).
 
 ## Tasks
 
 - [x] Komponente `src/components/Vereinsshop.astro` nach Vorlage bauen
 - [x] Banner in `src/pages/index.astro` unter dem Hero einhängen
-- [x] Menüpunkt „Shop ↗“ im Header, „Vereinsshop ↗“ im Footer
+- [x] „Vereinsshop ↗“ im Verein-Untermenü und im Footer
 - [x] Rabatt an Enddatum koppeln (Badge, Satz, Streichpreise)
 - [x] `npm run build`, Desktop- und Handy-Ansicht prüfen
 
@@ -76,9 +80,8 @@ Nicht im Umfang:
   900, 1000, 1100, 1200 und 1440 px: `scrollWidth` = Viewport-Breite (kein
   horizontaler Überlauf); Banner auf Handy gestapelt, Badge neben dem CTA,
   zwei Produktkarten nebeneinander.
-- Header: mit dem sechsten Menüpunkt lief der Button „Mitglied werden“ bei
-  860–1099 px über den Rand → kompakte Variante für diesen Bereich ergänzt,
-  Button bleibt einzeilig und innerhalb des Containers (gemessen).
+- 2026-11-24 nach Rebase auf main: Build fehlerfrei, Banner weiterhin
+  zwischen Hero und Sparten; „Vereinsshop ↗“ im Verein-Dropdown (Screenshot).
 - Enddatum-Logik: `aktion = new Date() <= 2026-12-10T23:59:59+01:00` zur
   Build-Zeit; danach erscheinen Badge, Rabatt-Satz und Streichpreise nicht
   mehr. Hinweis: nach dem 10.12. ist ein neuer Build (Push oder Redeploy)
@@ -104,8 +107,8 @@ aus der Vorlage, etwas unscharf)
 
 ### R3 · Shop-Links in Menü und Footer
 - Given: eine beliebige Unterseite (z. B. Fußball → Mannschaften)
-- When: du ins Hauptmenü (Desktop und Burger) und in den Footer schaust
-- Then: „Shop ↗“ im Menü und „Vereinsshop ↗“ im Footer öffnen den Macron-Shop in neuem Tab
+- When: du „Verein“ aufklappst (Desktop und Burger) und in den Footer schaust
+- Then: „Vereinsshop ↗“ im Verein-Menü und im Footer öffnen den Macron-Shop in neuem Tab
 - [ ] ok
 
 ## Questions
