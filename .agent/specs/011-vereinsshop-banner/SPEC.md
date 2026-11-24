@@ -57,10 +57,11 @@ Nicht im Umfang:
 2. 2026-11-22 – Produktbilder aus der gelieferten Vorlage ausgeschnitten
    (`public/shop-trikot.webp`, `public/shop-jacke.webp`). Bessere Originale
    aus dem Shop können 1:1 ersetzt werden.
-3. 2026-11-24 – Branch auf main (Spec 012/013/016) umgesetzt; Shop-Link
+3. 2026-11-24 – Hintergrund des Banners im Tiefgrün der Seite statt Creme (Wunsch im Chat), Texte weiß, Badge und Preise bleiben limettengrün.
+4. 2026-11-24 – Branch auf main (Spec 012/013/016) umgesetzt; Shop-Link
    wandert ins Verein-Untermenü (Wunsch im Chat), der frühere Header-Fix
    für mittlere Breiten entfällt mit dem schlankeren Header.
-4. 2026-11-22 – Cremeton und Limettengrün aus der Vorlage übernommen
+5. 2026-11-22 – Limettengrün aus der Vorlage übernommen
    (bewusste Ausnahme vom Grün/Weiß-Schema für den Aktionsbanner).
 
 ## Tasks
