@@ -90,8 +90,8 @@ const rabattiert = (n: number) => Math.round(n * 0.9 * 100) / 100;
   .shop {
     --shop-ink: #0b4a1e;
     --shop-lime: #c8f25a;
-    background: var(--color-green-900);
-    color: var(--color-white);
+    background: var(--color-green-050);
+    color: var(--shop-ink);
     overflow: hidden;
   }
 
@@ -113,10 +113,6 @@ const rabattiert = (n: number) => Math.round(n * 0.9 * 100) / 100;
   .shop__brand img {
     height: 40px;
     width: auto;
-    /* Logo ist grün – auf dunklem Grund weiß unterlegen (wie im Footer) */
-    background: #fff;
-    padding: 5px 9px;
-    border-radius: var(--radius-sm);
   }
 
   .shop__title {
@@ -126,7 +122,7 @@ const rabattiert = (n: number) => Math.round(n * 0.9 * 100) / 100;
     line-height: 0.95;
     letter-spacing: -0.01em;
     text-transform: uppercase;
-    color: var(--color-white);
+    color: var(--shop-ink);
   }
 
   .shop__lead {
@@ -147,14 +143,14 @@ const rabattiert = (n: number) => Math.round(n * 0.9 * 100) / 100;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     text-decoration: none;
-    color: var(--color-white);
+    color: var(--shop-ink);
     border-bottom: 5px solid var(--shop-lime);
     transition: border-color 0.15s ease, color 0.15s ease;
   }
   .shop__cta:hover,
   .shop__cta:focus-visible {
-    color: var(--shop-lime);
-    border-color: var(--color-white);
+    color: var(--color-green-700);
+    border-color: var(--color-green-500);
   }
 
   /* Rabatt-Badge: leicht gedrehter Kreis */
@@ -172,7 +168,7 @@ const rabattiert = (n: number) => Math.round(n * 0.9 * 100) / 100;
     background: var(--shop-lime);
     color: var(--shop-ink);
     transform: rotate(-8deg);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 20px rgba(11, 74, 30, 0.18);
     font-family: var(--font-head);
     line-height: 1;
   }

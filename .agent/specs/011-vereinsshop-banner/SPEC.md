@@ -57,7 +57,7 @@ Nicht im Umfang:
 2. 2026-11-22 – Produktbilder aus der gelieferten Vorlage ausgeschnitten
    (`public/shop-trikot.webp`, `public/shop-jacke.webp`). Bessere Originale
    aus dem Shop können 1:1 ersetzt werden.
-3. 2026-11-24 – Hintergrund des Banners im Tiefgrün der Seite statt Creme (Wunsch im Chat), Texte weiß, Badge und Preise bleiben limettengrün.
+3. 2026-11-24 – Hintergrund des Banners im Hellgrün der Seite (`--color-green-050`, wie Instagram-Block) statt Creme (Wunsch im Chat).
 4. 2026-11-24 – Branch auf main (Spec 012/013/016) umgesetzt; Shop-Link
    wandert ins Verein-Untermenü (Wunsch im Chat), der frühere Header-Fix
    für mittlere Breiten entfällt mit dem schlankeren Header.
